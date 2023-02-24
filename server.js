@@ -32,26 +32,26 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/card.html');
 });
 
-app.get('/.well-known/pki-validation/6F253985AFEF9B661E088FEC9197D089.txt', (req, res) => {
+/*app.get('/.well-known/pki-validation/6F253985AFEF9B661E088FEC9197D089.txt', (req, res) => {
   res.sendFile(__dirname + '/6F253985AFEF9B661E088FEC9197D089.txt' );
-});
+});*/
 app.use(express.static(__dirname));
 
-const serverws = https.createServer({
+/*const serverws = https.createServer({
   cert: fs.readFileSync('cert.pem'),
   key: fs.readFileSync('key.pem')
 });
-serverws.listen(3001);
+serverws.listen(3001);*/
 
 const WebSocket = require('ws');
 
-const wss = new WebSocket.Server({ serverws });
+//const wss = new WebSocket.Server({ serverws });
 
-/*const WebSocket = new WebSocket.Server({
+const WebSocket = new WebSocket.Server({
   port: 3001,
   cert: fs.readFileSync('cert.pem'),
   key: fs.readFileSync('key.pem')
-});*/
+});
 
 //const WebSocket = require('ws');
 //const server = new WebSocket.Server({ port: 3001 });
