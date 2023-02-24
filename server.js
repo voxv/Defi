@@ -9,7 +9,7 @@ exec('npm install', (err, stdout, stderr) => {
   console.error(`stderr: ${stderr}`);
 });*/
 const https = require('https');
-const ws = require('ws');
+const WebSocket = require('ws');
 const express = require('express');
 const fs = require('fs');
 const app = express();
