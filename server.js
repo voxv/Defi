@@ -16,17 +16,17 @@ const options = {
   key: fs.readFileSync('/path/to/key.pem')
 };
 
-https.createServer(options, app).listen(443, () => {
-  console.log('Server running on port 443');
+https.createServer(options, app).listen(3000, () => {
+  console.log('Server running on port 3000');
 });
 app.get('/healthcheck', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is up and running' });
 });
 
 //const PORT2 = process.env.PORT || 8000;
-app.listen(3000, () => {
+/*app.listen(3000, () => {
   console.log(`Server listening on port 3000`);
-});
+});*/
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/card.html');
 });
