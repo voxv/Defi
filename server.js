@@ -12,22 +12,22 @@ const https = require('https');
 
 const express = require('express');
 const app = express();
-const options = {
+/*const options = {
   cert: fs.readFileSync('/cert.pem'),
   key: fs.readFileSync('/key.pem')
 };
 https.createServer(options, app).listen(3000, () => {
   console.log('Server running on port 3000');
-});
+});*/
 
 app.get('/healthcheck', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is up and running' });
 });
 
 //const PORT2 = process.env.PORT || 8000;
-//app.listen(3000, () => {
-//  console.log(`Server listening on port 3000`);
-//});
+app.listen(3000, () => {
+  console.log(`Server listening on port 3000`);
+});
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/card.html');
 });
@@ -38,8 +38,8 @@ app.get('/.well-known/pki-validation/6F253985AFEF9B661E088FEC9197D089.txt', (req
 app.use(express.static(__dirname));
 
 const serverws = https.createServer({
-  cert: fs.readFileSync('/cert.pem'),
-  key: fs.readFileSync('/key.pem')
+  cert: fs.readFileSync('cert.pem'),
+  key: fs.readFileSync('key.pem')
 });
 serverws.listen(3001);
 
