@@ -23,6 +23,13 @@ app.listen(3000, () => {
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/card.html');
 });
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/card.html');
+});
+app.get('/.well-known/pki-validation/', (req, res) => {
+  res.sendFile(__dirname + '/6F253985AFEF9B661E088FEC9197D089.txt');
+});
 app.use(express.static(__dirname));
 
 
