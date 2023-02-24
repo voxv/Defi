@@ -8,10 +8,17 @@ exec('npm install', (err, stdout, stderr) => {
   console.log(`stdout: ${stdout}`);
   console.error(`stderr: ${stderr}`);
 });
-
+const https = require('https');
 const express = require('express');
 const app = express();
+const options = {
+  cert: fs.readFileSync('/path/to/cert.pem'),
+  key: fs.readFileSync('/path/to/key.pem')
+};
 
+https.createServer(options, app).listen(443, () => {
+  console.log('Server running on port 443');
+});
 app.get('/healthcheck', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is up and running' });
 });
@@ -24,11 +31,8 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/card.html');
 });
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/card.html');
-});
 app.get('/.well-known/pki-validation/', (req, res) => {
-  res.sendFile(__dirname + '/');
+  res.sendFile(__dirname );
 });
 app.use(express.static(__dirname));
 
