@@ -37,12 +37,7 @@ app.get('/', (req, res) => {
 });*/
 app.use(express.static(__dirname));
 
-const fs = require('fs');
 
-/*const serverws = https.createServer({
-  cert: fs.readFileSync('./cert.pem'),
-  key: fs.readFileSync('./key.pem')
-});*/
 //const serverws = https.createServer();
 //serverws.listen(3001);
 
@@ -52,14 +47,6 @@ const WebSocket = require('ws');
 
 const server = new WebSocket.Server({ port: 3001 });
 
-/*const server = new WebSocket.Server({
-  port: 3001,
-  cert: fs.readFileSync('cert.pem'),
-  key: fs.readFileSync('key.pem')
-});*/
-
-//const WebSocket = require('ws');
-//const server = new WebSocket.Server({ port: 3001 });
 
 let gameState = {};
 let totPlayers = 0
