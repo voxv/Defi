@@ -9,7 +9,6 @@ exec('npm install', (err, stdout, stderr) => {
   console.error(`stderr: ${stderr}`);
 });
 
-const port = process.env.PORT || 3000;
 const express = require('express');
 const app = express();
 
@@ -18,8 +17,8 @@ app.get('/healthcheck', (req, res) => {
 });
 
 //const PORT = process.env.PORT || 80;
-app.listen(port, () => {
-  console.log(`Server listening on port ${PORT}`);
+app.listen(80, () => {
+  console.log(`Server listening on port 80`);
 });
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/card.html');
