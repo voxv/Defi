@@ -23,7 +23,7 @@ app.listen(3000, () => {
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/card.html');
 });
-
+app.use(express.static(__dirname));
 
 
 const WebSocket = require('ws');
