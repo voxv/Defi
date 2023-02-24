@@ -5,8 +5,8 @@ app.get('/healthcheck', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is up and running' });
 });
 
-const PORT = process.env.PORT || 80;
-app.listen(PORT, () => {
+//const PORT = process.env.PORT || 80;
+app.listen(80, () => {
   console.log(`Server listening on port ${PORT}`);
 });
 app.get('/', (req, res) => {
