@@ -1,4 +1,4 @@
-const { exec } = require('child_process');
+/*const { exec } = require('child_process');
 
 exec('npm install', (err, stdout, stderr) => {
   if (err) {
@@ -7,20 +7,23 @@ exec('npm install', (err, stdout, stderr) => {
   }
   console.log(`stdout: ${stdout}`);
   console.error(`stderr: ${stderr}`);
-});
+});*/
 const https = require('https');
-
+const express = require('ws');
 const express = require('express');
+const fs = require('fs');
 const app = express();
 
+////////////////
+
+app.listen(3000, () => {
+  console.log(`Server listening on port 3000`);
+});
 
 app.get('/healthcheck', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is up and running' });
 });
 
-app.listen(3000, () => {
-  console.log(`Server listening on port 3000`);
-});
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/card.html');
 });
@@ -29,14 +32,19 @@ app.use(express.static(__dirname));
 
 ////////////////
 
-const fs = require('fs');
+
 const options = {
   key: fs.readFileSync('key.pem'),
   cert: fs.readFileSync('cert.pem')
 };
 
 const serverws = https.createServer(options);
+serverws.listen(3001, () => {
+  console.log('Server started on port 3001');
+});
+
 const server = new WebSocket.Server({ server: serverws });
+
 
 
 //////////////////
