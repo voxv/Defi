@@ -6,6 +6,26 @@ let totPlayers = 0
 let playersById = {}
 const sockets = new Set();
 
+const express = require('express');
+const app = express();
+
+app.get('/healthcheck', (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'Server is up and running' });
+});
+
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/card.html');
+});
+
+const PORT = process.env.PORT || 80;
+app.listen(PORT, () => {
+  console.log(`Web server listening on port ${PORT}`);
+});
+
 const playerState = {
   id: -1,
   username: '',
