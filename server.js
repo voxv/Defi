@@ -47,7 +47,7 @@ const WebSocket = require('ws');
 
 //const wss = new WebSocket.Server({ serverws });
 
-const WebSocket = new WebSocket.Server({
+const server = new WebSocket.Server({
   port: 3001,
   cert: fs.readFileSync('cert.pem'),
   key: fs.readFileSync('key.pem')
