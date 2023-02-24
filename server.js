@@ -27,8 +27,19 @@ app.get('/', (req, res) => {
 
 app.use(express.static(__dirname));
 
-const WebSocket = require('ws');
-const server = new WebSocket.Server({ port: 3001 });
+////////////////
+
+const fs = require('fs');
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
+
+const serverws = https.createServer(options);
+const server = new WebSocket.Server({ server: serverws });
+
+
+//////////////////
 
 let gameState = {};
 let totPlayers = 0
