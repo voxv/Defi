@@ -48,7 +48,7 @@ serverws.listen(3001);
 
 const WebSocket = require('ws');
 
-const server = new WebSocket.Server({ serverws });
+const server = new WebSocket.Server({ server: serverws });
 
 /*const server = new WebSocket.Server({
   port: 3001,
