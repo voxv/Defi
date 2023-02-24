@@ -1,8 +1,8 @@
 const publicKey = '-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMkOzVmF36ykSAb3WTmNAGQLFBcVUy+pmsS6fDzE3cYFTDFbV+teHrOZ/K2kwezPggkIRKqmChBEzIjebqYjPskCAwEAAQ==-----END PUBLIC KEY-----';
 
-//const socket = new WebSocket('wss://defi-nature.onrender.com:3001');
-
-const socket = new WebSocket('wss://defi-nature.onrender.com:3001', ['echo-protocol'], {
+const socket = new WebSocket('wss://defi-nature.onrender.com:3001');
+console.dir(socket);
+/*const socket = new WebSocket('wss://defi-nature.onrender.com:3001', ['echo-protocol'], {
     verifyClient: (info, cb) => {
         const publicKeyObj = { key: publicKey };
         const cert = info.req.connection.getPeerCertificate();
@@ -13,7 +13,7 @@ const socket = new WebSocket('wss://defi-nature.onrender.com:3001', ['echo-proto
             cb(false, 401, 'Unauthorized');
         }
     }
-});
+});*/
 
 let players;
 let myid = 0
