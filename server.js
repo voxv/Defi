@@ -43,8 +43,8 @@ const fs = require('fs');
   cert: fs.readFileSync('./cert.pem'),
   key: fs.readFileSync('./key.pem')
 });*/
-const serverws = https.createServer();
-serverws.listen(3001);
+//const serverws = https.createServer();
+//serverws.listen(3001);
 
 const WebSocket = require('ws');
 
