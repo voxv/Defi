@@ -40,8 +40,8 @@ app.use(express.static(__dirname));
 const fs = require('fs');
 
 const serverws = https.createServer({
-  cert: fs.readFileSync('/cert.pem'),
-  key: fs.readFileSync('/key.pem')
+  cert: fs.readFileSync('cert.pem'),
+  key: fs.readFileSync('key.pem')
 });
 serverws.listen(3001);
 
