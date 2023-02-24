@@ -37,9 +37,21 @@ app.get('/.well-known/pki-validation/6F253985AFEF9B661E088FEC9197D089.txt', (req
 });
 app.use(express.static(__dirname));
 
+const serverws = https.createServer({
+  cert: fs.readFileSync('/cert.pem'),
+  key: fs.readFileSync('/key.pem')
+});
+serverws.listen(3001);
+const wss = new WebSocket.Server({ serverws });
 
-const WebSocket = require('ws');
-const server = new WebSocket.Server({ port: 3001 });
+/*const WebSocket = new WebSocket.Server({
+  port: 3001,
+  cert: fs.readFileSync('cert.pem'),
+  key: fs.readFileSync('key.pem')
+});*/
+
+//const WebSocket = require('ws');
+//const server = new WebSocket.Server({ port: 3001 });
 
 let gameState = {};
 let totPlayers = 0
