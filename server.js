@@ -16,9 +16,9 @@ app.get('/healthcheck', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is up and running' });
 });
 
-//const PORT = process.env.PORT || 80;
-app.listen(80, () => {
-  console.log(`Server listening on port 80`);
+//const PORT2 = process.env.PORT || 8000;
+app.listen(8000, () => {
+  console.log(`Server listening on port 8000`);
 });
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/card.html');
