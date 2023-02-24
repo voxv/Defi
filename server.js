@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 
 
 const WebSocket = require('ws');
-const server = new WebSocket.Server({ port: 8080 });
+const server = new WebSocket.Server({ port: 8000 });
 
 let gameState = {};
 let totPlayers = 0
