@@ -9,7 +9,7 @@ exec('npm install', (err, stdout, stderr) => {
   console.error(`stderr: ${stderr}`);
 });
 const https = require('https');
-const fs = require('fs');
+
 const express = require('express');
 const app = express();
 /*const options = {
@@ -36,6 +36,8 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/6F253985AFEF9B661E088FEC9197D089.txt' );
 });*/
 app.use(express.static(__dirname));
+
+const fs = require('fs');
 
 const serverws = https.createServer({
   cert: fs.readFileSync('cert.pem'),
