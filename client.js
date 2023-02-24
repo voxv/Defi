@@ -1,5 +1,5 @@
 
-const socket = new WebSocket('wss://defi-nature.onrender.com:8000');
+const socket = new WebSocket('wss://defi-nature.onrender.com:3001');
 
 let players;
 let myid = 0
