@@ -1,5 +1,5 @@
 
-const socket = new WebSocket('ws://localhost:8080');
+const socket = new WebSocket('ws://localhost:8000');
 
 let players;
 let myid = 0
