@@ -39,8 +39,8 @@ const options = {
 };
 
 const serverws = https.createServer(options);
-serverws.listen(443, () => {
-  console.log('WS Server started on port 443');
+serverws.listen(3001, () => {
+  console.log('WS Server started on port 3001');
 });
 
 const server = new WebSocket.Server({ server: serverws });
