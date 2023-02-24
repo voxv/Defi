@@ -1,7 +1,7 @@
 const publicKey = '-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMkOzVmF36ykSAb3WTmNAGQLFBcVUy+pmsS6fDzE3cYFTDFbV+teHrOZ/K2kwezPggkIRKqmChBEzIjebqYjPskCAwEAAQ==-----END PUBLIC KEY-----';
 
 const socket = new WebSocket('wss://defi-nature.onrender.com:3001');
-console.dir(socket);
+
 /*const socket = new WebSocket('wss://defi-nature.onrender.com:3001', ['echo-protocol'], {
     verifyClient: (info, cb) => {
         const publicKeyObj = { key: publicKey };
@@ -30,7 +30,7 @@ var playersTemplate = function() {
 
 socket.addEventListener('open', (event) => {
 	players = new playersTemplate()
-	//console.dir(players)
+	console.log('OPENED!!')
 });
 
 socket.addEventListener('message', (event) => {
@@ -60,7 +60,7 @@ socket.addEventListener('error', (error) => {
 });
 
 function sendMessage(message) {
-	socket.send(JSON.stringify(message));
+
   if (socket.readyState === WebSocket.OPEN) {
 	console.log('Sending:'+JSON.stringify(message))
     socket.send(JSON.stringify(message));
@@ -68,3 +68,5 @@ function sendMessage(message) {
     console.error('WebSocket is not open, cannot send message');
   }
 }
+
+console.dir(socket);
