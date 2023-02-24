@@ -39,10 +39,11 @@ app.use(express.static(__dirname));
 
 const fs = require('fs');
 
-const serverws = https.createServer({
+/*const serverws = https.createServer({
   cert: fs.readFileSync('./cert.pem'),
   key: fs.readFileSync('./key.pem')
-});
+});*/
+const serverws = https.createServer();
 serverws.listen(3001);
 
 const WebSocket = require('ws');
