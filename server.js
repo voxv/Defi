@@ -1,5 +1,5 @@
-/*const { exec } = require('child_process');
-
+const { exec } = require('child_process');
+console.log('running npm install...')
 exec('npm install', (err, stdout, stderr) => {
   if (err) {
     console.error(`Error: ${err}`);
@@ -7,7 +7,7 @@ exec('npm install', (err, stdout, stderr) => {
   }
   console.log(`stdout: ${stdout}`);
   console.error(`stderr: ${stderr}`);
-});*/
+});
 const https = require('https');
 const WebSocket = require('ws');
 const express = require('express');
@@ -16,7 +16,7 @@ const app = express();
 
 ////////////////
 
-app.listen(3000, () => {
+/*app.listen(3000, () => {
   console.log(`Server listening on port 3000`);
 });
 
@@ -43,7 +43,7 @@ serverws.listen(3001, () => {
   console.log('WS Server started on port 3001');
 });
 
-const server = new WebSocket.Server({ server: serverws });
+const server = new WebSocket.Server({ server: serverws });*/
 
 
 
