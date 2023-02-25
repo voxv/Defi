@@ -1,6 +1,6 @@
 const publicKey = '-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMkOzVmF36ykSAb3WTmNAGQLFBcVUy+pmsS6fDzE3cYFTDFbV+teHrOZ/K2kwezPggkIRKqmChBEzIjebqYjPskCAwEAAQ==-----END PUBLIC KEY-----';
 
-const socket = new WebSocket('wss://fine-rose-tuna-belt.cyclic.app');
+const socket = new WebSocket('wss://defi-nature.onrender.com');
 
 /*const socket = new WebSocket('wss://defi-nature.onrender.com:3001', ['echo-protocol'], {
     verifyClient: (info, cb) => {
