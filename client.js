@@ -41,6 +41,9 @@ socket.addEventListener('message', (event) => {
 	  myid = 'player1'
 	  console.log('my id switched to player1')
       break;
+    case 'updateNames':
+      console.dir(data.players)
+      break
 
   }
 });

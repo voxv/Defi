@@ -93,7 +93,7 @@ server.on('connection', (socket) => {
   }
 
   totPlayers++
-console.log(totPlayers)
+
   var playerstate =  Object.assign({}, playerState)
   playerstate.id = theid
   let player = { socket: socket, state: playerstate };
@@ -107,6 +107,13 @@ console.log(totPlayers)
         socket.player.state.username = data.name
         socket.player.state.avatar = data.avatar
         console.dir(socket.player.state)
+
+        var ret = []
+		for (const s of sockets) {
+			ret.push({ id: s.player.state.id, username: s.player.state.username, avatar: s.player.state.avatar })
+		}
+		var dat = { type: 'updateNames', players: ret }
+        sendToAll(dat)
         break;
     }
   });
@@ -115,7 +122,7 @@ console.log(totPlayers)
     //console.log('closing player')
     if (socket.player.state.id=='player1') {
 		for (const sock of sockets) {
-		  if (sock.id === 'player1') {
+		  if (sock.player.state.id === 'player1') {
 			  console.log('removing player1')
 			sockets.delete(sock);
 			break;
@@ -123,7 +130,7 @@ console.log(totPlayers)
 		}
 	} else {
 		for (const sock of sockets) {
-		  if (sock.id === 'player2') {
+		  if (sock.player.state.id === 'player2') {
 			    console.log('removing player2')
 			sockets.delete(sock);
 			break;
@@ -132,8 +139,10 @@ console.log(totPlayers)
 	}
 	for (const sock of sockets) {
 
-	  if (sock.player.state.id == 'player2')
+	  if (sock.player.state.id == 'player2') {
 	  	sock.send(JSON.stringify({ type: 'changeToPlayer1' }))
+	  	sock.player.state.id = 'player1'
+	  }
 	}
 	totPlayers--
 	console.log('closing player, remaining:'+totPlayers)
@@ -141,6 +150,8 @@ console.log(totPlayers)
 
 
   socket.send(JSON.stringify({ type: 'setID', id: socket.player.state.id }));
+  console.log('ADDDDING SOCKETTT '+socket.player.state.id)
+
   sockets.add(socket);
 });
 
