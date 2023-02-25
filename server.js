@@ -50,7 +50,7 @@ serverws.listen(3001, () => {
 
 const serv = https.createServer(app)
 
-const io = require('socket.io'),
+const io = require('socket.io')
 const server = io.listen(serv);    
 //////////////////
 
