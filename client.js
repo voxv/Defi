@@ -35,8 +35,9 @@ socket.addEventListener('open', (event) => {
 });
 
 socket.addEventListener('message', (event) => {
+	console.dir(socket)
   console.log('msg:')
-  console.dir(event.data)
+  console.dir(event)
   let data = JSON.parse(event.data);
 
   switch (data.type) {
