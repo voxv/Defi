@@ -16,7 +16,7 @@ const app = express();
 
 ////////////////
 
-/*app.listen(3000, () => {
+app.listen(3000, () => {
   console.log(`Server listening on port 3000`);
 });
 
@@ -33,7 +33,7 @@ app.use(express.static(__dirname));
 ////////////////
 
 
-const options = {
+/*const options = {
   key: fs.readFileSync('key.pem'),
   cert: fs.readFileSync('cert.pem')
 };
@@ -41,9 +41,9 @@ const options = {
 const serverws = https.createServer(options);
 serverws.listen(3001, () => {
   console.log('WS Server started on port 3001');
-});
+});*/
 
-const server = new WebSocket.Server({ server: serverws });*/
+const server = new WebSocket.Server({ port: 3001 });
 
 
 
