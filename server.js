@@ -50,7 +50,7 @@ serverws.listen(3001, () => {
 //const server = new WebSocket.Server({ port: port })
 
 const httpServer = https.createServer(app)
-const server = require("socket.io")(app,{
+const server = require("socket.io")(httpServer,{
   cors: {
     origins: "*:*",
     methods: ["GET", "POST"]
