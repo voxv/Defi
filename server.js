@@ -45,9 +45,13 @@ serverws.listen(3001, () => {
 
 //const server = new WebSocket.Server({ port: 3001 });
 
-const port = process.env.PORT || 3001;
-const server = new WebSocket.Server({ port: port })
+//const port = process.env.PORT || 3001;
+//const server = new WebSocket.Server({ port: port })
 
+let serv = https.createServer(app)
+
+let io = require('socket.io'),
+let server = io.listen(serv);    
 //////////////////
 
 let gameState = {};
