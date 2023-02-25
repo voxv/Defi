@@ -14,6 +14,7 @@ const express = require('express');
 const fs = require('fs');
 const app = express();
 
+
 ////////////////
 
 app.listen(3000, () => {
@@ -55,9 +56,9 @@ serverws.listen(3001, () => {
   }
 });*/
 
-import { Server } from "socket.io";
+const { Server } = require("socket.io");
 
-const httpServer = createServer();
+const httpServer = createServer(app);
 const server = new Server(httpServer, {
   // options
 });
