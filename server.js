@@ -50,8 +50,8 @@ serverws.listen(3001, () => {
 
 let serv = https.createServer(app)
 
-let io = require('socket.io'),
-let server = io.listen(serv);    
+var io = require('socket.io'),
+var server = io.listen(serv);    
 //////////////////
 
 let gameState = {};
