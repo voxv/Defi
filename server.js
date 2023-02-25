@@ -58,7 +58,7 @@ serverws.listen(3001, () => {
 
 const { Server } = require("socket.io");
 
-const httpServer = https.createServer(app);
+const httpServer = http.createServer();
 const server = new Server(httpServer, {
   // options
 });
