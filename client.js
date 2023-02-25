@@ -1,9 +1,10 @@
-var proto = 'wss'
-if (process.env.NODE_ENV === 'development') {
-  require('dotenv').config();
-  proto = 'ws'
+var proto = 'ws'
+if (window.location.hostname === 'defi-nature.onrender.com') {
+  url = 'defi-nature.onrender.com'
+  proto = 'wss'
+} else {
+  url = 'localhost:3000'
 }
-const url = process.env.NODE_ENV === "production" ? process.env.PROD_URL : process.env.DEV_URL;
 
 var socket = io(proto+"://"+url, {transports: ['websocket']});
 

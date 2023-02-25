@@ -1,20 +1,22 @@
-const { exec } = require('child_process');
-console.log('running npm install...')
-exec('npm install', (err, stdout, stderr) => {
-  if (err) {
-    console.error(`Error: ${err}`);
-    return;
-  }
-  console.log(`stdout: ${stdout}`);
-  console.error(`stderr: ${stderr}`);
-});
+if (process && process.env.NODE_ENV === "production") {
+	const { exec } = require('child_process');
+	console.log('running npm install...')
+	exec('npm install', (err, stdout, stderr) => {
+	  if (err) {
+		console.error(`Error: ${err}`);
+		return;
+	  }
+	  console.log(`stdout: ${stdout}`);
+	  console.error(`stderr: ${stderr}`);
+	});
+}
+
 const https = require('https');
 const http = require('http');
 const WebSocket = require('ws');
 const express = require('express');
 const fs = require('fs');
 const app = express();
-
 
 ////////////////
 
@@ -65,7 +67,7 @@ const server = new io.Server(serv, {
   // options
 });
 serv.listen(3000);
-//const server = io.listen(serv);    
+//const server = io.listen(serv);
 //////////////////
 
 let gameState = {};
@@ -83,7 +85,7 @@ const playerState = {
 
 server.on('connection', (socket) => {
 
-  let theid 
+  let theid
   if (totPlayers==0) {
 	  theid = 'player1'
   } else if (totPlayers==1) {
