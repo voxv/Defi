@@ -18,9 +18,9 @@ const app = express();
 
 ////////////////
 
-app.listen(3000, () => {
-  console.log(`Server listening on port 3000`);
-});
+//app.listen(3000, () => {
+//  console.log(`Server listening on port 3000`);
+//});
 
 app.get('/healthcheck', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Server is up and running' });
@@ -64,7 +64,7 @@ const io = require('socket.io')
 const server = new io.Server(serv, {
   // options
 });
-
+httpServer.listen(3000);
 //const server = io.listen(serv);    
 //////////////////
 
