@@ -64,7 +64,7 @@ const io = require('socket.io')
 const server = new io.Server(serv, {
   // options
 });
-httpServer.listen(3000);
+serv.listen(3000);
 //const server = io.listen(serv);    
 //////////////////
 
