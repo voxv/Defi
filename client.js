@@ -62,7 +62,8 @@ socket.addEventListener('error', (error) => {
 });
 
 function sendMessage(message) {
-
+console.dir(socket.readyState)
+	socket.send(JSON.stringify(message));
   if (socket.readyState === WebSocket.OPEN) {
 	console.log('Sending:'+JSON.stringify(message))
     socket.send(JSON.stringify(message));
