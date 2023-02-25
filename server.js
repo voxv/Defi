@@ -93,30 +93,26 @@ server.on('connection', (socket) => {
   }
 
   totPlayers++
-
+console.log(totPlayers)
   var playerstate =  Object.assign({}, playerState)
   playerstate.id = theid
   let player = { socket: socket, state: playerstate };
   socket.player = player
-	console.log('player is:')
-	console.dir(socket.player)
-
-
   socket.on('message', (message) => {
 	console.log('message:'+message)
     let data = JSON.parse(message);
 
     switch (data.type) {
       case 'nameRegister':
-
         socket.player.state.username = data.name
         socket.player.state.avatar = data.avatar
+        console.dir(socket.player.state)
         break;
     }
   });
 
-  socket.on('close', () => {
-    console.log('closing player')
+  socket.on('disconnect', () => {
+    //console.log('closing player')
     if (socket.player.state.id=='player1') {
 		for (const sock of sockets) {
 		  if (sock.id === 'player1') {
@@ -135,10 +131,12 @@ server.on('connection', (socket) => {
 		}
 	}
 	for (const sock of sockets) {
-	  if (sock.id == 'player2')
+
+	  if (sock.player.state.id == 'player2')
 	  	sock.send(JSON.stringify({ type: 'changeToPlayer1' }))
 	}
 	totPlayers--
+	console.log('closing player, remaining:'+totPlayers)
   });
 
 

@@ -57,8 +57,10 @@ class StartScreen extends Phaser.Scene {
     div2.style.top = '300px';
   }
   selectAvatar(avatarIndex) {
-
-    this.selectedAvatar = avatarIndex;
-    sendMessage({ type: 'nameRegister', name: this.username, avatar: this.selectedAvatar })
+	var u = document.getElementById('username').value
+	if (u && u!=undefined) {
+		this.selectedAvatar = avatarIndex;
+		sendMessage({ type: 'nameRegister', name: u, avatar: this.selectedAvatar })
+	}
   }
 }

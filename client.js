@@ -21,7 +21,7 @@ var playersTemplate = function() {
 	this.player2 = Object.assign({}, player)
 }
 
-socket.addEventListener('open', (event) => {
+socket.addEventListener('connect', (event) => {
 	players = new playersTemplate()
 	console.log('OPENED!!')
 });
@@ -45,7 +45,7 @@ socket.addEventListener('message', (event) => {
   }
 });
 
-socket.addEventListener('close', (event) => {
+socket.addEventListener('disconnect', (event) => {
   console.log('WebSocket connection closed');
 });
 
