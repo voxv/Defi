@@ -49,21 +49,22 @@ serverws.listen(3001, () => {
 //const port = process.env.PORT || 3001;
 //const server = new WebSocket.Server({ port: port })
 
-/*const server = require("socket.io")(app,{
+const httpServer = https.createServer(app)
+const server = require("socket.io")(app,{
   cors: {
     origins: "*:*",
     methods: ["GET", "POST"]
   }
-});*/
+});
 
-const { Server } = require("socket.io");
+/*const { Server } = require("socket.io");
 
 const httpServer = http.createServer();
 const server = new Server(httpServer, {
   // options
 });
 
-httpServer.listen(3001);
+httpServer.listen(3001);*/
 
 //const serv = https.createServer(app)
 
