@@ -38,9 +38,9 @@ socket.addEventListener('message', (event) => {
 	console.dir(socket)
   console.log('msg:')
   console.dir(event)
-  let data = JSON.parse(event.data);
+  let data = JSON.parse(event);
 
-  switch (data.type) {
+  switch (event.type) {
 	case 'setID':
 	  myid = data.id
 	  console.dir('my id:'+myid)
