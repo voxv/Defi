@@ -43,9 +43,10 @@ serverws.listen(3001, () => {
   console.log('WS Server started on port 3001');
 });*/
 
-const server = new WebSocket.Server({ port: 3001 });
+//const server = new WebSocket.Server({ port: 3001 });
 
-
+const PORT = process.env.PORT || 3000;
+const server = new WebSocket.Server({ port: PORT })
 
 //////////////////
 
