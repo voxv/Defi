@@ -9,6 +9,7 @@ exec('npm install', (err, stdout, stderr) => {
   console.error(`stderr: ${stderr}`);
 });
 const https = require('https');
+const http = require('http');
 const WebSocket = require('ws');
 const express = require('express');
 const fs = require('fs');
@@ -33,29 +34,20 @@ app.use(express.static(__dirname));
 
 ////////////////
 
-
-/*const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
-};
-
-const serverws = https.createServer(options);
-serverws.listen(3001, () => {
-  console.log('WS Server started on port 3001');
-});*/
-
 //const server = new WebSocket.Server({ port: 3001 });
 
 //const port = process.env.PORT || 3001;
 //const server = new WebSocket.Server({ port: port })
 
-const httpServer = https.createServer(app)
+
+
+/*const httpServer = http.createServer(app)
 const server = require("socket.io")(httpServer,{
   cors: {
     origins: "*:*",
     methods: ["GET", "POST"]
   }
-});
+});*/
 
 /*const { Server } = require("socket.io");
 
@@ -68,7 +60,11 @@ httpServer.listen(3001);*/
 
 //const serv = https.createServer(app)
 
-//const io = require('socket.io')
+const io = require('socket.io')
+const server = new io.Server(3000, {
+  // options
+});
+
 //const server = io.listen(serv);    
 //////////////////
 
