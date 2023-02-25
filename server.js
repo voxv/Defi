@@ -48,10 +48,10 @@ serverws.listen(3001, () => {
 //const port = process.env.PORT || 3001;
 //const server = new WebSocket.Server({ port: port })
 
-var serv = https.createServer(app)
+const serv = https.createServer(app)
 
-var io = require('socket.io'),
-var server = io.listen(serv);    
+const io = require('socket.io'),
+const server = io.listen(serv);    
 //////////////////
 
 let gameState = {};
