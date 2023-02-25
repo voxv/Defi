@@ -1,20 +1,16 @@
-const publicKey = '-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMkOzVmF36ykSAb3WTmNAGQLFBcVUy+pmsS6fDzE3cYFTDFbV+teHrOZ/K2kwezPggkIRKqmChBEzIjebqYjPskCAwEAAQ==-----END PUBLIC KEY-----';
+var proto = 'wss'
+if (process.env.NODE_ENV === 'development') {
+  require('dotenv').config();
+  proto = 'ws'
+}
+const url = process.env.NODE_ENV === "production" ? process.env.PROD_URL : process.env.DEV_URL;
 
-//const socket = new WebSocket('wss://defi-nature.onrender.com');
-var socket = io("wss://defi-nature.onrender.com", {transports: ['websocket']});
-
-/*const socket = new WebSocket('wss://defi-nature.onrender.com:3001', ['echo-protocol'], {
-    verifyClient: (info, cb) => {
-        const publicKeyObj = { key: publicKey };
-        const cert = info.req.connection.getPeerCertificate();
-        const verified = crypto.verify(null, cert.raw.toString('base64'), publicKeyObj, 'base64');
-        if (verified) {
-            cb(true);
-        } else {
-            cb(false, 401, 'Unauthorized');
-        }
-    }
-});*/
+var socket = io("ws://"+url, {transports: ['websocket']});
+if (process.env.NODE_ENV === 'development') {
+	socket = io(proto+"://"+url, {transports: ['websocket']});
+} else {
+	socket = io(proto+"://"+url, {transports: ['websocket']});
+}
 
 let players;
 let myid = 0
@@ -64,7 +60,7 @@ socket.addEventListener('error', (error) => {
 function sendMessage(message) {
    console.dir(socket)
    socket.send(JSON.stringify(message));
-	
+
   /*if (socket.readyState === WebSocket.OPEN) {
 	console.log('Sending:'+JSON.stringify(message))
     socket.send(JSON.stringify(message));
