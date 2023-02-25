@@ -58,10 +58,10 @@ const server = new Server(httpServer, {
 
 httpServer.listen(3001);*/
 
-//const serv = https.createServer(app)
+const serv = http.createServer(app)
 
 const io = require('socket.io')
-const server = new io.Server(3000, {
+const server = new io.Server(serv, {
   // options
 });
 
