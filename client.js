@@ -1,7 +1,7 @@
 const publicKey = '-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMkOzVmF36ykSAb3WTmNAGQLFBcVUy+pmsS6fDzE3cYFTDFbV+teHrOZ/K2kwezPggkIRKqmChBEzIjebqYjPskCAwEAAQ==-----END PUBLIC KEY-----';
 
 //const socket = new WebSocket('wss://defi-nature.onrender.com');
-var socket = io("defi-nature.onrender.com", {transports: ['websocket']});
+var socket = io("wss://defi-nature.onrender.com", {transports: ['websocket']});
 
 /*const socket = new WebSocket('wss://defi-nature.onrender.com:3001', ['echo-protocol'], {
     verifyClient: (info, cb) => {
