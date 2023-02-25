@@ -62,7 +62,7 @@ socket.addEventListener('error', (error) => {
 });
 
 function sendMessage(message) {
-console.dir(socket.readyState)
+/*console.dir(socket)
 	socket.send(JSON.stringify(message));
   if (socket.readyState === WebSocket.OPEN) {
 	console.log('Sending:'+JSON.stringify(message))
@@ -70,6 +70,6 @@ console.dir(socket.readyState)
   }else {
     console.error('WebSocket is not open, cannot send message');
   }
-}
+}*/
 
 console.dir(socket);
