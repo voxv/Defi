@@ -6,11 +6,6 @@ if (process.env.NODE_ENV === 'development') {
 const url = process.env.NODE_ENV === "production" ? process.env.PROD_URL : process.env.DEV_URL;
 
 var socket = io("ws://"+url, {transports: ['websocket']});
-if (process.env.NODE_ENV === 'development') {
-	socket = io(proto+"://"+url, {transports: ['websocket']});
-} else {
-	socket = io(proto+"://"+url, {transports: ['websocket']});
-}
 
 let players;
 let myid = 0
