@@ -83,18 +83,21 @@ const playerState = {
 
 server.on('connection', (socket) => {
 
+  let theid 
   if (totPlayers==0) {
-	  socket.id = 'player1'
+	  theid = 'player1'
   } else if (totPlayers==1) {
-	  socket.id = 'player2'
+	  theid = 'player2'
   }
 
   totPlayers++
 
   var playerstate =  Object.assign({}, playerState)
-  playerstate.id = socket.id
+  playerstate.id = theid
   let player = { socket: socket, state: playerstate };
   socket.player = player
+	console.log('player is:')
+	console.dir(socket.player)
 
 
   socket.on('message', (message) => {
@@ -111,7 +114,7 @@ server.on('connection', (socket) => {
   });
 
   socket.on('close', () => {
-
+    console.log('closing player')
     if (socket.player.state.id=='player1') {
 		for (const sock of sockets) {
 		  if (sock.id === 'player1') {
@@ -137,7 +140,7 @@ server.on('connection', (socket) => {
   });
 
 
-  socket.send(JSON.stringify({ type: 'setID', id: socket.id }));
+  socket.send(JSON.stringify({ type: 'setID', id: socket.player.state.id }));
   sockets.add(socket);
 });
 
