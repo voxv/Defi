@@ -40,7 +40,7 @@ socket.addEventListener('message', (event) => {
   console.dir(event)
   let data = JSON.parse(event);
 
-  switch (event.type) {
+  switch (data.type) {
 	case 'setID':
 	  myid = data.id
 	  console.dir('my id:'+myid)
