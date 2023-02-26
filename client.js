@@ -42,7 +42,9 @@ socket.addEventListener('message', (event) => {
 	  console.log('my id switched to player1')
       break;
     case 'updateNames':
-      console.dir(data.players)
+
+	  g.players2 = data.players
+      console.dir(g)
       break
 
   }
@@ -57,7 +59,7 @@ socket.addEventListener('error', (error) => {
 });
 
 function sendMessage(message) {
-   console.dir(socket)
+   //console.dir(socket)
    socket.send(JSON.stringify(message));
 
   /*if (socket.readyState === WebSocket.OPEN) {
@@ -68,4 +70,4 @@ function sendMessage(message) {
   }*/
 }
 
-console.dir(socket);
+//console.dir(socket);
