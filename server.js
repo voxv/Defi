@@ -1,12 +1,12 @@
 if (process && process.env.NODE_ENV === "production") {
 	const { exec } = require('child_process');
-	console.log('running npm install...')
+	//console.log('running npm install...')
 	exec('npm install', (err, stdout, stderr) => {
 	  if (err) {
 		console.error(`Error: ${err}`);
 		return;
 	  }
-	  console.log(`stdout: ${stdout}`);
+	  //console.log(`stdout: ${stdout}`);
 	  console.error(`stderr: ${stderr}`);
 	});
 }
@@ -63,9 +63,11 @@ httpServer.listen(3001);*/
 const serv = http.createServer(app)
 
 const io = require('socket.io')
+
 const server = new io.Server(serv, {
   // options
 });
+
 serv.listen(3000);
 //const server = io.listen(serv);
 //////////////////
@@ -112,8 +114,12 @@ server.on('connection', (socket) => {
 		for (const s of sockets) {
 			ret.push({ id: s.player.state.id, username: s.player.state.username, avatar: s.player.state.avatar })
 		}
-		var dat = { type: 'updateNames', players: ret }
+		var dat = { type: 'updateNames', players: ret, callerp: socket.player.state.id }
         sendToAll(dat)
+        //socket.send(JSON.stringify(dat))
+        break;
+      case 'udpateAvatarP2':
+      	sendToAll({ type: 'udpateAvatarP2' })
         break;
     }
   });
@@ -142,6 +148,8 @@ server.on('connection', (socket) => {
 	  if (sock.player.state.id == 'player2') {
 	  	sock.send(JSON.stringify({ type: 'changeToPlayer1' }))
 	  	sock.player.state.id = 'player1'
+	  } else {
+		sock.send(JSON.stringify({ type: 'player2DC' }))
 	  }
 	}
 	totPlayers--
@@ -150,7 +158,7 @@ server.on('connection', (socket) => {
 
 
   socket.send(JSON.stringify({ type: 'setID', id: socket.player.state.id }));
-  console.log('ADDDDING SOCKETTT '+socket.player.state.id)
+  //console.log('ADDDDING SOCKETTT '+socket.player.state.id)
 
   sockets.add(socket);
 });
@@ -162,18 +170,4 @@ function sendToAll(msg, exceptSocket) {
         otherSocket.send(JSON.stringify(msg));
       }
     }
-}
-function getGameState() {
-
-  return {
-    type: 'update',
-    players: players.map((player) => player.state)
-  };
-}
-
-function mylog(message) {
-	console.log(message.toString())
-}
-function mylogdir(message) {
-	console.dir(message)
 }

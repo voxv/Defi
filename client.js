@@ -23,11 +23,9 @@ var playersTemplate = function() {
 
 socket.addEventListener('connect', (event) => {
 	players = new playersTemplate()
-	console.log('OPENED!!')
 });
 
 socket.addEventListener('message', (event) => {
-	console.dir(socket)
   console.log('msg:')
   console.dir(event)
   let data = JSON.parse(event);
@@ -39,13 +37,69 @@ socket.addEventListener('message', (event) => {
 	  break;
     case 'changeToPlayer1':
 	  myid = 'player1'
-	  console.log('my id switched to player1')
+	  //console.log('l1='+playersAll.length)
+
+	  for (var i = 0 ; i < playersAll.length ; i++) {
+		  if (playersAll[i].id == 'player1' || playersAll[i]=='') {
+			  delete playersAll[i]
+		  } else {
+			  playersAll[i].id = 'player1'
+		  }
+	  }
+
+	  playersAll = playersAll.filter(function(player) {
+	    return player !== undefined;
+	  });
+	  playersAll = playersAll.map((value) => value);
+	  //console.log('THEZERO:')
+	  //console.dir(playersAll)
+	  if (playersAll[0])
+	  playersAll[0].id = 'player1'
+
+	  g.otherAvatarImg.destroy()
+	  g.myAvatarImg.destroy()
+	  g.addAvatar()
+	  //console.log('l12='+playersAll.length)
+	  //console.log('my id switched to player1')
       break;
+
+    case 'player2DC':
+
+	  for (var i = 0 ; i < playersAll.length ; i++) {
+		  if (playersAll[i].id == 'player2') {
+			  delete playersAll[i]
+		  }
+	  }
+	  playersAll = playersAll.filter(function(player) {
+	    return player !== undefined;
+	  });
+	  playersAll = playersAll.map((value) => value);
+	  g.otherAvatarImg.destroy()
+	  g.addAvatar()
+	  //console.log('THEZERO222:')
+	  //console.dir(playersAll)
+      break
+
+
     case 'updateNames':
 
-	  g.players2 = data.players
-      console.dir(g)
+      playersAll = data.players
+      //console.log('players!')
+      //console.dir(data.callerp)
+      if (data.callerp == myid) {
+		  g.sound.stopAll();
+		  g.scene.pause();
+		  g.scene.shutdown()
+		  g.scene.start('PreScene');
+	  }
+
       break
+
+     case 'udpateAvatarP2':
+     	if (myid=='player1')
+      	g.addAvatar()
+        break;
+
 
   }
 });

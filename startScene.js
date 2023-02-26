@@ -119,8 +119,10 @@ class StartScreen extends Phaser.Scene {
   }
 
   onPause() {
-    this.game.canvas.parentNode.removeChild(g.div);
-    this.game.canvas.parentNode.removeChild(g.div2);
+    //this.game.canvas.parentNode.removeChild(g.div);
+    //this.game.canvas.parentNode.removeChild(g.div2);
+    g.div.style.display = "none";
+    g.div2.style.display = "none";
   }
 
   selectAvatar(avatarIndex, avatar) {
@@ -150,15 +152,6 @@ class StartScreen extends Phaser.Scene {
   sendRegisterName() {
 	var u = document.getElementById('username').value
 	sendMessage({ type: 'nameRegister', name: u, avatar: mySelectedAvatar })
-	console.log('asdas')
-	console.dir(g)
-	g.sound.stopAll();
-	g.scene.pause();
-	g.scene.shutdown()
-	console.log('----------')
-	console.dir(g)
-	console.dir(g.players2)
-	g.scene.start('PreScene', { players: g.players2 });
   }
 
   shutdown() {
