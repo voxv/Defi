@@ -54,22 +54,41 @@ socket.addEventListener('message', (event) => {
             if (playersAll[0])
                 playersAll[0].id = 'player1'
 
-            if (g.otherAvatarImg)
+        	var playclick = false
+        	if (g && g.otherName) {
+				console.log(g.otherName.text)
+				playclick = true
+			}
+
+            if (g && g.otherAvatarImg) {
                 g.otherAvatarImg.destroy()
-            if (g.otherName)
+                g.otherAvatarImg = null
+			}
+            if (g && g.otherName) {
                 g.otherName.destroy()
-            if (g.myName)
+                g.otherName = null
+			}
+            if (g && g.myName) {
                 g.myName.destroy()
-            if (g.myAvatarImg)
+                g.myName = null
+			}
+            if (g && g.myAvatarImg) {
                 g.myAvatarImg.destroy()
-            if (g.addAvatar)
+                g.myAvatarImg = null
+			}
+            if (g && g.addAvatar)
                 g.addAvatar({
-                    nosound: true
+                    nosound: playclick
                 })
             break;
 
         case 'player2DC':
 
+        	var playclick = false
+        	if (g && g.otherName) {
+				console.log(g.otherName.text)
+				playclick = true
+			}
             for (var i = 0; i < playersAll.length; i++) {
                 if (playersAll[i].id == 'player2') {
                     delete playersAll[i]
@@ -79,14 +98,17 @@ socket.addEventListener('message', (event) => {
                 return player !== undefined;
             });
             playersAll = playersAll.map((value) => value);
-            if (g.otherAvatarImg)
+            if (g && g.otherAvatarImg) {
                 g.otherAvatarImg.destroy()
-            if (g.otherName) {
+                g.otherAvatarImg = null
+			}
+            if (g && g.otherName) {
                 g.otherName.destroy()
+                g.otherName = null
             }
-            if (g.addAvatar)
+            if (g && g.addAvatar)
                 g.addAvatar({
-                    nosound: true
+                    nosound: playclick
                 })
             break
 
@@ -99,11 +121,11 @@ socket.addEventListener('message', (event) => {
                 g.scene.shutdown()
                 g.scene.start('PreScene');
             }
-            if (g.addAvatar)
+            if (g && g.addAvatar)
                 g.addAvatar()
             break
         case 'udpateAvatarP2':
-            if (g.addAvatar)
+            if (g && g.addAvatar)
                 g.addAvatar()
             break;
         case 'startGameSequence':

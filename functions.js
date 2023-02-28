@@ -4,3 +4,4 @@ var g
 var mySelectedAvatar = -1
 var avatars = []
 var playersAll = []
+var buttonLocked = false

@@ -128,7 +128,7 @@ class PreScene extends Phaser.Scene {
         }
     }
     addAvatar(options) {
-        if (myid == 'player1') {
+        if (!buttonLocked && myid == 'player1') {
             this.joinButton = document.getElementById('join-button')
             this.joinButton.innerHTML = 'Débuter'
             this.joinButton.style.display = 'block'
@@ -140,6 +140,8 @@ class PreScene extends Phaser.Scene {
                 socket.send(JSON.stringify({
                     type: 'startGameSequence'
                 }))
+                buttonLocked = true
+                g.lockJoinButton()
             })
         }
         if (g.otherName) {
@@ -232,6 +234,18 @@ class PreScene extends Phaser.Scene {
             }
             this.joinButton.classList.add("btn-primary");
             this.joinButton.disabled = false
+        }
+    }
+    lockJoinButton() {
+        if (this.joinButton) {
+            if (this.joinButton.classList.contains("btn-secondary")) {
+                this.joinButton.classList.remove("btn-secondary");
+            }
+            if (this.joinButton.classList.contains("btn-primary")) {
+                this.joinButton.classList.remove("btn-primary");
+            }
+            this.joinButton.classList.add("btn-success");
+            this.joinButton.remove()
         }
     }
 }
