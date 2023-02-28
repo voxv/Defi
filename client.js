@@ -29,7 +29,7 @@ socket.addEventListener('connect', (event) => {
 
 socket.addEventListener('message', (event) => {
 
-    console.log('msg:'+event)
+    console.log('msg:' + event)
     let data = JSON.parse(event);
 
     switch (data.type) {
@@ -54,28 +54,27 @@ socket.addEventListener('message', (event) => {
             if (playersAll[0])
                 playersAll[0].id = 'player1'
 
-        	var playclick = false
-        	if (g && g.otherName) {
-				console.log(g.otherName.text)
-				playclick = true
-			}
+            var playclick = false
+            if (g && g.otherName) {
+                playclick = true
+            }
 
             if (g && g.otherAvatarImg) {
                 g.otherAvatarImg.destroy()
                 g.otherAvatarImg = null
-			}
+            }
             if (g && g.otherName) {
                 g.otherName.destroy()
                 g.otherName = null
-			}
+            }
             if (g && g.myName) {
                 g.myName.destroy()
                 g.myName = null
-			}
+            }
             if (g && g.myAvatarImg) {
                 g.myAvatarImg.destroy()
                 g.myAvatarImg = null
-			}
+            }
             if (g && g.addAvatar)
                 g.addAvatar({
                     nosound: playclick
@@ -84,11 +83,10 @@ socket.addEventListener('message', (event) => {
 
         case 'player2DC':
 
-        	var playclick = false
-        	if (g && g.otherName) {
-				console.log(g.otherName.text)
-				playclick = true
-			}
+            var playclick = false
+            if (g && g.otherName) {
+                playclick = true
+            }
             for (var i = 0; i < playersAll.length; i++) {
                 if (playersAll[i].id == 'player2') {
                     delete playersAll[i]
@@ -101,7 +99,7 @@ socket.addEventListener('message', (event) => {
             if (g && g.otherAvatarImg) {
                 g.otherAvatarImg.destroy()
                 g.otherAvatarImg = null
-			}
+            }
             if (g && g.otherName) {
                 g.otherName.destroy()
                 g.otherName = null
