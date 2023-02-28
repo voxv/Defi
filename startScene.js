@@ -8,8 +8,13 @@ class StartScreen extends Phaser.Scene {
     this.load.image('avatar2', 'images/avatar2_high.png');
     this.load.image('avatar3', 'images/avatar3_high.png');
     this.load.image('avatar4', 'images/avatar4_high.png');
-    this.load.image('back1', 'images/back3.jpg');
-    this.load.audio('bkmusic', 'sounds/backintro.mp3');
+    this.load.image('avatar5', 'images/avatar5_high.png');
+    this.load.image('backstart', 'images/backstart.jpg');
+    this.load.audio('avatar1', 'sounds/avatar1.mp3');
+    this.load.audio('avatar2', 'sounds/avatar2.mp3');
+    this.load.audio('avatar3', 'sounds/avatar3.mp3');
+    this.load.audio('avatar4', 'sounds/avatar4.mp3');
+    this.load.audio('avatar5', 'sounds/avatar5.mp3');
   }
 
   create() {
@@ -27,14 +32,14 @@ class StartScreen extends Phaser.Scene {
 
 
 	let avatarY = centerY+60
-	let avatarX = 200
+	let avatarX = 120
 	let step = 140
 
 
 	const canvasWidth = this.game.config.width;
 	const canvasHeight = this.game.config.height;
 
-	const backimage = this.add.image(0, 0, 'back1');
+	const backimage = this.add.image(0, 0, 'backstart');
 	const imageWidth = backimage.width;
 	const imageHeight = backimage.height;
 	const scale = Math.min(canvasWidth / imageWidth, canvasHeight / imageHeight);
@@ -69,6 +74,13 @@ class StartScreen extends Phaser.Scene {
     avatar4.setScale(scaleAvatar)
     avatarX = avatarX+step
     avatars.push(avatar4)
+
+    const avatar5 = this.add.image(avatarX, avatarY, 'avatar5');
+    avatar5.setInteractive();
+    avatar5.on('pointerup', () => this.selectAvatar(5, avatar5));
+    avatar5.setScale(scaleAvatar)
+    avatarX = avatarX+step
+    avatars.push(avatar5)
 
     this.add.text(canvasW/2-200, 260, 'Choisis un avatar', {
       fontSize: '26px',
@@ -110,28 +122,24 @@ class StartScreen extends Phaser.Scene {
 		  g.deactivateJoinButton()
 	  }
 	});
-
-	this.bkmusic = this.sound.add('bkmusic', {  loop: true });
-
-	this.bkmusic.play()
-
 	this.events.on('pause', this.onPause, this);
   }
 
   onPause() {
-    //this.game.canvas.parentNode.removeChild(g.div);
-    //this.game.canvas.parentNode.removeChild(g.div2);
     g.div.style.display = "none";
     g.div2.style.display = "none";
   }
 
   selectAvatar(avatarIndex, avatar) {
+	g.sound.stopAll();
 	mySelectedAvatar = avatarIndex;
 	for (const a of avatars) {
 		a.setScale(0.7)
 	}
 	avatar.setScale(1)
 	this.activateJoinButton()
+    const sound = this.sound.add('avatar'+mySelectedAvatar);
+    sound.play();
   }
 
   deactivateJoinButton() {
@@ -152,9 +160,5 @@ class StartScreen extends Phaser.Scene {
   sendRegisterName() {
 	var u = document.getElementById('username').value
 	sendMessage({ type: 'nameRegister', name: u, avatar: mySelectedAvatar })
-  }
-
-  shutdown() {
-
   }
 }

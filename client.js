@@ -33,11 +33,9 @@ socket.addEventListener('message', (event) => {
   switch (data.type) {
 	case 'setID':
 	  myid = data.id
-	  console.dir('my id:'+myid)
 	  break;
     case 'changeToPlayer1':
 	  myid = 'player1'
-	  //console.log('l1='+playersAll.length)
 
 	  for (var i = 0 ; i < playersAll.length ; i++) {
 		  if (playersAll[i].id == 'player1' || playersAll[i]=='') {
@@ -51,16 +49,20 @@ socket.addEventListener('message', (event) => {
 	    return player !== undefined;
 	  });
 	  playersAll = playersAll.map((value) => value);
-	  //console.log('THEZERO:')
-	  //console.dir(playersAll)
 	  if (playersAll[0])
 	  playersAll[0].id = 'player1'
 
-	  g.otherAvatarImg.destroy()
-	  g.myAvatarImg.destroy()
-	  g.addAvatar()
-	  //console.log('l12='+playersAll.length)
-	  //console.log('my id switched to player1')
+	  if (g.otherAvatarImg)
+	  	g.otherAvatarImg.destroy()
+	  if (g.otherName)
+	    g.otherName.destroy()
+	  if (g.myName)
+	  	g.myName.destroy()
+	  if (g.myAvatarImg)
+	  	g.myAvatarImg.destroy()
+	  if (g.addAvatar)
+	  	g.addAvatar({ nosound: true })
+
       break;
 
     case 'player2DC':
@@ -74,33 +76,41 @@ socket.addEventListener('message', (event) => {
 	    return player !== undefined;
 	  });
 	  playersAll = playersAll.map((value) => value);
-	  g.otherAvatarImg.destroy()
-	  g.addAvatar()
-	  //console.log('THEZERO222:')
-	  //console.dir(playersAll)
+	  if (g.otherAvatarImg)
+	  	g.otherAvatarImg.destroy()
+	  if (g.otherName) {
+	  	g.otherName.destroy()
+	  }
+	  if (g.addAvatar)
+	    g.addAvatar({ nosound: true })
+
       break
 
 
     case 'updateNames':
 
       playersAll = data.players
-      //console.log('players!')
-      //console.dir(data.callerp)
       if (data.callerp == myid) {
 		  g.sound.stopAll();
 		  g.scene.pause();
 		  g.scene.shutdown()
 		  g.scene.start('PreScene');
 	  }
-
+	  if (g.addAvatar)
+	    g.addAvatar()
       break
 
      case 'udpateAvatarP2':
-     	if (myid=='player1')
-      	g.addAvatar()
+     	if (g.addAvatar)
+      		g.addAvatar()
         break;
 
-
+	case 'startGameSequence':
+		g.startGameSequence()
+		break;
+	case 'startGame':
+		g.startGame()
+		break;
   }
 });
 
@@ -113,15 +123,6 @@ socket.addEventListener('error', (error) => {
 });
 
 function sendMessage(message) {
-   //console.dir(socket)
    socket.send(JSON.stringify(message));
-
-  /*if (socket.readyState === WebSocket.OPEN) {
-	console.log('Sending:'+JSON.stringify(message))
-    socket.send(JSON.stringify(message));
-  }else {
-    console.error('WebSocket is not open, cannot send message');
-  }*/
 }
 
-//console.dir(socket);

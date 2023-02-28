@@ -23,6 +23,7 @@ class GameScene extends Phaser.Scene {
 
   create() {
 	g = this
+	console.log('GAME STARTED')
     // display game board and player hands
   }
 
