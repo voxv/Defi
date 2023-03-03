@@ -14,6 +14,10 @@ class PreScene extends Phaser.Scene {
         this.load.image('frame', 'images/frame.png');
         this.load.image('question', 'images/question.png');
         this.load.image('vs', 'images/vs.png');
+        this.load.image('cover1', 'images/cover_froid.png');
+        this.load.image('cover2', 'images/cover_froid.png');
+        this.load.image('cover3', 'images/cover_froid.png');
+
         this.load.audio('bkmusic', 'sounds/backintro.mp3');
         this.load.audio('avatar1', 'sounds/avatar1.mp3');
         this.load.audio('avatar2', 'sounds/avatar2.mp3');
@@ -43,6 +47,7 @@ class PreScene extends Phaser.Scene {
         backimage.setPosition(canvasWidth / 2, canvasHeight / 2);
         backimage.alpha = 0.8
 
+
         this.frame1X = 190
         this.frame2X = 590
         this.frameY = 200
@@ -60,6 +65,29 @@ class PreScene extends Phaser.Scene {
             }))
         }
 
+        this.covers_scale = 0.35
+        this.covers_scale_selected = 0.48
+        this.covers = {}
+
+        for (var i = 1; i < 4; i++) {
+            var c = this.add.image(this.frame1X + 50 + (i - 1) * 150, this.frameY + 240, 'cover' + i)
+            if (i == 1) {
+                c.setScale(this.covers_scale_selected)
+            } else {
+                c.setScale(this.covers_scale)
+            }
+            if (myid == 'player1') {
+                this.addCoverClick(c, i)
+
+            }
+            this.covers[i] = c
+        }
+
+        if (myid == 'player1') {
+
+
+        }
+
         this.addAvatar()
         this.bkmusic = this.sound.add('bkmusic', {
             loop: true
@@ -69,6 +97,30 @@ class PreScene extends Phaser.Scene {
 
         this.vsTweenDir = 1
         this.battleSoundPlayed = false;
+
+    }
+
+    addCoverClick(c, id) {
+
+        c.setInteractive();
+        c.coverid = id
+        c.on('pointerdown', function() {
+            for (const i in g.covers) {
+                g.covers[i].setScale(g.covers_scale)
+            }
+            this.setScale(g.covers_scale_selected)
+            socket.send(JSON.stringify({
+                type: 'selectedCover',
+                coverid: this.coverid
+            }))
+            selectedCover = this.coverid
+        })
+    }
+    selectCover(coverid) {
+        for (const i in g.covers) {
+            g.covers[i].setScale(g.covers_scale)
+        }
+        g.covers[coverid].setScale(g.covers_scale_selected)
     }
 
     startGame() {
@@ -128,6 +180,8 @@ class PreScene extends Phaser.Scene {
         }
     }
     addAvatar(options) {
+        var otherp = playersAll.find(player => player.id !== myid);
+
         if (!buttonLocked && myid == 'player1') {
             this.joinButton = document.getElementById('join-button')
             this.joinButton.innerHTML = 'Débuter'
@@ -135,7 +189,7 @@ class PreScene extends Phaser.Scene {
             this.game.canvas.parentNode.appendChild(this.joinButton);
             this.joinButton.style.position = 'absolute';
             this.joinButton.style.left = '370px';
-            this.joinButton.style.top = (canvasH - 350) + 'px';
+            this.joinButton.style.top = (canvasH - 330) + 'px';
             this.joinButton.addEventListener("click", function() {
                 socket.send(JSON.stringify({
                     type: 'startGameSequence'
@@ -143,6 +197,9 @@ class PreScene extends Phaser.Scene {
                 buttonLocked = true
                 g.lockJoinButton()
             })
+            if (!otherp || otherp.avatar == '') {
+                this.joinButton.disabled = true
+            }
         }
         if (g.otherName) {
             g.otherName.destroy()
@@ -165,7 +222,7 @@ class PreScene extends Phaser.Scene {
         this.myName = this.addName(xpos, this.frameY, myp.username)
 
         if (playersAll.length > 1) {
-            var otherp = playersAll.find(player => player.id !== myid);
+
             if (otherp.avatar != '') {
                 this.otherAvatarImg = this.add.image(xpos2, this.frameY, 'avatar' + otherp.avatar);
                 this.otherAvatarImg.setScale(this.avatarScale)
@@ -185,7 +242,8 @@ class PreScene extends Phaser.Scene {
                 const sound = this.sound.add('avatar' + otherp.avatar);
                 sound.play();
             }
-            this.activateJoinButton()
+            if (otherp.avatar != '')
+                this.activateJoinButton()
 
         } else if (myid == 'player1') {
             var t = this.add.image(xpos2, this.frameY, 'question');

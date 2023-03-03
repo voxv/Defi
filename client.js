@@ -1,9 +1,11 @@
 var proto = 'ws'
+var is_local = false
 if (window.location.hostname === 'defi-nature.onrender.com') {
     url = 'defi-nature.onrender.com'
     proto = 'wss'
 } else {
     url = 'localhost:3000'
+    is_local = true
 }
 
 var socket = io(proto + "://" + url, {
@@ -29,7 +31,7 @@ socket.addEventListener('connect', (event) => {
 
 socket.addEventListener('message', (event) => {
 
-    console.log('msg:' + event)
+    mylog('msg:' + event)
     let data = JSON.parse(event);
 
     switch (data.type) {
@@ -79,6 +81,11 @@ socket.addEventListener('message', (event) => {
                 g.addAvatar({
                     nosound: playclick
                 })
+
+            for (const i in g.covers) {
+                g.addCoverClick(g.covers[i], i)
+            }
+
             break;
 
         case 'player2DC':
@@ -114,6 +121,7 @@ socket.addEventListener('message', (event) => {
 
             playersAll = data.players
             if (data.callerp == myid) {
+                g.removeClickListener()
                 g.sound.stopAll();
                 g.scene.pause();
                 g.scene.shutdown()
@@ -125,6 +133,9 @@ socket.addEventListener('message', (event) => {
         case 'udpateAvatarP2':
             if (g && g.addAvatar)
                 g.addAvatar()
+            selectedCover = data.coverid
+            if (g.selectCover)
+                g.selectCover(data.coverid)
             break;
         case 'startGameSequence':
             g.startGameSequence()
@@ -132,17 +143,31 @@ socket.addEventListener('message', (event) => {
         case 'startGame':
             g.startGame()
             break;
+        case 'selectedCover':
+            g.selectCover(data.coverid)
+            break;
+
+            ///////////////////////////////////////////////
+
     }
 });
 
 socket.addEventListener('disconnect', (event) => {
-    console.log('WebSocket connection closed');
+    mylog('WebSocket connection closed');
 });
 
 socket.addEventListener('error', (error) => {
-    console.error('WebSocket error: ', error);
+    if (is_local) {
+        console.error('WebSocket error: ', error)
+    }
 });
 
 function sendMessage(message) {
     socket.send(JSON.stringify(message));
+}
+
+function mylog(msg) {
+    if (is_local) {
+        console.log(msg)
+    }
 }

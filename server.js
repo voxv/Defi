@@ -47,8 +47,32 @@ const sockets = new Set();
 const playerState = {
     id: -1,
     username: '',
-    avatar: ''
+    avatar: '',
+    inGame: false,
+    selectedCover: ''
 };
+var players = {
+    'player1': null,
+    'player2': null
+}
+
+cardsMain = {}
+
+var card = function(id) {
+    this.id = id
+    this.color = null
+    this.attributes = {
+        at_1: 0,
+        at_2: 0,
+        at_3: 0,
+        at_4: 0
+    }
+}
+
+for (var i = 0; i < 36; i++) {
+    var c = new card(i)
+    cardsMain[i] = c
+}
 
 server.on('connection', (socket) => {
 
@@ -58,7 +82,6 @@ server.on('connection', (socket) => {
     } else if (totPlayers == 1) {
         theid = 'player2'
     }
-
     totPlayers++
 
     var playerstate = Object.assign({}, playerState)
@@ -67,6 +90,7 @@ server.on('connection', (socket) => {
         socket: socket,
         state: playerstate
     };
+    players[theid] = player
     socket.player = player
     socket.on('message', (message) => {
         console.log('message:' + message)
@@ -77,7 +101,6 @@ server.on('connection', (socket) => {
             case 'nameRegister':
                 socket.player.state.username = data.name
                 socket.player.state.avatar = data.avatar
-                console.dir(socket.player.state)
                 var ret = []
                 for (const s of sockets) {
                     ret.push({
@@ -95,8 +118,13 @@ server.on('connection', (socket) => {
                 break;
 
             case 'udpateAvatarP2':
+                var c = 1
+                if (players['player1'].state.selectedCover != '') {
+                    c = players['player1'].state.selectedCover
+                }
                 sendToAll({
-                    type: 'udpateAvatarP2'
+                    type: 'udpateAvatarP2',
+                    coverid: c
                 })
                 break;
 
@@ -111,6 +139,25 @@ server.on('connection', (socket) => {
                 if (playersReady.length > 1) {
                     sendToAll({
                         type: 'startGame'
+                    })
+                }
+                break;
+            case 'selectedCover':
+                sendToAll({
+                    type: 'selectedCover',
+                    coverid: data.coverid
+                }, socket)
+                socket.player.state.selectedCover = data.coverid
+                players['player1'].state.selectedCover = data.coverid
+                break;
+
+                /////////////////////////////////////////////
+
+            case 'inGameConfirm':
+                players[socket.player.state.id].state.inGame = true
+                if (players['player1'].state.inGame && players['player2'].state.inGame) {
+                    sendToAll({
+                        type: 'inGameConfirm'
                     })
                 }
                 break;
@@ -134,6 +181,7 @@ server.on('connection', (socket) => {
                 }
             }
         }
+
         for (const sock of sockets) {
 
             if (sock.player.state.id == 'player2') {

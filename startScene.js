@@ -131,6 +131,10 @@ class StartScreen extends Phaser.Scene {
         g.div2.style.display = "none";
     }
 
+    removeClickListener() {
+        this.joinButton.removeEventListener('click', this.sendRegisterName);
+    }
+
     selectAvatar(avatarIndex, avatar) {
         g.sound.stopAll();
         mySelectedAvatar = avatarIndex;
