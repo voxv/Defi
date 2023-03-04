@@ -82,9 +82,11 @@ socket.addEventListener('message', (event) => {
                     nosound: playclick
                 })
 
-            for (const i in g.covers) {
-                g.addCoverClick(g.covers[i], i)
-            }
+			if (g && g.covers) {
+				for (const i in g.covers) {
+					g.addCoverClick(g.covers[i], i)
+				}
+			}
 
             break;
 

@@ -25,7 +25,7 @@ app.get('/healthcheck', (req, res) => {
         message: 'Server is up and running'
     });
 });
-
+//console.dir(attrs[0][0])
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/card.html');
 });
@@ -68,13 +68,22 @@ var card = function(id) {
         at_3: 0,
         at_4: 0
     }
-    this.setAttributes = function() {
+    this.setAttributes = function(attrs) {
+		var selectedCover
+		if (players['player1'].state.selectedCover=='') {
+			selectedCover = 1
+		} else {
+			selectedCover = players['player1'].state.selectedCover
+		}
+		console.log('sel:'+selectedCover)
+		console.dir(attrs[(selectedCover-1)][0].at_1)
+		console.log('myid:'+this.id)
 		var selectedCover = players['player1'].state.selectedCover
-		this.attributes.at_1 = attrs[(selectedCover-1)][this.id]['at_1']
-		this.attributes.at_2 = attrs[(selectedCover-1)][this.id]['at_2']
-		this.attributes.at_3 = attrs[(selectedCover-1)][this.id]['at_3']
-		this.attributes.at_4 = attrs[(selectedCover-1)][this.id]['at_4']
-		this.color = attrs[(selectedCover-1)][this.id].col
+		this.attributes.at_1 = attrs[0][this.id].at_1
+		this.attributes.at_2 = attrs[0][this.id].at_2
+		this.attributes.at_3 = attrs[0][this.id].at_3
+		this.attributes.at_4 = attrs[0][this.id].at_4
+		this.color = attrs[0][this.id].col
 	}
 }
 
@@ -170,7 +179,7 @@ server.on('connection', (socket) => {
                     })
                 }
                 for (const i in cardsMain) {
-					cardsMain[i].setAttributes()
+					cardsMain[i].setAttributes(attrs)
 				}
 				console.dir(cardsMain);
                 break;

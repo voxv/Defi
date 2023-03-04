@@ -15,7 +15,7 @@ class PreScene extends Phaser.Scene {
         this.load.image('question', 'images/question.png');
         this.load.image('vs', 'images/vs.png');
         this.load.image('cover1', 'images/cover_froid.png');
-        this.load.image('cover2', 'images/cover_froid.png');
+        this.load.image('cover2', 'images/cover_legende.png');
         this.load.image('cover3', 'images/cover_froid.png');
 
         this.load.audio('bkmusic', 'sounds/backintro.mp3');
@@ -25,7 +25,8 @@ class PreScene extends Phaser.Scene {
         this.load.audio('avatar4', 'sounds/avatar4.mp3');
         this.load.audio('avatar5', 'sounds/avatar5.mp3');
         this.load.audio('playerquit', 'sounds/playerquit.mp3');
-        this.load.audio('battlestart', 'sounds/battlestart.mp3');
+        //this.load.audio('battlestart', 'sounds/battlestart.mp3');
+        this.load.audio('battlestart', 'sounds/playerquit.mp3');
     }
 
     create() {
@@ -263,7 +264,7 @@ class PreScene extends Phaser.Scene {
     }
     addName(x, y, name) {
         return this.add.text(x, y + 140, name, {
-            fontSize: '36px',
+            fontSize: '26px',
             fontFamily: 'Tahoma',
             color: '#fcba03',
             padding: {
