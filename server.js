@@ -17,7 +17,9 @@ const WebSocket = require('ws');
 const express = require('express');
 const fs = require('fs');
 const app = express();
-const { attrs } = require('./server_defs.js');
+const {
+    attrs
+} = require('./server_defs.js');
 
 app.get('/healthcheck', (req, res) => {
     res.status(200).json({
@@ -69,22 +71,22 @@ var card = function(id) {
         at_4: 0
     }
     this.setAttributes = function(attrs) {
-		var selectedCover
-		if (players['player1'].state.selectedCover=='') {
-			selectedCover = 1
-		} else {
-			selectedCover = players['player1'].state.selectedCover
-		}
-		console.log('sel:'+selectedCover)
-		console.dir(attrs[(selectedCover-1)][0].at_1)
-		console.log('myid:'+this.id)
-		var selectedCover = players['player1'].state.selectedCover
-		this.attributes.at_1 = attrs[0][this.id].at_1
-		this.attributes.at_2 = attrs[0][this.id].at_2
-		this.attributes.at_3 = attrs[0][this.id].at_3
-		this.attributes.at_4 = attrs[0][this.id].at_4
-		this.color = attrs[0][this.id].col
-	}
+        var selectedCover
+        if (players['player1'].state.selectedCover == '') {
+            selectedCover = 1
+        } else {
+            selectedCover = players['player1'].state.selectedCover
+        }
+        console.log('sel:' + selectedCover)
+        console.dir(attrs[(selectedCover - 1)][0].at_1)
+        console.log('myid:' + this.id)
+        var selectedCover = players['player1'].state.selectedCover
+        this.attributes.at_1 = attrs[0][this.id].at_1
+        this.attributes.at_2 = attrs[0][this.id].at_2
+        this.attributes.at_3 = attrs[0][this.id].at_3
+        this.attributes.at_4 = attrs[0][this.id].at_4
+        this.color = attrs[0][this.id].col
+    }
 }
 
 for (var i = 0; i < 36; i++) {
@@ -179,8 +181,8 @@ server.on('connection', (socket) => {
                     })
                 }
                 for (const i in cardsMain) {
-					cardsMain[i].setAttributes(attrs)
-				}
+                    cardsMain[i].setAttributes(attrs)
+                }
                 break;
         }
     });
