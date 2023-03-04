@@ -25,7 +25,7 @@ app.get('/healthcheck', (req, res) => {
         message: 'Server is up and running'
     });
 });
-//console.dir(attrs[0][0])
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/card.html');
 });
@@ -181,7 +181,6 @@ server.on('connection', (socket) => {
                 for (const i in cardsMain) {
 					cardsMain[i].setAttributes(attrs)
 				}
-				console.dir(cardsMain);
                 break;
         }
     });

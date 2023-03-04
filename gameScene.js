@@ -32,7 +32,7 @@ var drawDeck = function(tot, x, y) {
     this.deck = []
     this.countTweens = 0
     this.yDir = yPos_p1
-    this.xDir = xPos_p1
+    this.xDir = xPos_p1+xOffset_avatar_deck
     this.topOffsetX = 0
     this.topOffsetY = 0
 
@@ -94,15 +94,15 @@ var drawDeck = function(tot, x, y) {
 
         var nimg = g.add.image(this.x + this.topOffsetX, this.y + this.topOffsetY, 'card_back')
         nimg.setScale(cardScaleDraw)
-
+		nimg.setDepth(14)
         var isP1 = false
         if (this.yDir == yPos_p1) {
             this.yDir = yPos_p2
-            this.xDir = xPos_p2
+            this.xDir = xPos_p2+xOffset_avatar_deck
         } else {
             isP1 = true
             this.yDir = yPos_p1
-            this.xDir = xPos_p1
+            this.xDir = xPos_p1+xOffset_avatar_deck
         }
         this.tweensDraw.push(g.tweens.add({
             targets: nimg,
@@ -155,8 +155,10 @@ class GameScene extends Phaser.Scene {
 
     create() {
         g = this
+		this.avatarScale = 0.6
         this.cardsMain = {}
         this.createCards()
+        this.createFrames()
 
         socket.send(JSON.stringify({
             type: 'inGameConfirm',
@@ -166,10 +168,48 @@ class GameScene extends Phaser.Scene {
         this.drawDeck = new drawDeck(totCards, 420, 300)
         this.drawDeck.update()
         this.drawDeck.doDraw()
-        this.deckP1 = new drawDeck(0, xPos_p1, yPos_p1)
-        this.deckP2 = new drawDeck(0, xPos_p2, yPos_p2)
+
+		this.frame1X = xPos_p1
+		this.frame1Y = yPos_p1
+		this.frame2X = xPos_p2
+		this.frame2Y = yPos_p2
+
+        this.deckP1 = new drawDeck(0, xPos_p1+xOffset_avatar_deck, yPos_p1)
+        this.deckP2 = new drawDeck(0, xPos_p2+xOffset_avatar_deck, yPos_p2)
     }
 
+	createFrames() {
+		const cardimgp1 = this.add.image(xPos_p1, yPos_p1, 'frame');
+		cardimgp1.setScale(this.avatarScale)
+		cardimgp1.setDepth(12)
+		const cardimgp2 = this.add.image(xPos_p2, yPos_p2, 'frame');
+		cardimgp2.setScale(this.avatarScale)
+		cardimgp2.setDepth(12)
+        this.myAvatarImg = this.add.image(xPos_p1, yPos_p1, 'avatar' + mySelectedAvatar);
+        this.myAvatarImg.setScale(this.avatarScale)
+        this.myAvatarImg.setDepth(10)
+        this.otherAvatarImg = this.add.image(xPos_p2, yPos_p2, 'avatar' + otherSelectedAvatar);
+        this.otherAvatarImg.setScale(this.avatarScale)
+        this.otherAvatarImg.setDepth(10)
+        this.addName(xPos_p1, yPos_p1-85,myName)
+        this.addName(xPos_p2, yPos_p2-85, otherName)
+	}
+
+    addName(x, y, name) {
+        return this.add.text(x, y + 140, name, {
+            fontSize: '18px',
+            fontFamily: 'Tahoma',
+            color: '#fcba03',
+            padding: {
+                x: 10,
+                y: 5
+            },
+            lineSpacing: 10,
+            //stroke: '#1a540e',
+            //strokeThickness: 5,
+            //strokeRounded: true
+        }).setOrigin(0.5);
+    }
     createCards() {
         for (var i = 0; i < totCards; i++) {
             const cardimg = this.add.image(cardResetPosX, cardResetPosY, 'card_' + i);

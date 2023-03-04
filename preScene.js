@@ -196,7 +196,9 @@ class PreScene extends Phaser.Scene {
                     type: 'startGameSequence'
                 }))
                 buttonLocked = true
-                g.lockJoinButton()
+				if (g.joinButton) {
+					g.joinButton.remove()
+				}
             })
             if (!otherp || otherp.avatar == '') {
                 this.joinButton.disabled = true
@@ -219,14 +221,15 @@ class PreScene extends Phaser.Scene {
         var a = playersAll.find(player => player.id === myid);
         this.myAvatarImg = this.add.image(xpos, this.frameY, 'avatar' + a.avatar);
         this.myAvatarImg.setScale(this.avatarScale)
-        const myp = playersAll.find(player => player.id === myid);
-        this.myName = this.addName(xpos, this.frameY, myp.username)
-
+        //const myp = playersAll.find(player => player.id === myid);
+        this.myName = this.addName(xpos, this.frameY, a.username)
+		myName = a.username
         if (playersAll.length > 1) {
 
             if (otherp.avatar != '') {
                 this.otherAvatarImg = this.add.image(xpos2, this.frameY, 'avatar' + otherp.avatar);
                 this.otherAvatarImg.setScale(this.avatarScale)
+                otherSelectedAvatar = otherp.avatar
 
             } else {
                 var t = this.add.image(xpos2, this.frameY, 'question');
@@ -234,6 +237,7 @@ class PreScene extends Phaser.Scene {
             }
             if (otherp.username != '') {
                 this.otherName = this.addName(xpos2, this.frameY, otherp.username)
+                otherName = otherp.username
             }
 
             if (myid == 'player1' && otherp.avatar != '') {
@@ -293,18 +297,6 @@ class PreScene extends Phaser.Scene {
             }
             this.joinButton.classList.add("btn-primary");
             this.joinButton.disabled = false
-        }
-    }
-    lockJoinButton() {
-        if (this.joinButton) {
-            if (this.joinButton.classList.contains("btn-secondary")) {
-                this.joinButton.classList.remove("btn-secondary");
-            }
-            if (this.joinButton.classList.contains("btn-primary")) {
-                this.joinButton.classList.remove("btn-primary");
-            }
-            this.joinButton.classList.add("btn-success");
-            this.joinButton.remove()
         }
     }
 }

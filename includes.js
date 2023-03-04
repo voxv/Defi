@@ -1,7 +1,15 @@
 var canvasW = 1200
 var canvasH = 850
 var g
-var mySelectedAvatar = -1
+/*var mySelectedAvatar = -1
+var otherSelectedAvatar = -1
+var otherName = ''
+var myName = ''*/
+var mySelectedAvatar = 2
+var otherSelectedAvatar = 4
+var otherName = 'other'
+var myName = 'myself'
+
 var avatars = []
 var playersAll = []
 var buttonLocked = false
@@ -9,12 +17,13 @@ var selectedCover = 1
 var cardResetPosX = -200
 var cardResetPosY = 0
 var cardScale = 1
-var cardScaleDraw = 0.25
+var cardScaleDraw = 0.20
 var totCards = 36
-var xPos_p1 = 50
-var yPos_p1 = 50
-var xPos_p2 = 750
-var yPos_p2 = 550
+var xPos_p1 = 60
+var yPos_p1 = 525
+var xPos_p2 = 680
+var yPos_p2 = 60
+var xOffset_avatar_deck = 80
 
 var attrs_labels = {
 	0: { at_1: 'Taille', at_2: 'Poids', at_3: 'Puissance', at_4: "Date d'apparition" }
