@@ -82,11 +82,11 @@ socket.addEventListener('message', (event) => {
                     nosound: playclick
                 })
 
-			if (g && g.covers) {
-				for (const i in g.covers) {
-					g.addCoverClick(g.covers[i], i)
-				}
-			}
+            if (g && g.covers) {
+                for (const i in g.covers) {
+                    g.addCoverClick(g.covers[i], i)
+                }
+            }
 
             break;
 
@@ -146,8 +146,8 @@ socket.addEventListener('message', (event) => {
             g.startGame()
             break;
         case 'selectedCover':
-        	if (g.selectCover)
-            	g.selectCover(data.coverid)
+            if (g.selectCover)
+                g.selectCover(data.coverid)
             break;
 
             ///////////////////////////////////////////////
