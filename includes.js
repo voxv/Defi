@@ -11,6 +11,10 @@ var cardResetPosY = 0
 var cardScale = 1
 var cardScaleDraw = 0.25
 var totCards = 36
+var xPos_p1 = 50
+var yPos_p1 = 50
+var xPos_p2 = 750
+var yPos_p2 = 550
 
 var attrs_labels = {
 	0: { at_1: 'Taille', at_2: 'Poids', at_3: 'Puissance', at_4: "Date d'apparition" }

@@ -22,111 +22,113 @@ var card = function(id, img) {
 }
 
 var drawDeck = function(tot, x, y) {
-	this.x	 = x
-	this.y = y
-	this.tot = tot
-	this.currentTot = this.tot
-	this.cards = []
-	this.backImages = []
-    this.drawYDest_p1 = 100
-	this.drawYDest_p2 = 500
-    this.drawXDest_p1 = 130
-    this.drawXDest_p2 = 730
-	this.tweensDraw = []
-	this.deck = []
-	this.countTweens = 0
-	this.yDir = this.drawYDest_p1
-	this.xDir = this.drawXDest_p1
-	this.topOffsetX = 0
-	this.topOffsetY = 0
+    this.x = x
+    this.y = y
+    this.tot = tot
+    this.currentTot = this.tot
+    this.cards = []
+    this.backImages = []
+    this.tweensDraw = []
+    this.deck = []
+    this.countTweens = 0
+    this.yDir = yPos_p1
+    this.xDir = xPos_p1
+    this.topOffsetX = 0
+    this.topOffsetY = 0
 
-	this.initImages = function(){
-		this.countTweens = 0
-		this.deck = []
-		var offsetX = 0
-		var offsetY = 0
-		this.topOffsetX = offsetX
-		this.topOffsetY = offsetY
-		var stepX = 3
-		var stepY = 4
-		for (var i = 0 ; i < this.currentTot ; i++) {
-			if (i%4==0) {
-				var img =  g.add.image(this.x + offsetX, this.y + offsetY, 'card_back')
-				img.setScale(cardScaleDraw)
-				img.visible = false
-				this.backImages.push(img)
-				offsetX += stepX
-				offsetY += stepY
-			}
-		}
-		console.dir(this.backImages)
-	}
+    this.initImages = function() {
+        this.countTweens = 0
+        this.deck = []
+        var offsetX = 0
+        var offsetY = 0
+        this.topOffsetX = offsetX
+        this.topOffsetY = offsetY
+        var stepX = 3
+        var stepY = 4
+        for (var i = 0; i < this.currentTot; i++) {
+            if (i % 4 == 0) {
+                var img = g.add.image(this.x + offsetX, this.y + offsetY, 'card_back')
+                img.setScale(cardScaleDraw)
+                img.visible = false
+                this.backImages.push(img)
+                offsetX += stepX
+                offsetY += stepY
+            }
+        }
+    }
 
-	this.update = function() {
-		/*for (const i in this.backImages) {
-			this.backImages[i].visible = true
-		}*/
-		for (var i = 0 ; i < this.backImages.length ; i++){
-			this.backImages[i].destroy()
-		}
-		this.backImages = []
-		var offsetX = 0
-		var offsetY = 0
-		var stepX = 3
-		var stepY = 2
-		for (var i = 0 ; i < this.currentTot ; i++) {
-			if (i%6==0) {
-				var img =  g.add.image(this.x + offsetX, this.y + offsetY, 'card_back')
-				img.setScale(cardScaleDraw)
-				img.visible = true
-				this.backImages.push(img)
-				offsetX += stepX
-				offsetY += stepY
-			}
-		}
-		this.topOffsetX = offsetX-stepX
-		this.topOffsetY = offsetY-stepY
-		this.currentTot--
-	}
+    this.addCard = function() {
 
-	this.doDraw = function() {
+        this.currentTot++
+        this.update(true)
 
-		var nimg = g.add.image(this.x + this.topOffsetX, this.y + this.topOffsetY, 'card_back')
-		nimg.setScale(cardScaleDraw)
-		//for (let i = 0; i < (this.currentTot) ; i++) {
+    }
+    this.update = function(noDecrement) {
 
-		  if (this.yDir == this.drawYDest_p1) {
-			  this.yDir = this.drawYDest_p2
-			  this.xDir = this.drawXDest_p2
-		  } else {
-			  this.yDir = this.drawYDest_p1
-			  this.xDir = this.drawXDest_p1
-		  }
-		  this.tweensDraw.push(g.tweens.add({
-			targets: nimg,
-			y: this.yDir,
-			x: this.xDir,
+        for (var i = 0; i < this.backImages.length; i++) {
+            this.backImages[i].destroy()
+        }
+        this.backImages = []
+        var offsetX = 0
+        var offsetY = 0
+        var stepX = 3
+        var stepY = 2
+
+        for (var i = 0; i < this.currentTot; i++) {
+            if (i % 6 == 0) {
+                var img = g.add.image(this.x + offsetX, this.y + offsetY, 'card_back')
+                img.setScale(cardScaleDraw)
+                img.visible = true
+                this.backImages.push(img)
+                offsetX += stepX
+                offsetY += stepY
+            }
+        }
+        this.topOffsetX = offsetX - stepX
+        this.topOffsetY = offsetY - stepY
+        if (!noDecrement)
+            this.currentTot--
+    }
+
+    this.doDraw = function() {
+
+        var nimg = g.add.image(this.x + this.topOffsetX, this.y + this.topOffsetY, 'card_back')
+        nimg.setScale(cardScaleDraw)
+
+        var isP1 = false
+        if (this.yDir == yPos_p1) {
+            this.yDir = yPos_p2
+            this.xDir = xPos_p2
+        } else {
+            isP1 = true
+            this.yDir = yPos_p1
+            this.xDir = xPos_p1
+        }
+        this.tweensDraw.push(g.tweens.add({
+            targets: nimg,
+            y: this.yDir,
+            x: this.xDir,
             ease: Phaser.Math.Easing.Cubic.In,
-            duration: 250,
+            duration: 300,
             context: this,
             onComplete: function() {
-				if (g.drawDeck.currentTot>=0) {
-					g.drawDeck.update()
-					g.drawDeck.doDraw()
-					//g.totalRemainingInDrawDeck--
-					/*if ((g.totalRemainingInDrawDeck)<=0) {
-						console.log('yay')
-					}*/
-					g.drawDeck.tweensDraw.pop()
-					//nimg.destroy()
-					//this.destroy()
-				}
+
+                if (g.drawDeck.currentTot >= 0) {
+                    g.drawDeck.update()
+                    g.drawDeck.doDraw()
+                    if (isP1) {
+                        g.deckP1.addCard()
+                    } else {
+                        g.deckP2.addCard()
+                    }
+                    g.drawDeck.tweensDraw.pop()
+                    nimg.destroy()
+                }
             },
-			delay:  30
-		  }));
-		  this.countTweens++
-		//}
-	}
+            delay: 80
+        }));
+        this.countTweens++
+    }
 }
 
 class GameScene extends Phaser.Scene {
@@ -143,6 +145,12 @@ class GameScene extends Phaser.Scene {
         }
         this.load.image('card_back', 'images/card_back.png');
         this.load.image('card_sp_tornade', 'images/card_sp_tornade.png');
+        this.load.image('frame', 'images/frame.png');
+        this.load.image('avatar1', 'images/avatar1_high.png');
+        this.load.image('avatar2', 'images/avatar2_high.png');
+        this.load.image('avatar3', 'images/avatar3_high.png');
+        this.load.image('avatar4', 'images/avatar4_high.png');
+        this.load.image('avatar5', 'images/avatar5_high.png');
     }
 
     create() {
@@ -154,61 +162,14 @@ class GameScene extends Phaser.Scene {
             type: 'inGameConfirm',
 
         }))
-        this.backImage = this.add.image(cardResetPosX, cardResetPosY, 'card_back');
-        this.totalRemainingInDrawDeck = totCards
 
-
-        //this.drawDeck = []
-        //this.tweensDraw = []
-        //this.showDrawDeck()
-        //this.doDraw()
         this.drawDeck = new drawDeck(totCards, 420, 300)
         this.drawDeck.update()
         this.drawDeck.doDraw()
+        this.deckP1 = new drawDeck(0, xPos_p1, yPos_p1)
+        this.deckP2 = new drawDeck(0, xPos_p2, yPos_p2)
     }
 
-
-
-	showDrawDeck() {
-
-		//this.drawDeck.update()
-
-
-		/*const offsetX = 2;
-		const offsetY = 3;
-		this.drawDeck = []
-		console.log(this.totalRemainingInDrawDeck)
-		if (this.totalRemainingInDrawDeck>totCards-10) {
-			for (var i = 0 ; i < (totCards-1) ; i++) {
-				console.log(this.backImage.x)
-				var img =  this.add.image(this.backImage.x + offsetX*i, this.backImage.y + offsetY*i, 'card_back')
-				img.setScale(cardScaleDraw)
-				//img.x = g.drawXDest
-				//img.y = 300
-				this.drawDeck.push(img);
-			}
-		} else if (this.totalRemainingInDrawDeck>totCards-20) {
-			for (var i = 0 ; i < (totCards-1) ; i++) {
-				const px = offsetX
-				if (i%2==0){
-					px += offsetX*i
-				}
-				var img =  this.add.image(this.backImage.x + px, this.backImage.y + offsetY*i, 'card_back')
-				img.setScale(cardScaleDraw)
-				this.drawDeck.push(img);
-			}
-		} else {
-			for (var i = 0 ; i < 1 ; i++) {
-				var img =  this.add.image(this.backImage.x + offsetX*i, this.backImage.y + offsetY*i, 'card_back')
-				img.setScale(cardScaleDraw)
-				this.drawDeck.push(img);
-			}
-		}*/
-
-	//}
-
-
-	}
     createCards() {
         for (var i = 0; i < totCards; i++) {
             const cardimg = this.add.image(cardResetPosX, cardResetPosY, 'card_' + i);
@@ -220,16 +181,12 @@ class GameScene extends Phaser.Scene {
             this.cardsMain[i].setAttributes()
         }
     }
-    update() {
 
-    }
-	reinit() {
-        //this.totalRemainingInDrawDeck = totCards
+    reinit() {
         this.drawDeck = new drawDeck(totCards, 420, 300)
-        //this.tweensDraw = []
         selectedCover = 1
         playersAll = []
         buttonLocked = false
         mySelectedAvatar = ''
-	}
+    }
 }
