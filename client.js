@@ -144,7 +144,8 @@ socket.addEventListener('message', (event) => {
             g.startGame()
             break;
         case 'selectedCover':
-            g.selectCover(data.coverid)
+        	if (g.selectCover)
+            	g.selectCover(data.coverid)
             break;
 
             ///////////////////////////////////////////////
