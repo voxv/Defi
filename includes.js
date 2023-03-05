@@ -1,15 +1,24 @@
 var canvasW = 1200
 var canvasH = 850
 var g
-/*var mySelectedAvatar = -1
-var otherSelectedAvatar = -1
-var otherName = ''
-var myName = ''*/
-var mySelectedAvatar = 2
-var otherSelectedAvatar = 4
-var otherName = 'other'
-var myName = 'myself'
+var mySelectedAvatar
+var otherSelectedAvatar
+var otherName
+var myName
 
+const debug = false
+
+if (debug) {
+	mySelectedAvatar = 2
+	otherSelectedAvatar = 4
+	otherName = 'other'
+	myName = 'myself'
+} else {
+	mySelectedAvatar = -1
+	otherSelectedAvatar = -1
+	otherName = ''
+	myName = ''
+}
 var avatars = []
 var playersAll = []
 var buttonLocked = false
@@ -24,7 +33,9 @@ var yPos_p1 = 525
 var xPos_p2 = 740
 var yPos_p2 = 60
 var xOffset_avatar_deck = 80
-var yOffset_avatar_deck = 0
+var yOffset_avatar_deck = 4
+var startingPlayer = 'player1'
+var timeoutHandle = null
 
 var attrs_labels = {
 	0: { at_1: 'Taille', at_2: 'Poids', at_3: 'Puissance', at_4: "Date d'apparition" }

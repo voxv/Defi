@@ -18,6 +18,7 @@ const express = require('express');
 const fs = require('fs');
 const app = express();
 const { attrs } = require('./server_defs.js');
+const debug = false
 
 app.get('/healthcheck', (req, res) => {
     res.status(200).json({
@@ -53,6 +54,7 @@ const playerState = {
     drawDone: false,
     bonneChanceDone: false,
     quiVaCommencerDone: false,
+    drawWinnerShown: false,
     selectedCover: ''
 };
 var players = {
@@ -172,8 +174,18 @@ server.on('connection', (socket) => {
                 /////////////////////////////////////////////
 
             case 'inGameConfirm':
+            	////TESTSS/////
+            	//console.log('UU:'+players[socket.player.state.id].state.username)
+            	if (debug && players[socket.player.state.id].state.username=='') {
+					players[socket.player.state.id].state.username='myself'
+					players[socket.player.state.id].state.avatar='2'
+				}
+				//////////////
                 players[socket.player.state.id].state.inGame = true
-                if (players['player1'].state.inGame && players['player2'].state.inGame) {
+
+                ////TEST
+                //if (players['player1'].state.inGame && players['player2'].state!=undefined && players['player2'].state.inGame) {
+                if (!debug && players['player1'].state.inGame && players['player2'].state.inGame) {
                     sendToAll({
                         type: 'inGameConfirm'
                     })
@@ -186,11 +198,15 @@ server.on('connection', (socket) => {
 
             case 'drawDoneConfirm':
                 players[socket.player.state.id].state.drawDone = true
-                if (players['player1'].state.drawDone && players['player2'].state.drawDone) {
-					console.log('both done')
+                if (!debug && players['player1'].state.drawDone && players['player2'].state.drawDone) {
+					var starting = 'player1'
+					var n = Math.floor(Math.random() * 2) + 1;
+					if (n==2) {
+						starting = 'player2'
+					}
                     sendToAll({
                         type: 'drawDone',
-
+                        starting: starting,
                     })
                 }
                 break;
@@ -212,6 +228,15 @@ server.on('connection', (socket) => {
                     })
                 }
             	break
+            case 'drawWinnerShown':
+            	players[socket.player.state.id].state.drawWinnerShown = true
+                if (players['player1'].state.drawWinnerShown && players['player2'].state.drawWinnerShown) {
+                    sendToAll({
+                        type: 'drawWinnerShown'
+                    })
+                }
+            	break
+
         }
     });
 

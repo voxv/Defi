@@ -30,14 +30,26 @@
   </head>
   <body>
     <script>
-      const config = {
-        type: Phaser.AUTO,
-        width: 800,
-        height: 600,
-        parent: 'game-container',
-        //scene: [StartScreen, PreScene, GameScene],
-        scene: [GameScene],
-      };
+      var config
+      if (debug) {
+		  config = {
+			type: Phaser.AUTO,
+			width: 800,
+			height: 600,
+			parent: 'game-container',
+			//scene: [StartScreen, PreScene, GameScene],
+			scene: [GameScene],
+		  };
+      } else {
+		  config = {
+			type: Phaser.AUTO,
+			width: 800,
+			height: 600,
+			parent: 'game-container',
+			scene: [StartScreen, PreScene, GameScene],
+			//scene: [GameScene],
+		  };
+	  }
       const game = new Phaser.Game(config);
     </script>
     <div id="game-container"></div>

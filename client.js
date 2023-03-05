@@ -142,6 +142,12 @@ socket.addEventListener('message', (event) => {
                 g.selectCover(data.coverid)
             break;
         case 'startGameSequence':
+        	///////// TEST
+             if (debug && playersAll.length == 0) {
+				 playersAll.push({id: 'player1', username: 'myself', avatar:2})
+				 playersAll.push({id: 'player2', username: 'other', avatar:4})
+			 }
+			 //////////////////////
         	if (g && g.startGameSequence)
             	g.startGameSequence()
             break;
@@ -154,6 +160,7 @@ socket.addEventListener('message', (event) => {
                 g.selectCover(data.coverid)
             break;
         case 'drawDone':
+        	startingPlayer = data.starting
             if (g && g.showBonneChance)
                 g.showBonneChance()
                break
@@ -164,6 +171,10 @@ socket.addEventListener('message', (event) => {
 		case 'quiVaCommencerDone':
             if (g && g.quiVaCommencerDone)
                 g.quiVaCommencerDone()
+			break
+		case 'drawWinnerShown':
+            if (g && g.drawWinnerShown)
+                g.drawWinnerShown()
 			break
 
             ///////////////////////////////////////////////
