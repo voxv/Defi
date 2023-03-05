@@ -123,11 +123,13 @@ socket.addEventListener('message', (event) => {
 
             playersAll = data.players
             if (data.callerp == myid) {
-                g.removeClickListener()
-                g.sound.stopAll();
-                g.scene.pause();
-                g.scene.shutdown()
-                g.scene.start('PreScene');
+				if (g) {
+					g.removeClickListener()
+					g.sound.stopAll();
+					g.scene.pause();
+					g.scene.shutdown()
+					g.scene.start('PreScene');
+				}
             }
             if (g && g.addAvatar)
                 g.addAvatar()
@@ -136,19 +138,33 @@ socket.addEventListener('message', (event) => {
             if (g && g.addAvatar)
                 g.addAvatar()
             selectedCover = data.coverid
-            if (g.selectCover)
+            if (g && g.selectCover)
                 g.selectCover(data.coverid)
             break;
         case 'startGameSequence':
-            g.startGameSequence()
+        	if (g && g.startGameSequence)
+            	g.startGameSequence()
             break;
         case 'startGame':
-            g.startGame()
+        	if (g && g.startGame)
+            	g.startGame()
             break;
         case 'selectedCover':
-            if (g.selectCover)
+            if (g && g.selectCover)
                 g.selectCover(data.coverid)
             break;
+        case 'drawDone':
+            if (g && g.showBonneChance)
+                g.showBonneChance()
+               break
+		case 'bonneChanceDone':
+            if (g && g.startPlayerPick)
+                g.startPlayerPick()
+			break
+		case 'quiVaCommencerDone':
+            if (g && g.quiVaCommencerDone)
+                g.quiVaCommencerDone()
+			break
 
             ///////////////////////////////////////////////
 

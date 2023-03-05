@@ -21,12 +21,16 @@ var cardScaleDraw = 0.20
 var totCards = 36
 var xPos_p1 = 60
 var yPos_p1 = 525
-var xPos_p2 = 680
+var xPos_p2 = 740
 var yPos_p2 = 60
 var xOffset_avatar_deck = 80
+var yOffset_avatar_deck = 0
 
 var attrs_labels = {
 	0: { at_1: 'Taille', at_2: 'Poids', at_3: 'Puissance', at_4: "Date d'apparition" }
+}
+var attrs_metrics = {
+	0: { at_1: 'cm', at_2: 'kg', at_3: '', at_4: "" }
 }
 var attrs = {
 	0: {   // pack id

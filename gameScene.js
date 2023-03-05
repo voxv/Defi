@@ -31,7 +31,7 @@ var drawDeck = function(tot, x, y) {
     this.tweensDraw = []
     this.deck = []
     this.countTweens = 0
-    this.yDir = yPos_p1
+    this.yDir = yPos_p1 - yOffset_avatar_deck
     this.xDir = xPos_p1 + xOffset_avatar_deck
     this.topOffsetX = 0
     this.topOffsetY = 0
@@ -96,20 +96,23 @@ var drawDeck = function(tot, x, y) {
         nimg.setScale(cardScaleDraw)
         nimg.setDepth(14)
         var isP1 = false
-        if (this.yDir == yPos_p1) {
-            this.yDir = yPos_p2
-            this.xDir = xPos_p2 + xOffset_avatar_deck
+        if (this.yDir == yPos_p1 - yOffset_avatar_deck) {
+            this.yDir = yPos_p2 + yOffset_avatar_deck
+            this.xDir = xPos_p2 - xOffset_avatar_deck-5
         } else {
             isP1 = true
-            this.yDir = yPos_p1
+            this.yDir = yPos_p1 - yOffset_avatar_deck
             this.xDir = xPos_p1 + xOffset_avatar_deck
         }
+        const sound = g.sound.add('cardflip');
+        sound.setVolume(0.6)
+        sound.play();
         this.tweensDraw.push(g.tweens.add({
             targets: nimg,
             y: this.yDir,
             x: this.xDir,
             ease: Phaser.Math.Easing.Cubic.In,
-            duration: 300,
+            duration: 30,
             context: this,
             onComplete: function() {
 
@@ -123,9 +126,13 @@ var drawDeck = function(tot, x, y) {
                     }
                     g.drawDeck.tweensDraw.pop()
                     nimg.destroy()
-                }
+                } else {
+					socket.send(JSON.stringify({
+						type: 'drawDoneConfirm',
+					}))
+				}
             },
-            delay: 80
+            delay: 10
         }));
         this.countTweens++
     }
@@ -151,10 +158,22 @@ class GameScene extends Phaser.Scene {
         this.load.image('avatar3', 'images/avatar3_high.png');
         this.load.image('avatar4', 'images/avatar4_high.png');
         this.load.image('avatar5', 'images/avatar5_high.png');
+        this.load.image('game_back', 'images/game_back1.jpg');
+        this.load.image('gameBackName', 'images/gameBackName.png');
+        this.load.image('playerpickback', 'images/playerpickback.jpg');
+        this.load.image('bonnechance', 'images/bonnechance.jpg');
+
+        this.load.audio('cardflip', 'sounds/cardflip.mp3');
+        this.load.audio('bonnechance', 'sounds/bonnechance.mp3');
+        this.load.audio('drumroll', 'sounds/drumroll.mp3');
+
     }
 
     create() {
         g = this
+        this.createBackImage()
+		//const backname1 = this.add.image(xPos_p1+28, yPos_p1 , 'backname');
+		//const backname2 = this.add.image(xPos_p2-28, yPos_p2 , 'backname');
         this.avatarScale = 0.6
         this.cardsMain = {}
         this.createCards()
@@ -162,9 +181,7 @@ class GameScene extends Phaser.Scene {
 
         socket.send(JSON.stringify({
             type: 'inGameConfirm',
-
         }))
-
         this.drawDeck = new drawDeck(totCards, 420, 300)
         this.drawDeck.update()
         this.drawDeck.doDraw()
@@ -174,10 +191,21 @@ class GameScene extends Phaser.Scene {
         this.frame2X = xPos_p2
         this.frame2Y = yPos_p2
 
-        this.deckP1 = new drawDeck(0, xPos_p1 + xOffset_avatar_deck, yPos_p1)
-        this.deckP2 = new drawDeck(0, xPos_p2 + xOffset_avatar_deck, yPos_p2)
+        this.deckP1 = new drawDeck(0, xPos_p1 + xOffset_avatar_deck, yPos_p1 - yOffset_avatar_deck)
+        this.deckP2 = new drawDeck(0, xPos_p2 - xOffset_avatar_deck-5, yPos_p2 + yOffset_avatar_deck)
     }
-
+	createBackImage() {
+        const backimage = this.add.image(0, 0, 'game_back');
+        const canvasWidth = this.game.config.width;
+        const canvasHeight = this.game.config.height;
+        const imageWidth = backimage.width;
+        const imageHeight = backimage.height;
+        const scale = Math.min(canvasWidth / imageWidth, canvasHeight / imageHeight);
+        backimage.setScale(scale+0.2);
+        //backimage.setDepth(1);
+        backimage.setPosition(canvasWidth / 2, canvasHeight / 2);
+        //backimage.alpha = 0.8
+	}
     createFrames() {
         const cardimgp1 = this.add.image(xPos_p1, yPos_p1, 'frame');
         cardimgp1.setScale(this.avatarScale)
@@ -196,7 +224,10 @@ class GameScene extends Phaser.Scene {
     }
 
     addName(x, y, name) {
-        return this.add.text(x, y + 140, name, {
+
+		const gameBackName = this.add.image(x, y+144, 'gameBackName');
+		gameBackName.setDepth(2)
+        var tt = this.add.text(x, y + 141, name, {
             fontSize: '18px',
             fontFamily: 'Tahoma',
             color: '#fcba03',
@@ -204,11 +235,10 @@ class GameScene extends Phaser.Scene {
                 x: 10,
                 y: 5
             },
-            lineSpacing: 10,
-            //stroke: '#1a540e',
-            //strokeThickness: 5,
-            //strokeRounded: true
+            lineSpacing: 10
         }).setOrigin(0.5);
+        tt.setDepth(3)
+        return tt
     }
     createCards() {
         for (var i = 0; i < totCards; i++) {
@@ -221,7 +251,55 @@ class GameScene extends Phaser.Scene {
             this.cardsMain[i].setAttributes()
         }
     }
+    startPlayerPick() {
+		const x = canvasW/2-169
+		const y = canvasH/2-125
+		const backimage = this.add.image(x, y-80, 'playerpickback');
+		backimage.setDepth(4)
+		backimage.setScale(1.2)
 
+        var tt = this.add.text(x, y -80, 'Qui va commencer?', {
+            fontSize: '28px',
+            fontFamily: 'Tahoma',
+            color: '#fcba03',
+            padding: {
+                x: 10,
+                y: 5
+            },
+            lineSpacing: 10,
+            stroke: '#1a540e',
+            strokeThickness: 5,
+            strokeRounded: true,
+        }).setOrigin(0.5);
+        tt.setDepth(5)
+
+        const sound = this.sound.add('drumroll');
+        sound.play();
+		setTimeout(function() { backimage.destroy(); tt.destroy(); socket.send(JSON.stringify({ type: 'quiVaCommencerDone' }))} , 2350)
+        sound.on('complete', function() {
+            socket.send(JSON.stringify({
+                type: 'quiVaCommencerDone'
+            }))
+        })
+	}
+
+	quiVaCommencerDone() {
+
+		console.log('yay')
+	}
+	showBonneChance() {
+		const backimage = this.add.image(canvasW/2-169, canvasH/2-125, 'bonnechance');
+		//setTimeout(function() { backimage.destroy(); socket.send(JSON.stringify({ type: 'bonneChanceDone' })) }, 1000)
+        const sound = this.sound.add('bonnechance');
+        sound.play();
+        sound.on('complete', function() {
+			backimage.destroy()
+            g.sound.stopAll()
+            socket.send(JSON.stringify({
+                type: 'bonneChanceDone'
+            }))
+        })
+	}
     reinit() {
         this.drawDeck = new drawDeck(totCards, 420, 300)
         selectedCover = 1
