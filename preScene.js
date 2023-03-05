@@ -84,11 +84,6 @@ class PreScene extends Phaser.Scene {
             this.covers[i] = c
         }
 
-        if (myid == 'player1') {
-
-
-        }
-
         this.addAvatar()
         this.bkmusic = this.sound.add('bkmusic', {
             loop: true
