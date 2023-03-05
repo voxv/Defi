@@ -20,6 +20,7 @@ const app = express();
 const {
     attrs
 } = require('./server_defs.js');
+
 const debug = false
 
 app.get('/healthcheck', (req, res) => {

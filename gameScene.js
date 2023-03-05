@@ -61,8 +61,8 @@ var drawDeck = function(tot, x, y) {
 
         this.currentTot++
         this.update(true)
-
     }
+
     this.update = function(noDecrement) {
 
         for (var i = 0; i < this.backImages.length; i++) {
@@ -86,8 +86,10 @@ var drawDeck = function(tot, x, y) {
         }
         this.topOffsetX = offsetX - stepX
         this.topOffsetY = offsetY - stepY
-        if (!noDecrement)
+
+        if (!noDecrement) {
             this.currentTot--
+        }
     }
 
     this.doDraw = function() {
@@ -96,6 +98,7 @@ var drawDeck = function(tot, x, y) {
         nimg.setScale(cardScaleDraw)
         nimg.setDepth(14)
         var isP1 = false
+
         if (this.yDir == yPos_p1 - yOffset_avatar_deck) {
             this.yDir = yPos_p2 - yOffset_avatar_deck
             this.xDir = xPos_p2 - xOffset_avatar_deck - 5
@@ -104,9 +107,11 @@ var drawDeck = function(tot, x, y) {
             this.yDir = yPos_p1 - yOffset_avatar_deck
             this.xDir = xPos_p1 + xOffset_avatar_deck
         }
+
         const sound = g.sound.add('cardflip');
         sound.setVolume(0.6)
         sound.play();
+
         this.tweensDraw.push(g.tweens.add({
             targets: nimg,
             y: this.yDir,
@@ -134,6 +139,7 @@ var drawDeck = function(tot, x, y) {
             },
             delay: 10
         }));
+
         this.countTweens++
     }
 }
@@ -171,14 +177,11 @@ class GameScene extends Phaser.Scene {
             frameWidth: 60,
             frameHeight: 68
         });
-
     }
 
     create() {
         g = this
         this.createBackImage()
-        //const backname1 = this.add.image(xPos_p1+28, yPos_p1 , 'backname');
-        //const backname2 = this.add.image(xPos_p2-28, yPos_p2 , 'backname');
         this.avatarScale = 0.6
         this.cardsMain = {}
         this.createCards()
@@ -202,7 +205,6 @@ class GameScene extends Phaser.Scene {
                 type: 'inGameConfirm',
             }))
         }
-
 
         if (debug) {
             this.drawDeck = new drawDeck(0, 420, 300)
@@ -247,10 +249,9 @@ class GameScene extends Phaser.Scene {
         const imageHeight = backimage.height;
         const scale = Math.min(canvasWidth / imageWidth, canvasHeight / imageHeight);
         backimage.setScale(scale + 0.2);
-        //backimage.setDepth(1);
         backimage.setPosition(canvasWidth / 2, canvasHeight / 2);
-        //backimage.alpha = 0.8
     }
+
     createFrames() {
         const cardimgp1 = this.add.image(xPos_p1, yPos_p1, 'frame');
         cardimgp1.setScale(this.avatarScale)
@@ -330,11 +331,6 @@ class GameScene extends Phaser.Scene {
                 }))
             }, 2650)
         }
-        sound.on('complete', function() {
-            /*socket.send(JSON.stringify({
-                type: 'quiVaCommencerDone'
-            }))*/
-        })
     }
 
     quiVaCommencerDone() {
@@ -420,7 +416,6 @@ class GameScene extends Phaser.Scene {
 
     showBonneChance() {
         const backimage = this.add.image(canvasW / 2 - 169, canvasH / 2 - 125, 'bonnechance');
-        //setTimeout(function() { backimage.destroy(); socket.send(JSON.stringify({ type: 'bonneChanceDone' })) }, 1000)
         const sound = this.sound.add('bonnechance');
         sound.play();
         sound.on('complete', function() {

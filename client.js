@@ -142,7 +142,6 @@ socket.addEventListener('message', (event) => {
                 g.selectCover(data.coverid)
             break;
         case 'startGameSequence':
-            ///////// TEST
             if (debug && playersAll.length == 0) {
                 playersAll.push({
                     id: 'player1',
@@ -155,7 +154,6 @@ socket.addEventListener('message', (event) => {
                     avatar: 4
                 })
             }
-            //////////////////////
             if (g && g.startGameSequence)
                 g.startGameSequence()
             break;
