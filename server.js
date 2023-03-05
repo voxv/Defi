@@ -17,7 +17,9 @@ const WebSocket = require('ws');
 const express = require('express');
 const fs = require('fs');
 const app = express();
-const { attrs } = require('./server_defs.js');
+const {
+    attrs
+} = require('./server_defs.js');
 const debug = false
 
 app.get('/healthcheck', (req, res) => {
@@ -74,19 +76,19 @@ var card = function(id) {
         at_4: 0
     }
     this.setAttributes = function(attrs) {
-		var selectedCover
-		if (players['player1'].state.selectedCover=='') {
-			selectedCover = 1
-		} else {
-			selectedCover = players['player1'].state.selectedCover
-		}
-		var selectedCover = players['player1'].state.selectedCover
-		this.attributes.at_1 = attrs[0][this.id].at_1
-		this.attributes.at_2 = attrs[0][this.id].at_2
-		this.attributes.at_3 = attrs[0][this.id].at_3
-		this.attributes.at_4 = attrs[0][this.id].at_4
-		this.color = attrs[0][this.id].col
-	}
+        var selectedCover
+        if (players['player1'].state.selectedCover == '') {
+            selectedCover = 1
+        } else {
+            selectedCover = players['player1'].state.selectedCover
+        }
+        var selectedCover = players['player1'].state.selectedCover
+        this.attributes.at_1 = attrs[0][this.id].at_1
+        this.attributes.at_2 = attrs[0][this.id].at_2
+        this.attributes.at_3 = attrs[0][this.id].at_3
+        this.attributes.at_4 = attrs[0][this.id].at_4
+        this.color = attrs[0][this.id].col
+    }
 }
 
 for (var i = 0; i < 36; i++) {
@@ -171,39 +173,32 @@ server.on('connection', (socket) => {
                 players['player1'].state.selectedCover = data.coverid
                 break;
 
-                /////////////////////////////////////////////
-
             case 'inGameConfirm':
-            	////TESTSS/////
-            	//console.log('UU:'+players[socket.player.state.id].state.username)
-            	if (debug && players[socket.player.state.id].state.username=='') {
-					players[socket.player.state.id].state.username='myself'
-					players[socket.player.state.id].state.avatar='2'
-				}
-				//////////////
+                if (debug && players[socket.player.state.id].state.username == '') {
+                    players[socket.player.state.id].state.username = 'myself'
+                    players[socket.player.state.id].state.avatar = '2'
+                }
                 players[socket.player.state.id].state.inGame = true
 
-                ////TEST
-                //if (players['player1'].state.inGame && players['player2'].state!=undefined && players['player2'].state.inGame) {
                 if (!debug && players['player1'].state.inGame && players['player2'].state.inGame) {
                     sendToAll({
                         type: 'inGameConfirm'
                     })
                 }
                 for (const i in cardsMain) {
-					cardsMain[i].setAttributes(attrs)
-				}
+                    cardsMain[i].setAttributes(attrs)
+                }
 
                 break;
 
             case 'drawDoneConfirm':
                 players[socket.player.state.id].state.drawDone = true
                 if (!debug && players['player1'].state.drawDone && players['player2'].state.drawDone) {
-					var starting = 'player1'
-					var n = Math.floor(Math.random() * 2) + 1;
-					if (n==2) {
-						starting = 'player2'
-					}
+                    var starting = 'player1'
+                    var n = Math.floor(Math.random() * 2) + 1;
+                    if (n == 2) {
+                        starting = 'player2'
+                    }
                     sendToAll({
                         type: 'drawDone',
                         starting: starting,
@@ -211,31 +206,29 @@ server.on('connection', (socket) => {
                 }
                 break;
             case 'bonneChanceDone':
-            	players[socket.player.state.id].state.bonneChanceDone = true
+                players[socket.player.state.id].state.bonneChanceDone = true
                 if (players['player1'].state.bonneChanceDone && players['player2'].state.bonneChanceDone) {
-					console.log('both bonneChanceDone done')
                     sendToAll({
                         type: 'bonneChanceDone'
                     })
                 }
-            	break;
+                break;
             case 'quiVaCommencerDone':
-            	players[socket.player.state.id].state.quiVaCommencerDone = true
+                players[socket.player.state.id].state.quiVaCommencerDone = true
                 if (players['player1'].state.quiVaCommencerDone && players['player2'].state.quiVaCommencerDone) {
-					console.log('both quiVaCommencerDone done')
                     sendToAll({
                         type: 'quiVaCommencerDone'
                     })
                 }
-            	break
+                break
             case 'drawWinnerShown':
-            	players[socket.player.state.id].state.drawWinnerShown = true
+                players[socket.player.state.id].state.drawWinnerShown = true
                 if (players['player1'].state.drawWinnerShown && players['player2'].state.drawWinnerShown) {
                     sendToAll({
                         type: 'drawWinnerShown'
                     })
                 }
-            	break
+                break
 
         }
     });

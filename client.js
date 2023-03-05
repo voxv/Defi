@@ -123,13 +123,13 @@ socket.addEventListener('message', (event) => {
 
             playersAll = data.players
             if (data.callerp == myid) {
-				if (g) {
-					g.removeClickListener()
-					g.sound.stopAll();
-					g.scene.pause();
-					g.scene.shutdown()
-					g.scene.start('PreScene');
-				}
+                if (g) {
+                    g.removeClickListener()
+                    g.sound.stopAll();
+                    g.scene.pause();
+                    g.scene.shutdown()
+                    g.scene.start('PreScene');
+                }
             }
             if (g && g.addAvatar)
                 g.addAvatar()
@@ -142,43 +142,48 @@ socket.addEventListener('message', (event) => {
                 g.selectCover(data.coverid)
             break;
         case 'startGameSequence':
-        	///////// TEST
-             if (debug && playersAll.length == 0) {
-				 playersAll.push({id: 'player1', username: 'myself', avatar:2})
-				 playersAll.push({id: 'player2', username: 'other', avatar:4})
-			 }
-			 //////////////////////
-        	if (g && g.startGameSequence)
-            	g.startGameSequence()
+            ///////// TEST
+            if (debug && playersAll.length == 0) {
+                playersAll.push({
+                    id: 'player1',
+                    username: 'myself',
+                    avatar: 2
+                })
+                playersAll.push({
+                    id: 'player2',
+                    username: 'other',
+                    avatar: 4
+                })
+            }
+            //////////////////////
+            if (g && g.startGameSequence)
+                g.startGameSequence()
             break;
         case 'startGame':
-        	if (g && g.startGame)
-            	g.startGame()
+            if (g && g.startGame)
+                g.startGame()
             break;
         case 'selectedCover':
             if (g && g.selectCover)
                 g.selectCover(data.coverid)
             break;
         case 'drawDone':
-        	startingPlayer = data.starting
+            startingPlayer = data.starting
             if (g && g.showBonneChance)
                 g.showBonneChance()
-               break
-		case 'bonneChanceDone':
+            break
+        case 'bonneChanceDone':
             if (g && g.startPlayerPick)
                 g.startPlayerPick()
-			break
-		case 'quiVaCommencerDone':
+            break
+        case 'quiVaCommencerDone':
             if (g && g.quiVaCommencerDone)
                 g.quiVaCommencerDone()
-			break
-		case 'drawWinnerShown':
+            break
+        case 'drawWinnerShown':
             if (g && g.drawWinnerShown)
                 g.drawWinnerShown()
-			break
-
-            ///////////////////////////////////////////////
-
+            break
     }
 });
 

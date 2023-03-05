@@ -216,9 +216,9 @@ class PreScene extends Phaser.Scene {
         var a = playersAll.find(player => player.id === myid);
         this.myAvatarImg = this.add.image(xpos, this.frameY, 'avatar' + a.avatar);
         this.myAvatarImg.setScale(this.avatarScale)
-        //const myp = playersAll.find(player => player.id === myid);
         this.myName = this.addName(xpos, this.frameY, a.username)
 		myName = a.username
+
         if (playersAll.length > 1) {
 
             if (otherp.avatar != '') {
