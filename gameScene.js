@@ -394,53 +394,52 @@ class GameScene extends Phaser.Scene {
             }, 2650)
         }
     }
-	drawCard(data) {
-		console.dir(data)
-		console.dir(data.id)
-		var cardid = data.cardId
-		var playerId = data.playerId
-		var imgName = 'card_'+cardid
-		var xDest = 210
-		var yDest = 240
-		var xStart = g.deckP1.x+10
-		var yStart = g.deckP1.y
-		var isMine = true
+    drawCard(data) {
 
-		if (playerId!=myid) {
-			imgName = 'card_back'
-			xDest = 570
-			yDest = 360
-			xStart = g.deckP2.x-10
-			yStart = g.deckP2.y
-			isMine = false
-		}
+        var cardid = data.cardId
+        var playerId = data.playerId
+        var imgName = 'card_' + cardid
+        var xDest = 210
+        var yDest = 240
+        var xStart = g.deckP1.x + 10
+        var yStart = g.deckP1.y
+        var isMine = true
 
-		const b = this.add.image(xStart, yStart, 'card_back');
-		b.setScale(cardScaleDraw+0.03)
+        if (playerId != myid) {
+            imgName = 'card_back'
+            xDest = 570
+            yDest = 360
+            xStart = g.deckP2.x - 10
+            yStart = g.deckP2.y
+            isMine = false
+        }
 
-		let tt = g.tweens.add({
-			targets: b,
-			scale: 1,
-			x: xDest,
-			y:yDest,
-			ease: 'Linear',
-			duration: 390,
-			context: this,
-			onComplete: function() {
-				if (isMine) {
-					g.add.image(210, 240, 'card_'+cardid);
-				} else {
-					g.add.image(570, 360, 'card_back');
-				}
-				b.destroy()
-				tt.stop()
-				tt.remove()
-			}
-		})
+        const b = this.add.image(xStart, yStart, 'card_back');
+        b.setScale(cardScaleDraw + 0.03)
 
+        let tt = g.tweens.add({
+            targets: b,
+            scale: 1,
+            x: xDest,
+            y: yDest,
+            ease: 'Linear',
+            duration: 390,
+            context: this,
+            onComplete: function() {
+                if (isMine) {
+                    g.add.image(210, 240, 'card_' + cardid);
+                } else {
+                    g.add.image(570, 360, 'card_back');
+                }
+                b.destroy()
+                tt.stop()
+                tt.remove()
+            }
+        })
 
 
-	}
+
+    }
     drawWinnerShown() {
 
         var xpos = xPos_p1
@@ -454,7 +453,7 @@ class GameScene extends Phaser.Scene {
             flip = false
             offx = -70
             offy = 57
-		}
+        }
         var arr = g.add.sprite(xpos + offx, ypos + offy, 'arrows')
         if (flip) {
             arr.setFlipX(true);
@@ -464,43 +463,40 @@ class GameScene extends Phaser.Scene {
         arr.play('animarrows')
         const frame1 = this.add.image(210, 240, 'frameInGame');
         frame1.setScale(1.1)
-        //const tee = this.add.image(210, 240, 'card_24');
         const frame2 = this.add.image(570, 360, 'frameInGame');
         frame2.setScale(1.1)
-        //const te = this.add.image(570, 360, 'card_back');
 
-		this.deckP1.lastImage.setInteractive()
-		this.deckP1.lastImage.on('pointerdown', () => {
-		  stoppedScaleCardAnim = true
-		  //this.deckP1.lastImage.off('pointerdown');
-		    socket.send(JSON.stringify({
-		      type: 'drawCard'
+        this.deckP1.lastImage.setInteractive()
+        this.deckP1.lastImage.on('pointerdown', () => {
+            stoppedScaleCardAnim = true
+            socket.send(JSON.stringify({
+                type: 'drawCard'
             }))
-		});
-		this.animScaleCard()
+        });
+        this.animScaleCard()
     }
 
-	animScaleCard() {
-		if (!stoppedScaleCardAnim) {
-			let tt = g.tweens.add({
-				targets: g.deckP1.lastImage,
-				scale: cardScaleAnim,
-				ease: 'Linear',
-				duration: 190,
-				context: this,
-				onComplete: function() {
-					if (cardScaleAnim==cardScaleAnimRange) {
-						cardScaleAnim = cardScaleDraw
-					} else {
-						cardScaleAnim = cardScaleAnimRange
-					}
-					tt.stop()
-					tt.remove()
-					g.animScaleCard()
-				}
-			})
-		}
-	}
+    animScaleCard() {
+        if (!stoppedScaleCardAnim) {
+            let tt = g.tweens.add({
+                targets: g.deckP1.lastImage,
+                scale: cardScaleAnim,
+                ease: 'Linear',
+                duration: 190,
+                context: this,
+                onComplete: function() {
+                    if (cardScaleAnim == cardScaleAnimRange) {
+                        cardScaleAnim = cardScaleDraw
+                    } else {
+                        cardScaleAnim = cardScaleAnimRange
+                    }
+                    tt.stop()
+                    tt.remove()
+                    g.animScaleCard()
+                }
+            })
+        }
+    }
 
 
     showBonneChance() {
