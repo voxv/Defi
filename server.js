@@ -58,14 +58,15 @@ const playerState = {
     bonneChanceDone: false,
     quiVaCommencerDone: false,
     drawWinnerShown: false,
-    selectedCover: ''
+    selectedCover: '',
+    cards: []
 };
 var players = {
     'player1': null,
     'player2': null
 }
 
-cardsMain = {}
+cardsMain = []
 
 var card = function(id) {
     this.id = id
@@ -94,8 +95,9 @@ var card = function(id) {
 
 for (var i = 0; i < 36; i++) {
     var c = new card(i)
-    cardsMain[i] = c
+    cardsMain.push(c)
 }
+cardsMain = shuffleArray(cardsMain)
 
 server.on('connection', (socket) => {
 
@@ -186,10 +188,10 @@ server.on('connection', (socket) => {
                         type: 'inGameConfirm'
                     })
                 }
-                for (const i in cardsMain) {
+                for (var i = 0 ; i < cardsMain.length ; i++) {
                     cardsMain[i].setAttributes(attrs)
                 }
-
+				console.dir(cardsMain)
                 break;
 
             case 'drawDoneConfirm':
@@ -223,13 +225,41 @@ server.on('connection', (socket) => {
                 }
                 break
             case 'drawWinnerShown':
-                players[socket.player.state.id].state.drawWinnerShown = true
-                if (players['player1'].state.drawWinnerShown && players['player2'].state.drawWinnerShown) {
-                    sendToAll({
-                        type: 'drawWinnerShown'
-                    })
-                }
+            	if (debug) {
+
+					players['player1'].state.drawWinnerShown = true
+					players['player2'].state.drawWinnerShown = true
+				} else {
+					players[socket.player.state.id].state.drawWinnerShown = true
+				}
+				if (players['player1'].state.drawWinnerShown && players['player2'].state.drawWinnerShown) {
+					sendToAll({
+						type: 'drawWinnerShown'
+					})
+				}
                 break
+             case 'drawCard':
+             	var c = cardsMain.pop()
+				players[socket.player.state.id].state.cards.push(c)
+				var othersock
+				for (const sock of sockets) {
+					if (sock.player.state.id != socket.player.state.id) {
+						othersock = sock
+						break;
+					}
+				}
+				othersock.send(JSON.stringify({
+        			type: 'drawCard',
+        			cardId: c.id,
+        			playerId: socket.player.state.id
+    			}));
+				socket.send(JSON.stringify({
+        			type: 'drawCard',
+        			cardId: c.id,
+        			playerId: socket.player.state.id
+    			}));
+    			console.log(socket.player.state.id+' drew card '+c.id)
+             	break
 
         }
     });
@@ -276,10 +306,19 @@ server.on('connection', (socket) => {
 });
 
 function sendToAll(msg, exceptSocket) {
-
+	console.log('SENDTOALL: '+JSON.stringify(msg))
     for (const otherSocket of sockets) {
         if (!exceptSocket || otherSocket !== exceptSocket) {
             otherSocket.send(JSON.stringify(msg));
         }
     }
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+
+  return array;
 }

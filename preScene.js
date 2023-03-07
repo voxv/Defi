@@ -154,8 +154,9 @@ class PreScene extends Phaser.Scene {
                 context: g,
                 onComplete: function() {
                     g.vsTweenDir *= -1
-                    if (tween.destroy)
-                        tween.destroy()
+                    tween.stop()
+                    tween.remove()
+                       // tween.destroy()
                     g.startGameSequence()
                 }
             });

@@ -33,7 +33,7 @@ socket.addEventListener('message', (event) => {
 
     mylog('msg:' + event)
     let data = JSON.parse(event);
-
+ console.dir(data)
     switch (data.type) {
         case 'setID':
             myid = data.id
@@ -182,6 +182,11 @@ socket.addEventListener('message', (event) => {
             if (g && g.drawWinnerShown)
                 g.drawWinnerShown()
             break
+        case 'drawCard':
+console.log('dadasd')
+            if (g && g.drawCard)
+                g.drawCard(data)
+        	break;
     }
 });
 

@@ -37,6 +37,11 @@ var yOffset_avatar_deck = 4
 var startingPlayer = 'player1'
 var timeoutHandle = null
 
+var cardScaleAnimRange = cardScaleDraw+0.02
+var cardScaleAnim = cardScaleAnimRange
+
+var stoppedScaleCardAnim = false
+
 var attrs_labels = {
     0: {
         at_1: 'Taille',

@@ -35,6 +35,7 @@ var drawDeck = function(tot, x, y) {
     this.xDir = xPos_p1 + xOffset_avatar_deck
     this.topOffsetX = 0
     this.topOffsetY = 0
+    this.lastImage = null
 
     this.initImages = function() {
         this.countTweens = 0
@@ -84,6 +85,8 @@ var drawDeck = function(tot, x, y) {
                 offsetY += stepY
             }
         }
+        this.lastImage = this.backImages.slice(-1)[0];
+
         this.topOffsetX = offsetX - stepX
         this.topOffsetY = offsetY - stepY
 
@@ -164,8 +167,9 @@ class GameScene extends Phaser.Scene {
         this.load.image('avatar3', 'images/avatar3_high.png');
         this.load.image('avatar4', 'images/avatar4_high.png');
         this.load.image('avatar5', 'images/avatar5_high.png');
-        this.load.image('game_back', 'images/game_back1.jpg');
+        this.load.image('game_back', 'images/game_back.jpg');
         this.load.image('gameBackName', 'images/gameBackName.png');
+        this.load.image('frameInGame', 'images/frameInGame.png');
         this.load.image('playerpickback', 'images/playerpickback.jpg');
         this.load.image('bonnechance', 'images/bonnechance.jpg');
 
@@ -390,7 +394,53 @@ class GameScene extends Phaser.Scene {
             }, 2650)
         }
     }
+	drawCard(data) {
+		console.dir(data)
+		console.dir(data.id)
+		var cardid = data.cardId
+		var playerId = data.playerId
+		var imgName = 'card_'+cardid
+		var xDest = 210
+		var yDest = 240
+		var xStart = g.deckP1.x+10
+		var yStart = g.deckP1.y
+		var isMine = true
 
+		if (playerId!=myid) {
+			imgName = 'card_back'
+			xDest = 570
+			yDest = 360
+			xStart = g.deckP2.x-10
+			yStart = g.deckP2.y
+			isMine = false
+		}
+
+		const b = this.add.image(xStart, yStart, 'card_back');
+		b.setScale(cardScaleDraw+0.03)
+
+		let tt = g.tweens.add({
+			targets: b,
+			scale: 1,
+			x: xDest,
+			y:yDest,
+			ease: 'Linear',
+			duration: 390,
+			context: this,
+			onComplete: function() {
+				if (isMine) {
+					g.add.image(210, 240, 'card_'+cardid);
+				} else {
+					g.add.image(570, 360, 'card_back');
+				}
+				b.destroy()
+				tt.stop()
+				tt.remove()
+			}
+		})
+
+
+
+	}
     drawWinnerShown() {
 
         var xpos = xPos_p1
@@ -398,13 +448,13 @@ class GameScene extends Phaser.Scene {
         var flip = true
         var offx = 70
         var offy = 57
-        if (startingPlayer == 'player2') {
+        if (startingPlayer != myid) {
             xpos = xPos_p2
             ypos = yPos_p2
             flip = false
             offx = -70
             offy = 57
-        }
+		}
         var arr = g.add.sprite(xpos + offx, ypos + offy, 'arrows')
         if (flip) {
             arr.setFlipX(true);
@@ -412,7 +462,46 @@ class GameScene extends Phaser.Scene {
         arr.setDepth(10)
         arr.setScale(0.3)
         arr.play('animarrows')
+        const frame1 = this.add.image(210, 240, 'frameInGame');
+        frame1.setScale(1.1)
+        //const tee = this.add.image(210, 240, 'card_24');
+        const frame2 = this.add.image(570, 360, 'frameInGame');
+        frame2.setScale(1.1)
+        //const te = this.add.image(570, 360, 'card_back');
+
+		this.deckP1.lastImage.setInteractive()
+		this.deckP1.lastImage.on('pointerdown', () => {
+		  stoppedScaleCardAnim = true
+		  //this.deckP1.lastImage.off('pointerdown');
+		    socket.send(JSON.stringify({
+		      type: 'drawCard'
+            }))
+		});
+		this.animScaleCard()
     }
+
+	animScaleCard() {
+		if (!stoppedScaleCardAnim) {
+			let tt = g.tweens.add({
+				targets: g.deckP1.lastImage,
+				scale: cardScaleAnim,
+				ease: 'Linear',
+				duration: 190,
+				context: this,
+				onComplete: function() {
+					if (cardScaleAnim==cardScaleAnimRange) {
+						cardScaleAnim = cardScaleDraw
+					} else {
+						cardScaleAnim = cardScaleAnimRange
+					}
+					tt.stop()
+					tt.remove()
+					g.animScaleCard()
+				}
+			})
+		}
+	}
+
 
     showBonneChance() {
         const backimage = this.add.image(canvasW / 2 - 169, canvasH / 2 - 125, 'bonnechance');
