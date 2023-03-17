@@ -6,7 +6,8 @@ var otherSelectedAvatar
 var otherName
 var myName
 
-const debug = false
+const debug = true
+const debugCard = 0
 
 if (debug) {
     mySelectedAvatar = 2
@@ -36,18 +37,43 @@ var xOffset_avatar_deck = 80
 var yOffset_avatar_deck = 4
 var startingPlayer = 'player1'
 var timeoutHandle = null
+var playedCard = 0
+var currentAttrChoice = 0
+var attrMetricsAdded = false
+var gameStarted = false
+var cardPlayed = null
+
+/*var inGameFrameX_p1 = 210
+var inGameFrameY_p1 = 240
+var inGameFrameY_p2 = 570
+var inGameFrameY_p2 = 360*/
+
+var inGameFrameX_p1 = 145
+var inGameFrameY_p1 = 230
+var inGameFrameX_p2 = 650
+var inGameFrameY_p2 = 368
+
+var choiceXStart = 395
+var choiceYStart = 77
+var choiceStep = 100
+
 
 var cardScaleAnimRange = cardScaleDraw+0.02
 var cardScaleAnim = cardScaleAnimRange
 
 var stoppedScaleCardAnim = false
 
+var attrResultsAdded = false
+var animChoiceTextAdded = false
+
+var currentWinner
+
 var attrs_labels = {
     0: {
         at_1: 'Taille',
         at_2: 'Poids',
         at_3: 'Puissance',
-        at_4: "Date d'apparition"
+        at_4: "Apparition"
     }
 }
 var attrs_metrics = {

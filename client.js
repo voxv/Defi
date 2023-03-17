@@ -17,7 +17,8 @@ let myid = 0
 
 const player = {
     username: '',
-    avatar: ''
+    avatar: '',
+    cards: []
 }
 
 var playersTemplate = function() {
@@ -31,9 +32,11 @@ socket.addEventListener('connect', (event) => {
 
 socket.addEventListener('message', (event) => {
 
-    mylog('msg:' + event)
-    let data = JSON.parse(event);
 
+    let data = JSON.parse(event);
+	if (data.type!='drawDone') {
+		mylog('msg:' + event)
+	}
     switch (data.type) {
         case 'setID':
             myid = data.id
@@ -167,6 +170,11 @@ socket.addEventListener('message', (event) => {
             break;
         case 'drawDone':
             startingPlayer = data.starting
+			console.log('STARTING:'+startingPlayer)
+            //const p1 = playersAll.find((u) => u.id == 'player1');
+            //const p2 = playersAll.find((u) => u.id == 'player2');
+            //console.dir(data.p1Cards)
+            //console.dir(data.p2Cards)
             if (g && g.showBonneChance)
                 g.showBonneChance()
             break
@@ -179,13 +187,43 @@ socket.addEventListener('message', (event) => {
                 g.quiVaCommencerDone()
             break
         case 'drawWinnerShown':
+       		if (debug) {
+                socket.send(JSON.stringify({
+                    type: 'drawDoneConfirm',
+                }))
+			}
+			//console.dir(data)
             if (g && g.drawWinnerShown)
-                g.drawWinnerShown()
+                g.drawWinnerShown(data.caller)
             break
         case 'drawCard':
             if (g && g.drawCard)
                 g.drawCard(data)
             break;
+        case 'playedCardFinish':
+            if (g && g.playedCardFinish)
+                g.playedCardFinish(data)
+        	break
+        case 'attributeSet':
+            if (g && g.attributeSet)
+                g.attributeSet(data)
+        	break
+        case 'attrResults':
+            if (g && g.attributeSet)
+                g.attrResults(data)
+        	break
+        case 'finishedChoiceAnim':
+            if (g && g.finishedChoiceAnim)
+                g.finishedChoiceAnim(data)
+        	break
+        case 'showColOverride':
+            if (g && g.showColOverride)
+                g.showColOverride(data)
+        	break
+        case 'showColOverrideDone':
+            if (g && g.showColOverride)
+                g.showColOverrideDone(data)
+        	break
     }
 });
 

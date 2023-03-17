@@ -21,7 +21,7 @@ var card = function(id, img) {
     }
 }
 
-var drawDeck = function(tot, x, y) {
+var drawDeck = function(tot, x, y, playerId) {
     this.x = x
     this.y = y
     this.tot = tot
@@ -36,6 +36,9 @@ var drawDeck = function(tot, x, y) {
     this.topOffsetX = 0
     this.topOffsetY = 0
     this.lastImage = null
+    if (playerId) {
+		this.playerId = playerId
+	}
 
     this.initImages = function() {
         this.countTweens = 0
@@ -64,6 +67,12 @@ var drawDeck = function(tot, x, y) {
         this.update(true)
     }
 
+    this.removeCard = function() {
+
+        this.currentTot--
+        this.update(true)
+    }
+
     this.update = function(noDecrement) {
 
         for (var i = 0; i < this.backImages.length; i++) {
@@ -86,7 +95,18 @@ var drawDeck = function(tot, x, y) {
             }
         }
         this.lastImage = this.backImages.slice(-1)[0];
-
+		if ((myid=='player1' && this.playerId=='player1' || myid=='player2' && this.playerId=='player1') && this.lastImage && !stoppedScaleCardAnim) {
+			this.lastImage.setInteractive()
+			  const onClick = () => {
+				if (!gameStarted) return
+				stoppedScaleCardAnim = true;
+				socket.send(JSON.stringify({
+				  type: 'drawCard'
+				}));
+				this.lastImage.removeListener('pointerdown', onClick);
+			  }
+			  this.lastImage.on('pointerdown', onClick);
+		}
         this.topOffsetX = offsetX - stepX
         this.topOffsetY = offsetY - stepY
 
@@ -169,13 +189,20 @@ class GameScene extends Phaser.Scene {
         this.load.image('avatar5', 'images/avatar5_high.png');
         this.load.image('game_back', 'images/game_back.jpg');
         this.load.image('gameBackName', 'images/gameBackName.png');
+        this.load.image('backChoice', 'images/backChoice.png');
         this.load.image('frameInGame', 'images/frameInGame.png');
         this.load.image('playerpickback', 'images/playerpickback.jpg');
         this.load.image('bonnechance', 'images/bonnechance.jpg');
+        this.load.image('choiceBackground', 'images/choiceBackground2.jpg');
+        this.load.image('red', 'images/red.png');
+        this.load.image('yellow', 'images/yellow.png');
+        this.load.image('orange', 'images/orange.png');
+        this.load.image('green', 'images/green.png');
 
         this.load.audio('cardflip', 'sounds/cardflip.mp3');
         this.load.audio('bonnechance', 'sounds/bonnechance.mp3');
         this.load.audio('drumroll', 'sounds/drumroll.mp3');
+        this.load.audio('colorChange', 'sounds/colorChange.mp3');
 
         this.load.spritesheet('arrows', 'images/arrows.png', {
             frameWidth: 60,
@@ -187,7 +214,7 @@ class GameScene extends Phaser.Scene {
         g = this
         this.createBackImage()
         this.avatarScale = 0.6
-        this.cardsMain = {}
+        this.cardsMain = []
         this.createCards()
         this.createFrames()
         if (debug) {
@@ -196,10 +223,12 @@ class GameScene extends Phaser.Scene {
             playersAll[0].id = 'player1'
             playersAll[0].username = 'myself'
             playersAll[0].avatar = '2'
+            playersAll[0].playedCardFinish = false
             playersAll[1] = {}
             playersAll[1].id = 'player2'
             playersAll[1].username = 'other'
             playersAll[1].avatar = '4'
+            playersAll[1].playedCardFinish = false
 
             socket.send(JSON.stringify({
                 type: 'drawWinnerShown',
@@ -226,8 +255,8 @@ class GameScene extends Phaser.Scene {
         this.frame2X = xPos_p2
         this.frame2Y = yPos_p2
 
-        this.deckP1 = new drawDeck(0, xPos_p1 + xOffset_avatar_deck, yPos_p1 - yOffset_avatar_deck)
-        this.deckP2 = new drawDeck(0, xPos_p2 - xOffset_avatar_deck - 5, yPos_p2 - yOffset_avatar_deck)
+        this.deckP1 = new drawDeck(0, xPos_p1 + xOffset_avatar_deck, yPos_p1 - yOffset_avatar_deck, 'player1')
+        this.deckP2 = new drawDeck(0, xPos_p2 - xOffset_avatar_deck - 5, yPos_p2 - yOffset_avatar_deck, 'player2')
 
         if (debug) {
             for (var i = 0; i < totCards / 2; i++) {
@@ -239,11 +268,17 @@ class GameScene extends Phaser.Scene {
             key: 'animarrows',
             frames: this.anims.generateFrameNumbers('arrows', {
                 start: 0,
-                end: 2
+                end: 1
             }),
             frameRate: 2,
             repeat: -1
         });
+		this.game.canvas.setAttribute('willReadFrequently', 'true');
+		this.backChoices = []
+		this.attrTexts = []
+		this.backChoiceImgs = []
+		this.choiceAttrData = {}
+		this.arrowSide = null
     }
     createBackImage() {
         const backimage = this.add.image(0, 0, 'game_back');
@@ -297,8 +332,8 @@ class GameScene extends Phaser.Scene {
             cardimg.x = cardResetPosX
             cardimg.y = cardResetPosY
             var c = new card(i, cardimg)
-            this.cardsMain[i] = c
-            this.cardsMain[i].setAttributes()
+            c.setAttributes()
+            this.cardsMain.push(c)
         }
     }
     startPlayerPick() {
@@ -348,19 +383,19 @@ class GameScene extends Phaser.Scene {
             playersAll[0].id = 'player1'
             playersAll[0].username = 'myself'
             playersAll[0].avatar = '2'
+            playersAll[0].playedCardFinish = false
             playersAll[1] = {}
             playersAll[1].id = 'player2'
             playersAll[1].username = 'other'
             playersAll[1].avatar = '4'
+            playersAll[1].playedCardFinish = false
         }
-
         for (var i = 0; i < playersAll.length; i++) {
             if (playersAll[i].id == startingPlayer) {
                 uname = playersAll[1].username
                 av = playersAll[1].avatar
             }
         }
-
         var av = this.add.image(x - 20, y - 30, 'avatar' + av);
         av.setScale(1.2)
 
@@ -393,27 +428,38 @@ class GameScene extends Phaser.Scene {
                 }))
             }, 2650)
         }
+
     }
+
     drawCard(data) {
 
         var cardid = data.cardId
         var playerId = data.playerId
         var imgName = 'card_' + cardid
-        var xDest = 210
-        var yDest = 240
+        var xDest = inGameFrameX_p1
+        var yDest = inGameFrameY_p1
         var xStart = g.deckP1.x + 10
         var yStart = g.deckP1.y
         var isMine = true
 
+		if (playerId==myid) {
+			playedCard = cardid
+		}
+
         if (playerId != myid) {
             imgName = 'card_back'
-            xDest = 570
-            yDest = 360
+            xDest = inGameFrameX_p2
+            yDest = inGameFrameY_p2
             xStart = g.deckP2.x - 10
             yStart = g.deckP2.y
             isMine = false
         }
 
+		if (!isMine) {
+			this.deckP2.removeCard()
+		} else {
+			this.deckP1.removeCard()
+		}
         const b = this.add.image(xStart, yStart, 'card_back');
         b.setScale(cardScaleDraw + 0.03)
 
@@ -427,21 +473,357 @@ class GameScene extends Phaser.Scene {
             context: this,
             onComplete: function() {
                 if (isMine) {
-                    g.add.image(210, 240, 'card_' + cardid);
+                    g.add.image(inGameFrameX_p1, inGameFrameY_p1, 'card_' + cardid);
                 } else {
-                    g.add.image(570, 360, 'card_back');
+                    g.add.image(inGameFrameX_p2, inGameFrameY_p2, 'card_back');
                 }
                 b.destroy()
                 tt.stop()
                 tt.remove()
+				if (playerId == myid) {
+					socket.send(JSON.stringify({
+						type: 'playedCard'
+					}))
+				}
             }
         })
-
-
-
     }
-    drawWinnerShown() {
 
+	showColOverrideDone() {
+		this.playedCardFinish()
+
+
+	}
+
+	showColOverride(data) {
+
+        const sound = this.sound.add('colorChange');
+        sound.play();
+		sound.on('complete', function() {
+			socket.send(JSON.stringify({
+			  type: 'showColOverrideDone',
+			 }));
+		});
+		var cc
+		var cc2
+		if (myid==startingPlayer) {
+			var p = data.col_p2
+			var p2 = data.col_p1
+			if (myid=='player2') {
+				p = data.col_p1
+				p2 = data.col_p2
+			}
+			cc = g.add.image(inGameFrameX_p2-88, inGameFrameY_p2-172, p);
+			cc2 = g.add.image(inGameFrameX_p1-97, inGameFrameY_p1-181, p2);
+			cc2.setScale(0.19, 0.19)
+		} else {
+			var p = data.col_p1
+			var p2 = data.col_p2
+			if (myid=='player2') {
+				p = data.col_p2
+				p2 = data.col_p1
+			}
+			cc = g.add.image(inGameFrameX_p1-99, inGameFrameY_p1-180, p);
+			cc2 = g.add.image(inGameFrameX_p2-90, inGameFrameY_p2-174, p2);
+			cc2.setScale(0.22, 0.22)
+		}
+		cc.setDepth(15)
+		cc.setScale(0.18, 0.18)
+		cc2.setDepth(15)
+
+		let ttc = g.tweens.add({
+			targets: cc,
+			scale: 0.25,
+			ease: Phaser.Math.Easing.Cubic.Out,
+			duration: 490,
+			context: this,
+			yoyo: true,
+			loop: true,
+			repeat:-1
+		})
+		startingPlayer = data.currentTurn
+		if (myid!=startingPlayer && this.backChoiceImgs && this.backChoices && this.attrTexts) {
+			for (var i = 0 ; i < 4 ; i++) {
+				if (this.backChoiceImgs[i]) {
+					this.backChoiceImgs[i].destroy()
+				}
+				if (this.backChoices[i]) {
+					this.backChoices[i].destroy()
+				}
+				if (this.attrTexts[i]) {
+					this.attrTexts[i].destroy()
+				}
+			}
+			return
+		}
+		this.changeArrowSide()
+	}
+
+    playedCardFinish(data) {
+
+		if (data && data.override) {
+			startingPlayer = data.currentTurn
+			if (myid!=startingPlayer && this.backChoiceImgs && this.backChoices && this.attrTexts) {
+				return
+			}
+		}
+
+		if (attrMetricsAdded || myid!=startingPlayer) {
+			return
+		}
+		attrMetricsAdded = true
+		let textVals = []
+		let textKeys = []
+		var tt
+		var x = choiceXStart
+		var y = choiceYStart
+		var bck = g.add.image(x+4, y+153, 'choiceBackground')
+		var labels = []
+		var attributes = []
+		var metrics = []
+
+		bck.setDepth(1)
+		if (debug) {
+			if (myid=='player2')
+			playedCard = 12
+		}
+		this.backChoiceImgs.push(bck)
+
+		cardPlayed = this.cardsMain.find(item => item.id == playedCard)
+
+		for (var i = 0 ; i < 4 ; i++) {
+			let ii = i
+			let yVal = y
+			tt = g.add.image(x+3, y, 'backChoice');
+			tt.setScale(1.05, 1.05)
+			tt.setDepth(2)
+			tt.setInteractive()
+			tt.setTint(0xaaaaaa)
+			this.backChoices.push(tt)
+			let img = tt
+			tt.on('pointerover', () => {
+			  g.input.setDefaultCursor('pointer')
+			  img.setTint(0xffffff);
+			})
+			tt.on('pointerout', () => {
+			  g.input.setDefaultCursor('auto')
+			  img.setTint(0xaaaaaa)
+			})
+			const onClick = () => {
+				currentAttrChoice = parseInt(textVals[ii])
+				socket.send(JSON.stringify({
+				  type: 'attributeSet',
+				  cardId: cardPlayed.id,
+				  attr: textKeys[ii],
+				  attrId: ii,
+				  color: cardPlayed.color,
+				  name: cardPlayed.name,
+				  attrVal: currentAttrChoice
+				}));
+				tt.removeListener('pointerdown', onClick);
+			}
+			tt.on('pointerdown', onClick);
+			y+=choiceStep
+		}
+		labels.push(attrs_labels[(selectedCover - 1)].at_1)
+		labels.push(attrs_labels[(selectedCover - 1)].at_2)
+		labels.push(attrs_labels[(selectedCover - 1)].at_3)
+		labels.push(attrs_labels[(selectedCover - 1)].at_4)
+		attributes.push(cardPlayed.attributes.at_1)
+		attributes.push(cardPlayed.attributes.at_2)
+		attributes.push(cardPlayed.attributes.at_3)
+		attributes.push(cardPlayed.attributes.at_4)
+		metrics.push(attrs_metrics[(selectedCover - 1)].at_1)
+		metrics.push(attrs_metrics[(selectedCover - 1)].at_2)
+		metrics.push(attrs_metrics[(selectedCover - 1)].at_3)
+		metrics.push(attrs_metrics[(selectedCover - 1)].at_4)
+		x = choiceXStart
+		y = choiceYStart
+		var txts = []
+		for (var i = 0 ; i < 4 ; i++) {
+			if (i==3) x+=3
+			var txt = this.add.text(x, y, labels[i]+': '+attributes[i]+' '+metrics[i], {
+				fontSize: '22px',
+				fontFamily: 'Tahoma',
+				color: '#fcba03',
+				padding: {
+					x: 10,
+					y: 5
+				},
+				lineSpacing: 10,
+				stroke: '#1a540e',
+				strokeThickness: 5,
+				strokeRounded: true,
+			}).setOrigin(0.5);
+			txt.setDepth(5)
+			txt.myVal = attributes[i]
+			txt.myLabel = labels[i]
+			const nums = txt.text.match(/-?\d+/g);
+			textVals.push(nums)
+			textKeys.push(labels[i])
+			this.attrTexts.push(txt)
+			y+=choiceStep
+		}
+	}
+
+	attributeSet(data) {
+		if (debug) {
+			if (myid=='player2') {
+				cardPlayed = this.cardsMain.find(item => item.id == debugCard)
+			}
+		}
+		currentAttrChoice = data.attrVal
+		var attName = 'at_'+(data.attrId+1)
+		this.choiceAttrData = data
+		cardPlayed.setAttributes()
+
+        socket.send(JSON.stringify({
+            type: 'attrResults',
+            val: cardPlayed.attributes[attName],
+            col: cardPlayed['color'],
+            caller: myid
+        }))
+	}
+
+	addPickedChoiceNotTurn(data) {
+		var x = choiceXStart
+		var yStart = 275
+
+		var tt = g.add.image(x+3, yStart, 'backChoice');
+		tt.setScale(1.05, 1.05)
+		tt.setDepth(2)
+
+		var txt = this.add.text(x+3, yStart, this.choiceAttrData['attr'], {
+			fontSize: '22px',
+			fontFamily: 'Tahoma',
+			color: '#fcba03',
+			padding: {
+				x: 10,
+				y: 5
+			},
+			lineSpacing: 10,
+			stroke: '#1a540e',
+			strokeThickness: 5,
+			strokeRounded: true,
+		}).setOrigin(0.5);
+		txt.setDepth(5)
+		animChoiceTextAdded = false
+		this.animChoiceText(tt, txt, true)
+	}
+	attrResults(data) {
+		if (attrResultsAdded) return
+
+		attrResultsAdded = true
+		currentWinner = data.winner
+
+		if (myid!=startingPlayer) {
+			this.addPickedChoiceNotTurn(data)
+			return
+		}
+		var foundIndex
+
+		for (var i = 0 ; i < this.backChoiceImgs.length ; i++) {
+			this.backChoiceImgs[i].destroy()
+		}
+		for (var i = 0 ; i < this.attrTexts.length ; i++) {
+
+			if (currentAttrChoice==this.attrTexts[i].myVal) { foundIndex = i; continue; }
+			this.attrTexts[i].destroy()
+		}
+		for (var i = 0 ; i < this.backChoices.length ; i++) {
+			if (i==foundIndex) {  continue }
+			this.backChoices[i].destroy()
+		}
+
+		var remainingTxt = this.attrTexts[foundIndex]
+
+		if (remainingTxt!=undefined) {
+
+			remainingTxt.setStyle({  fontSize:30});
+			remainingTxt.text = this.attrTexts[foundIndex].myLabel
+
+			var remainingBack = this.backChoices[foundIndex]
+			remainingBack.off('pointerover');
+			remainingBack.off('pointerout');
+			remainingBack.off('pointerdown');
+		}
+
+		if (data.caller!=myid && data.override) {
+			this.animChoiceText(remainingBack, remainingTxt, true)
+		}
+		else
+			this.animChoiceText(remainingBack, remainingTxt,data.override)
+
+	}
+
+	animChoiceText(back,text, override) {
+
+		if (animChoiceTextAdded) return
+		animChoiceTextAdded = true
+        let tt = g.tweens.add({
+            targets: back,
+            scale: 1.2,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 1390,
+            context: this,
+            onComplete: function() {
+                tt.stop()
+                tt.remove()
+            }
+        })
+        let tt2 = g.tweens.add({
+            targets: text,
+            scale: 1.4,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 1390,
+            context: this,
+            onComplete: function() {
+                tt2.stop()
+                tt2.remove()
+            }
+        })
+        let tt3 = g.tweens.add({
+            targets: back,
+            scale: 0.01,
+            alpha:0,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 1390,
+            context: this,
+            delay: 1300,
+            onComplete: function() {
+                tt3.stop()
+                tt3.remove()
+            }
+        })
+        let tt4 = g.tweens.add({
+            targets: text,
+            scale: 0.01,
+            alpha:0,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 1390,
+            context: this,
+            delay: 1300,
+            onComplete: function() {
+                tt4.stop()
+                tt4.remove()
+                var ret = {
+					type: 'finishedChoiceAnim'
+				}
+				animChoiceTextAdded = true
+				socket.send(JSON.stringify(ret))
+            }
+        })
+	}
+
+	finishedChoiceAnim() {
+
+		console.log('WINNER :'+currentWinner)
+	}
+
+	changeArrowSide() {
+		if (this.arrowSide) {
+			this.arrowSide.destroy()
+		}
         var xpos = xPos_p1
         var ypos = yPos_p1
         var flip = true
@@ -461,23 +843,43 @@ class GameScene extends Phaser.Scene {
         arr.setDepth(10)
         arr.setScale(0.3)
         arr.play('animarrows')
-        const frame1 = this.add.image(210, 240, 'frameInGame');
-        frame1.setScale(1.1)
-        const frame2 = this.add.image(570, 360, 'frameInGame');
-        frame2.setScale(1.1)
+        this.arrowSide = arr
+	}
 
-        this.deckP1.lastImage.setInteractive()
-        this.deckP1.lastImage.on('pointerdown', () => {
-            stoppedScaleCardAnim = true
-            socket.send(JSON.stringify({
-                type: 'drawCard'
-            }))
-        });
-        this.animScaleCard()
+    drawWinnerShown(caller) {
+
+        /*var xpos = xPos_p1
+        var ypos = yPos_p1
+        var flip = true
+        var offx = 70
+        var offy = 57
+        if (startingPlayer != myid) {
+            xpos = xPos_p2
+            ypos = yPos_p2
+            flip = false
+            offx = -70
+            offy = 57
+        }
+        var arr = g.add.sprite(xpos + offx, ypos + offy, 'arrows')
+        if (flip) {
+            arr.setFlipX(true);
+        }
+        arr.setDepth(10)
+        arr.setScale(0.3)
+        arr.play('animarrows')*/
+
+        this.changeArrowSide()
+
+        const frame1 = this.add.image(inGameFrameX_p1, inGameFrameY_p1, 'frameInGame');
+        frame1.setScale(1.1)
+        const frame2 = this.add.image(inGameFrameX_p2, inGameFrameY_p2, 'frameInGame');
+        frame2.setScale(1.1)
+        this.animScaleCard(caller)
+        gameStarted = true
     }
 
-    animScaleCard() {
-        if (!stoppedScaleCardAnim) {
+    animScaleCard(caller) {
+        if (!stoppedScaleCardAnim && caller==myid) {
             let tt = g.tweens.add({
                 targets: g.deckP1.lastImage,
                 scale: cardScaleAnim,
@@ -492,12 +894,11 @@ class GameScene extends Phaser.Scene {
                     }
                     tt.stop()
                     tt.remove()
-                    g.animScaleCard()
+                    g.animScaleCard(caller)
                 }
             })
         }
     }
-
 
     showBonneChance() {
         const backimage = this.add.image(canvasW / 2 - 169, canvasH / 2 - 125, 'bonnechance');
@@ -511,6 +912,7 @@ class GameScene extends Phaser.Scene {
             }))
         })
     }
+
     reinit() {
         this.drawDeck = new drawDeck(totCards, 420, 300)
         selectedCover = 1
