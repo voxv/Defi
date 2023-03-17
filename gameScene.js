@@ -37,8 +37,8 @@ var drawDeck = function(tot, x, y, playerId) {
     this.topOffsetY = 0
     this.lastImage = null
     if (playerId) {
-		this.playerId = playerId
-	}
+        this.playerId = playerId
+    }
 
     this.initImages = function() {
         this.countTweens = 0
@@ -95,18 +95,18 @@ var drawDeck = function(tot, x, y, playerId) {
             }
         }
         this.lastImage = this.backImages.slice(-1)[0];
-		if ((myid=='player1' && this.playerId=='player1' || myid=='player2' && this.playerId=='player1') && this.lastImage && !stoppedScaleCardAnim) {
-			this.lastImage.setInteractive()
-			  const onClick = () => {
-				if (!gameStarted) return
-				stoppedScaleCardAnim = true;
-				socket.send(JSON.stringify({
-				  type: 'drawCard'
-				}));
-				this.lastImage.removeListener('pointerdown', onClick);
-			  }
-			  this.lastImage.on('pointerdown', onClick);
-		}
+        if ((myid == 'player1' && this.playerId == 'player1' || myid == 'player2' && this.playerId == 'player1') && this.lastImage && !stoppedScaleCardAnim) {
+            this.lastImage.setInteractive()
+            const onClick = () => {
+                if (!gameStarted) return
+                stoppedScaleCardAnim = true;
+                socket.send(JSON.stringify({
+                    type: 'drawCard'
+                }));
+                this.lastImage.removeListener('pointerdown', onClick);
+            }
+            this.lastImage.on('pointerdown', onClick);
+        }
         this.topOffsetX = offsetX - stepX
         this.topOffsetY = offsetY - stepY
 
@@ -273,12 +273,12 @@ class GameScene extends Phaser.Scene {
             frameRate: 2,
             repeat: -1
         });
-		this.game.canvas.setAttribute('willReadFrequently', 'true');
-		this.backChoices = []
-		this.attrTexts = []
-		this.backChoiceImgs = []
-		this.choiceAttrData = {}
-		this.arrowSide = null
+        this.game.canvas.setAttribute('willReadFrequently', 'true');
+        this.backChoices = []
+        this.attrTexts = []
+        this.backChoiceImgs = []
+        this.choiceAttrData = {}
+        this.arrowSide = null
     }
     createBackImage() {
         const backimage = this.add.image(0, 0, 'game_back');
@@ -442,9 +442,9 @@ class GameScene extends Phaser.Scene {
         var yStart = g.deckP1.y
         var isMine = true
 
-		if (playerId==myid) {
-			playedCard = cardid
-		}
+        if (playerId == myid) {
+            playedCard = cardid
+        }
 
         if (playerId != myid) {
             imgName = 'card_back'
@@ -455,11 +455,11 @@ class GameScene extends Phaser.Scene {
             isMine = false
         }
 
-		if (!isMine) {
-			this.deckP2.removeCard()
-		} else {
-			this.deckP1.removeCard()
-		}
+        if (!isMine) {
+            this.deckP2.removeCard()
+        } else {
+            this.deckP1.removeCard()
+        }
         const b = this.add.image(xStart, yStart, 'card_back');
         b.setScale(cardScaleDraw + 0.03)
 
@@ -480,202 +480,202 @@ class GameScene extends Phaser.Scene {
                 b.destroy()
                 tt.stop()
                 tt.remove()
-				if (playerId == myid) {
-					socket.send(JSON.stringify({
-						type: 'playedCard'
-					}))
-				}
+                if (playerId == myid) {
+                    socket.send(JSON.stringify({
+                        type: 'playedCard'
+                    }))
+                }
             }
         })
     }
 
-	showColOverrideDone() {
-		this.playedCardFinish()
+    showColOverrideDone() {
+        this.playedCardFinish()
 
 
-	}
+    }
 
-	showColOverride(data) {
+    showColOverride(data) {
 
         const sound = this.sound.add('colorChange');
         sound.play();
-		sound.on('complete', function() {
-			socket.send(JSON.stringify({
-			  type: 'showColOverrideDone',
-			 }));
-		});
-		var cc
-		var cc2
-		if (myid==startingPlayer) {
-			var p = data.col_p2
-			var p2 = data.col_p1
-			if (myid=='player2') {
-				p = data.col_p1
-				p2 = data.col_p2
-			}
-			cc = g.add.image(inGameFrameX_p2-88, inGameFrameY_p2-172, p);
-			cc2 = g.add.image(inGameFrameX_p1-97, inGameFrameY_p1-181, p2);
-			cc2.setScale(0.19, 0.19)
-		} else {
-			var p = data.col_p1
-			var p2 = data.col_p2
-			if (myid=='player2') {
-				p = data.col_p2
-				p2 = data.col_p1
-			}
-			cc = g.add.image(inGameFrameX_p1-99, inGameFrameY_p1-180, p);
-			cc2 = g.add.image(inGameFrameX_p2-90, inGameFrameY_p2-174, p2);
-			cc2.setScale(0.22, 0.22)
-		}
-		cc.setDepth(15)
-		cc.setScale(0.18, 0.18)
-		cc2.setDepth(15)
+        sound.on('complete', function() {
+            socket.send(JSON.stringify({
+                type: 'showColOverrideDone',
+            }));
+        });
+        var cc
+        var cc2
+        if (myid == startingPlayer) {
+            var p = data.col_p2
+            var p2 = data.col_p1
+            if (myid == 'player2') {
+                p = data.col_p1
+                p2 = data.col_p2
+            }
+            cc = g.add.image(inGameFrameX_p2 - 88, inGameFrameY_p2 - 172, p);
+            cc2 = g.add.image(inGameFrameX_p1 - 97, inGameFrameY_p1 - 181, p2);
+            cc2.setScale(0.19, 0.19)
+        } else {
+            var p = data.col_p1
+            var p2 = data.col_p2
+            if (myid == 'player2') {
+                p = data.col_p2
+                p2 = data.col_p1
+            }
+            cc = g.add.image(inGameFrameX_p1 - 99, inGameFrameY_p1 - 180, p);
+            cc2 = g.add.image(inGameFrameX_p2 - 90, inGameFrameY_p2 - 174, p2);
+            cc2.setScale(0.22, 0.22)
+        }
+        cc.setDepth(15)
+        cc.setScale(0.18, 0.18)
+        cc2.setDepth(15)
 
-		let ttc = g.tweens.add({
-			targets: cc,
-			scale: 0.25,
-			ease: Phaser.Math.Easing.Cubic.Out,
-			duration: 490,
-			context: this,
-			yoyo: true,
-			loop: true,
-			repeat:-1
-		})
-		startingPlayer = data.currentTurn
-		if (myid!=startingPlayer && this.backChoiceImgs && this.backChoices && this.attrTexts) {
-			for (var i = 0 ; i < 4 ; i++) {
-				if (this.backChoiceImgs[i]) {
-					this.backChoiceImgs[i].destroy()
-				}
-				if (this.backChoices[i]) {
-					this.backChoices[i].destroy()
-				}
-				if (this.attrTexts[i]) {
-					this.attrTexts[i].destroy()
-				}
-			}
-			return
-		}
-		this.changeArrowSide()
-	}
+        let ttc = g.tweens.add({
+            targets: cc,
+            scale: 0.25,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 490,
+            context: this,
+            yoyo: true,
+            loop: true,
+            repeat: -1
+        })
+        startingPlayer = data.currentTurn
+        if (myid != startingPlayer && this.backChoiceImgs && this.backChoices && this.attrTexts) {
+            for (var i = 0; i < 4; i++) {
+                if (this.backChoiceImgs[i]) {
+                    this.backChoiceImgs[i].destroy()
+                }
+                if (this.backChoices[i]) {
+                    this.backChoices[i].destroy()
+                }
+                if (this.attrTexts[i]) {
+                    this.attrTexts[i].destroy()
+                }
+            }
+            return
+        }
+        this.changeArrowSide()
+    }
 
     playedCardFinish(data) {
 
-		if (data && data.override) {
-			startingPlayer = data.currentTurn
-			if (myid!=startingPlayer && this.backChoiceImgs && this.backChoices && this.attrTexts) {
-				return
-			}
-		}
+        if (data && data.override) {
+            startingPlayer = data.currentTurn
+            if (myid != startingPlayer && this.backChoiceImgs && this.backChoices && this.attrTexts) {
+                return
+            }
+        }
 
-		if (attrMetricsAdded || myid!=startingPlayer) {
-			return
-		}
-		attrMetricsAdded = true
-		let textVals = []
-		let textKeys = []
-		var tt
-		var x = choiceXStart
-		var y = choiceYStart
-		var bck = g.add.image(x+4, y+153, 'choiceBackground')
-		var labels = []
-		var attributes = []
-		var metrics = []
+        if (attrMetricsAdded || myid != startingPlayer) {
+            return
+        }
+        attrMetricsAdded = true
+        let textVals = []
+        let textKeys = []
+        var tt
+        var x = choiceXStart
+        var y = choiceYStart
+        var bck = g.add.image(x + 4, y + 153, 'choiceBackground')
+        var labels = []
+        var attributes = []
+        var metrics = []
 
-		bck.setDepth(1)
-		if (debug) {
-			if (myid=='player2')
-			playedCard = 12
-		}
-		this.backChoiceImgs.push(bck)
+        bck.setDepth(1)
+        if (debug) {
+            if (myid == 'player2')
+                playedCard = 12
+        }
+        this.backChoiceImgs.push(bck)
 
-		cardPlayed = this.cardsMain.find(item => item.id == playedCard)
+        cardPlayed = this.cardsMain.find(item => item.id == playedCard)
 
-		for (var i = 0 ; i < 4 ; i++) {
-			let ii = i
-			let yVal = y
-			tt = g.add.image(x+3, y, 'backChoice');
-			tt.setScale(1.05, 1.05)
-			tt.setDepth(2)
-			tt.setInteractive()
-			tt.setTint(0xaaaaaa)
-			this.backChoices.push(tt)
-			let img = tt
-			tt.on('pointerover', () => {
-			  g.input.setDefaultCursor('pointer')
-			  img.setTint(0xffffff);
-			})
-			tt.on('pointerout', () => {
-			  g.input.setDefaultCursor('auto')
-			  img.setTint(0xaaaaaa)
-			})
-			const onClick = () => {
-				currentAttrChoice = parseInt(textVals[ii])
-				socket.send(JSON.stringify({
-				  type: 'attributeSet',
-				  cardId: cardPlayed.id,
-				  attr: textKeys[ii],
-				  attrId: ii,
-				  color: cardPlayed.color,
-				  name: cardPlayed.name,
-				  attrVal: currentAttrChoice
-				}));
-				tt.removeListener('pointerdown', onClick);
-			}
-			tt.on('pointerdown', onClick);
-			y+=choiceStep
-		}
-		labels.push(attrs_labels[(selectedCover - 1)].at_1)
-		labels.push(attrs_labels[(selectedCover - 1)].at_2)
-		labels.push(attrs_labels[(selectedCover - 1)].at_3)
-		labels.push(attrs_labels[(selectedCover - 1)].at_4)
-		attributes.push(cardPlayed.attributes.at_1)
-		attributes.push(cardPlayed.attributes.at_2)
-		attributes.push(cardPlayed.attributes.at_3)
-		attributes.push(cardPlayed.attributes.at_4)
-		metrics.push(attrs_metrics[(selectedCover - 1)].at_1)
-		metrics.push(attrs_metrics[(selectedCover - 1)].at_2)
-		metrics.push(attrs_metrics[(selectedCover - 1)].at_3)
-		metrics.push(attrs_metrics[(selectedCover - 1)].at_4)
-		x = choiceXStart
-		y = choiceYStart
-		var txts = []
-		for (var i = 0 ; i < 4 ; i++) {
-			if (i==3) x+=3
-			var txt = this.add.text(x, y, labels[i]+': '+attributes[i]+' '+metrics[i], {
-				fontSize: '22px',
-				fontFamily: 'Tahoma',
-				color: '#fcba03',
-				padding: {
-					x: 10,
-					y: 5
-				},
-				lineSpacing: 10,
-				stroke: '#1a540e',
-				strokeThickness: 5,
-				strokeRounded: true,
-			}).setOrigin(0.5);
-			txt.setDepth(5)
-			txt.myVal = attributes[i]
-			txt.myLabel = labels[i]
-			const nums = txt.text.match(/-?\d+/g);
-			textVals.push(nums)
-			textKeys.push(labels[i])
-			this.attrTexts.push(txt)
-			y+=choiceStep
-		}
-	}
+        for (var i = 0; i < 4; i++) {
+            let ii = i
+            let yVal = y
+            tt = g.add.image(x + 3, y, 'backChoice');
+            tt.setScale(1.05, 1.05)
+            tt.setDepth(2)
+            tt.setInteractive()
+            tt.setTint(0xaaaaaa)
+            this.backChoices.push(tt)
+            let img = tt
+            tt.on('pointerover', () => {
+                g.input.setDefaultCursor('pointer')
+                img.setTint(0xffffff);
+            })
+            tt.on('pointerout', () => {
+                g.input.setDefaultCursor('auto')
+                img.setTint(0xaaaaaa)
+            })
+            const onClick = () => {
+                currentAttrChoice = parseInt(textVals[ii])
+                socket.send(JSON.stringify({
+                    type: 'attributeSet',
+                    cardId: cardPlayed.id,
+                    attr: textKeys[ii],
+                    attrId: ii,
+                    color: cardPlayed.color,
+                    name: cardPlayed.name,
+                    attrVal: currentAttrChoice
+                }));
+                tt.removeListener('pointerdown', onClick);
+            }
+            tt.on('pointerdown', onClick);
+            y += choiceStep
+        }
+        labels.push(attrs_labels[(selectedCover - 1)].at_1)
+        labels.push(attrs_labels[(selectedCover - 1)].at_2)
+        labels.push(attrs_labels[(selectedCover - 1)].at_3)
+        labels.push(attrs_labels[(selectedCover - 1)].at_4)
+        attributes.push(cardPlayed.attributes.at_1)
+        attributes.push(cardPlayed.attributes.at_2)
+        attributes.push(cardPlayed.attributes.at_3)
+        attributes.push(cardPlayed.attributes.at_4)
+        metrics.push(attrs_metrics[(selectedCover - 1)].at_1)
+        metrics.push(attrs_metrics[(selectedCover - 1)].at_2)
+        metrics.push(attrs_metrics[(selectedCover - 1)].at_3)
+        metrics.push(attrs_metrics[(selectedCover - 1)].at_4)
+        x = choiceXStart
+        y = choiceYStart
+        var txts = []
+        for (var i = 0; i < 4; i++) {
+            if (i == 3) x += 3
+            var txt = this.add.text(x, y, labels[i] + ': ' + attributes[i] + ' ' + metrics[i], {
+                fontSize: '22px',
+                fontFamily: 'Tahoma',
+                color: '#fcba03',
+                padding: {
+                    x: 10,
+                    y: 5
+                },
+                lineSpacing: 10,
+                stroke: '#1a540e',
+                strokeThickness: 5,
+                strokeRounded: true,
+            }).setOrigin(0.5);
+            txt.setDepth(5)
+            txt.myVal = attributes[i]
+            txt.myLabel = labels[i]
+            const nums = txt.text.match(/-?\d+/g);
+            textVals.push(nums)
+            textKeys.push(labels[i])
+            this.attrTexts.push(txt)
+            y += choiceStep
+        }
+    }
 
-	attributeSet(data) {
-		if (debug) {
-			if (myid=='player2') {
-				cardPlayed = this.cardsMain.find(item => item.id == debugCard)
-			}
-		}
-		currentAttrChoice = data.attrVal
-		var attName = 'at_'+(data.attrId+1)
-		this.choiceAttrData = data
-		cardPlayed.setAttributes()
+    attributeSet(data) {
+        if (debug) {
+            if (myid == 'player2') {
+                cardPlayed = this.cardsMain.find(item => item.id == debugCard)
+            }
+        }
+        currentAttrChoice = data.attrVal
+        var attName = 'at_' + (data.attrId + 1)
+        this.choiceAttrData = data
+        cardPlayed.setAttributes()
 
         socket.send(JSON.stringify({
             type: 'attrResults',
@@ -683,83 +683,89 @@ class GameScene extends Phaser.Scene {
             col: cardPlayed['color'],
             caller: myid
         }))
-	}
+    }
 
-	addPickedChoiceNotTurn(data) {
-		var x = choiceXStart
-		var yStart = 275
+    addPickedChoiceNotTurn(data) {
+        var x = choiceXStart
+        var yStart = 275
 
-		var tt = g.add.image(x+3, yStart, 'backChoice');
-		tt.setScale(1.05, 1.05)
-		tt.setDepth(2)
+        var tt = g.add.image(x + 3, yStart, 'backChoice');
+        tt.setScale(1.05, 1.05)
+        tt.setDepth(2)
 
-		var txt = this.add.text(x+3, yStart, this.choiceAttrData['attr'], {
-			fontSize: '22px',
-			fontFamily: 'Tahoma',
-			color: '#fcba03',
-			padding: {
-				x: 10,
-				y: 5
-			},
-			lineSpacing: 10,
-			stroke: '#1a540e',
-			strokeThickness: 5,
-			strokeRounded: true,
-		}).setOrigin(0.5);
-		txt.setDepth(5)
-		animChoiceTextAdded = false
-		this.animChoiceText(tt, txt, true)
-	}
-	attrResults(data) {
-		if (attrResultsAdded) return
+        var txt = this.add.text(x + 3, yStart, this.choiceAttrData['attr'], {
+            fontSize: '22px',
+            fontFamily: 'Tahoma',
+            color: '#fcba03',
+            padding: {
+                x: 10,
+                y: 5
+            },
+            lineSpacing: 10,
+            stroke: '#1a540e',
+            strokeThickness: 5,
+            strokeRounded: true,
+        }).setOrigin(0.5);
+        txt.setDepth(5)
+        animChoiceTextAdded = false
+        this.animChoiceText(tt, txt, true)
+    }
+    attrResults(data) {
+        if (attrResultsAdded) return
 
-		attrResultsAdded = true
-		currentWinner = data.winner
+        attrResultsAdded = true
+        currentWinner = data.winner
 
-		if (myid!=startingPlayer) {
-			this.addPickedChoiceNotTurn(data)
-			return
-		}
-		var foundIndex
+        if (myid != startingPlayer) {
+            this.addPickedChoiceNotTurn(data)
+            return
+        }
+        var foundIndex
 
-		for (var i = 0 ; i < this.backChoiceImgs.length ; i++) {
-			this.backChoiceImgs[i].destroy()
-		}
-		for (var i = 0 ; i < this.attrTexts.length ; i++) {
+        for (var i = 0; i < this.backChoiceImgs.length; i++) {
+            this.backChoiceImgs[i].destroy()
+        }
+        for (var i = 0; i < this.attrTexts.length; i++) {
 
-			if (currentAttrChoice==this.attrTexts[i].myVal) { foundIndex = i; continue; }
-			this.attrTexts[i].destroy()
-		}
-		for (var i = 0 ; i < this.backChoices.length ; i++) {
-			if (i==foundIndex) {  continue }
-			this.backChoices[i].destroy()
-		}
+            if (currentAttrChoice == this.attrTexts[i].myVal) {
+                foundIndex = i;
+                continue;
+            }
+            this.attrTexts[i].destroy()
+        }
+        for (var i = 0; i < this.backChoices.length; i++) {
+            if (i == foundIndex) {
+                continue
+            }
+            this.backChoices[i].destroy()
+        }
 
-		var remainingTxt = this.attrTexts[foundIndex]
+        var remainingTxt = this.attrTexts[foundIndex]
 
-		if (remainingTxt!=undefined) {
+        if (remainingTxt != undefined) {
 
-			remainingTxt.setStyle({  fontSize:30});
-			remainingTxt.text = this.attrTexts[foundIndex].myLabel
+            remainingTxt.setStyle({
+                fontSize: 30
+            });
+            remainingTxt.text = this.attrTexts[foundIndex].myLabel
 
-			var remainingBack = this.backChoices[foundIndex]
-			remainingBack.off('pointerover');
-			remainingBack.off('pointerout');
-			remainingBack.off('pointerdown');
-		}
+            var remainingBack = this.backChoices[foundIndex]
+            remainingBack.off('pointerover');
+            remainingBack.off('pointerout');
+            remainingBack.off('pointerdown');
+        }
 
-		if (data.caller!=myid && data.override) {
-			this.animChoiceText(remainingBack, remainingTxt, true)
-		}
-		else
-			this.animChoiceText(remainingBack, remainingTxt,data.override)
+        if (data.caller != myid && data.override) {
+            this.animChoiceText(remainingBack, remainingTxt, true)
+        } else
+            this.animChoiceText(remainingBack, remainingTxt, data.override)
 
-	}
+    }
 
-	animChoiceText(back,text, override) {
+    animChoiceText(back, text, override) {
 
-		if (animChoiceTextAdded) return
-		animChoiceTextAdded = true
+        if (animChoiceTextAdded) return
+        animChoiceTextAdded = true
         let tt = g.tweens.add({
             targets: back,
             scale: 1.2,
@@ -785,7 +791,7 @@ class GameScene extends Phaser.Scene {
         let tt3 = g.tweens.add({
             targets: back,
             scale: 0.01,
-            alpha:0,
+            alpha: 0,
             ease: Phaser.Math.Easing.Cubic.Out,
             duration: 1390,
             context: this,
@@ -798,7 +804,7 @@ class GameScene extends Phaser.Scene {
         let tt4 = g.tweens.add({
             targets: text,
             scale: 0.01,
-            alpha:0,
+            alpha: 0,
             ease: Phaser.Math.Easing.Cubic.Out,
             duration: 1390,
             context: this,
@@ -807,23 +813,23 @@ class GameScene extends Phaser.Scene {
                 tt4.stop()
                 tt4.remove()
                 var ret = {
-					type: 'finishedChoiceAnim'
-				}
-				animChoiceTextAdded = true
-				socket.send(JSON.stringify(ret))
+                    type: 'finishedChoiceAnim'
+                }
+                animChoiceTextAdded = true
+                socket.send(JSON.stringify(ret))
             }
         })
-	}
+    }
 
-	finishedChoiceAnim() {
+    finishedChoiceAnim() {
 
-		console.log('WINNER :'+currentWinner)
-	}
+        console.log('WINNER :' + currentWinner)
+    }
 
-	changeArrowSide() {
-		if (this.arrowSide) {
-			this.arrowSide.destroy()
-		}
+    changeArrowSide() {
+        if (this.arrowSide) {
+            this.arrowSide.destroy()
+        }
         var xpos = xPos_p1
         var ypos = yPos_p1
         var flip = true
@@ -844,29 +850,9 @@ class GameScene extends Phaser.Scene {
         arr.setScale(0.3)
         arr.play('animarrows')
         this.arrowSide = arr
-	}
+    }
 
     drawWinnerShown(caller) {
-
-        /*var xpos = xPos_p1
-        var ypos = yPos_p1
-        var flip = true
-        var offx = 70
-        var offy = 57
-        if (startingPlayer != myid) {
-            xpos = xPos_p2
-            ypos = yPos_p2
-            flip = false
-            offx = -70
-            offy = 57
-        }
-        var arr = g.add.sprite(xpos + offx, ypos + offy, 'arrows')
-        if (flip) {
-            arr.setFlipX(true);
-        }
-        arr.setDepth(10)
-        arr.setScale(0.3)
-        arr.play('animarrows')*/
 
         this.changeArrowSide()
 
@@ -879,7 +865,7 @@ class GameScene extends Phaser.Scene {
     }
 
     animScaleCard(caller) {
-        if (!stoppedScaleCardAnim && caller==myid) {
+        if (!stoppedScaleCardAnim && caller == myid) {
             let tt = g.tweens.add({
                 targets: g.deckP1.lastImage,
                 scale: cardScaleAnim,
