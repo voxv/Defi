@@ -224,6 +224,10 @@ socket.addEventListener('message', (event) => {
             if (g && g.playCardAttackDone)
                 g.playCardAttackDone(data)
             break
+        case 'readyNextTurn':
+             if (g && g.readyNextTurn)
+                g.readyNextTurn(data)
+            break
 
     }
 });

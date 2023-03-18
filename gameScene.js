@@ -21,6 +21,33 @@ var card = function(id, img) {
     }
 }
 
+var lifeBar = function(x, y, playerid, deck) {
+    this.x = x
+    this.y = y
+    if (playerid == 'player1') {
+        this.x -= 125
+        this.y -= 70
+    } else {
+        this.x -= 24
+        this.y += 83
+    }
+    this.playerId = playerid
+    this.backImage = g.add.image(this.x, this.y, 'lifebarEmpty').setOrigin(0, 0);
+    this.barImage = g.add.image(this.x, this.y, 'lifebar').setOrigin(0, 0);
+    this.barImage.scaleX = 1
+    this.barImage.scaleY = 1
+    this.backImage.setDepth(9)
+    this.barImage.setDepth(10)
+    this.originalBarX = this.x
+
+    this.update = function() {
+        var ratio = deck.currentTot / 36
+        this.barImage.setScale(ratio, 1);
+        var newx = (this.barImage.width - this.barImage.width * ratio) / 5.2;
+        this.barImage.x = this.originalBarX + newx
+    }
+    this.update()
+}
 var drawDeck = function(tot, x, y, playerId) {
     this.x = x
     this.y = y
@@ -36,9 +63,14 @@ var drawDeck = function(tot, x, y, playerId) {
     this.topOffsetX = 0
     this.topOffsetY = 0
     this.lastImage = null
+    this.hasLifeBar = false
+
     if (playerId) {
         this.playerId = playerId
+        this.lifeBar = new lifeBar(this.x, this.y, this.playerId, this)
+        this.hasLifeBar = true
     }
+
 
     this.initImages = function() {
         this.countTweens = 0
@@ -65,12 +97,18 @@ var drawDeck = function(tot, x, y, playerId) {
 
         this.currentTot++
         this.update(true)
+        if (this.hasLifeBar) {
+            this.lifeBar.update()
+        }
     }
 
     this.removeCard = function() {
 
         this.currentTot--
         this.update(true)
+        if (this.hasLifeBar) {
+            this.lifeBar.update()
+        }
     }
 
     this.update = function(noDecrement) {
@@ -199,6 +237,10 @@ class GameScene extends Phaser.Scene {
         this.load.image('orange', 'images/orange.png');
         this.load.image('green', 'images/green.png');
         this.load.image('backShowScore', 'images/backShowScore2.png');
+        this.load.image('lifebarEmpty', 'images/lifebarEmpty2.jpg');
+        this.load.image('lifebar', 'images/lifebar.png');
+        this.load.image('lifebarEmpty_rev', 'images/lifebarEmpty2_rev.jpg');
+        this.load.image('lifebar_rev', 'images/lifebar_rev.png');
 
         this.load.audio('cardflip', 'sounds/cardflip.mp3');
         this.load.audio('bonnechance', 'sounds/bonnechance.mp3');
@@ -268,6 +310,7 @@ class GameScene extends Phaser.Scene {
         this.frame1Y = yPos_p1
         this.frame2X = xPos_p2
         this.frame2Y = yPos_p2
+
 
         this.deckP1 = new drawDeck(0, xPos_p1 + xOffset_avatar_deck, yPos_p1 - yOffset_avatar_deck, 'player1')
         this.deckP2 = new drawDeck(0, xPos_p2 - xOffset_avatar_deck - 5, yPos_p2 - yOffset_avatar_deck, 'player2')
@@ -796,8 +839,10 @@ class GameScene extends Phaser.Scene {
 
         if (data.caller != myid && data.override) {
             this.animChoiceText(remainingBack, remainingTxt, true)
-        } else
+        } else {
             this.animChoiceText(remainingBack, remainingTxt, data.override)
+        }
+
     }
 
     animChoiceText(back, text, override, noback, speed, scale) {
@@ -890,14 +935,16 @@ class GameScene extends Phaser.Scene {
         timeoutHandle = setTimeout(function() {
             timeoutHandle = null
             g.showAttrVals(currentWinner)
-        }, 1200)
+        }, 1900)
 
         if (myid == currentWinner) {
             winnerCard = this.myCardImg
         } else {
             winnerCard = this.card_back_other
         }
-        this.showAttrVals()
+        setTimeout(function() {
+            g.showAttrVals()
+        }, 1200)
     }
 
     showAttrVals(winner) {
@@ -936,9 +983,11 @@ class GameScene extends Phaser.Scene {
         if (winner) {
             sc = 1.2
             const sound = this.sound.add('showScoreWin');
+            sound.setVolume(0.7)
             sound.play();
         } else {
             const sound = this.sound.add('showScore');
+            sound.setVolume(0.7)
             sound.play();
         }
         var bckImg = this.add.image(xpos, ypos, 'backShowScore').setOrigin(0.5);
@@ -1110,13 +1159,28 @@ class GameScene extends Phaser.Scene {
                 cido.destroy()
                 if (currentWinner == myid) {
                     g.deckP1.addCard()
+                    stoppedScaleCardAnim = false
                     g.deckP1.addCard()
                 } else {
                     g.deckP2.addCard()
+                    stoppedScaleCardAnim = false
                     g.deckP2.addCard()
                 }
+
+                socket.send(JSON.stringify({
+                    type: 'readyNextTurn',
+                    c1: playedCard,
+                    c2: playedCardOther,
+                    winner: currentWinner
+                }))
             }
         });
+    }
+
+    readyNextTurn(data) {
+        g.deckP1.update(true)
+        g.deckP2.update(true)
+        g.animScaleCard(myid)
     }
 
     getCoordsByPlayer() {
@@ -1186,16 +1250,8 @@ class GameScene extends Phaser.Scene {
                 ease: 'Linear',
                 duration: 190,
                 context: this,
-                onComplete: function() {
-                    if (cardScaleAnim == cardScaleAnimRange) {
-                        cardScaleAnim = cardScaleDraw
-                    } else {
-                        cardScaleAnim = cardScaleAnimRange
-                    }
-                    tt.stop()
-                    tt.remove()
-                    g.animScaleCard(caller)
-                }
+                yoyo: true,
+                repeat: -1
             })
         }
     }

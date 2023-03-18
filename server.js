@@ -66,6 +66,7 @@ const playerState = {
     showColOverrideDone: false,
     showAttrValsDone: false,
     playCardAttackDone: false,
+    readyNextTurn: false,
     selectedCover: '',
     cards: []
 };
@@ -436,9 +437,38 @@ server.on('connection', (socket) => {
                     })
                 }
                 break
+            case 'readyNextTurn':
+                if (socket.player.state.id == 'player1') {
+                    var card1 = new card(data.c1)
+                    var card2 = new card(data.c2)
+                    card1.setAttributes(attrs)
+                    card2.setAttributes(attrs)
+                    players[data.winner].state.cards.push(card1)
+                    players[data.winner].state.cards.push(card2)
+                }
+                players[socket.player.state.id].state.readyNextTurn = true
+                if (players['player1'].state.readyNextTurn && players['player2'].state.readyNextTurn) {
+                    reinit(players['player1'].state)
+                    reinit(players['player2'].state)
+                    colOverrideSent = false
+                    sendToAll({
+                        type: 'readyNextTurn',
+                        caller: socket.player.state.id
+                    })
+                }
+                break
         }
     });
 
+    function reinit(pl_state) {
+        pl_state.playedCard = false
+        pl_state.attrResultsFound = false
+        pl_state.finishedChoiceAnim = false
+        pl_state.showColOverrideDone = false
+        pl_state.showAttrValsDone = false
+        pl_state.playCardAttackDone = false
+        pl_state.readyNextTurn = false
+    }
     socket.on('disconnect', () => {
         playersReady = []
         if (socket.player.state.id == 'player1') {
