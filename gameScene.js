@@ -198,15 +198,28 @@ class GameScene extends Phaser.Scene {
         this.load.image('yellow', 'images/yellow.png');
         this.load.image('orange', 'images/orange.png');
         this.load.image('green', 'images/green.png');
+        this.load.image('backShowScore', 'images/backShowScore2.png');
 
         this.load.audio('cardflip', 'sounds/cardflip.mp3');
         this.load.audio('bonnechance', 'sounds/bonnechance.mp3');
         this.load.audio('drumroll', 'sounds/drumroll.mp3');
         this.load.audio('colorChange', 'sounds/colorChange.mp3');
+        this.load.audio('showScore', 'sounds/showScore.mp3');
+        this.load.audio('showScoreWin', 'sounds/showScoreWin.mp3');
+        this.load.audio('avatar1', 'sounds/avatar1.mp3');
+        this.load.audio('avatar2', 'sounds/avatar2.mp3');
+        this.load.audio('avatar3', 'sounds/avatar3.mp3');
+        this.load.audio('avatar4', 'sounds/avatar4.mp3');
+        this.load.audio('avatar5', 'sounds/avatar5.mp3');
+        this.load.audio('thump', 'sounds/thump.mp3');
 
         this.load.spritesheet('arrows', 'images/arrows.png', {
             frameWidth: 60,
             frameHeight: 68
+        });
+        this.load.spritesheet('cardhit', 'images/cardhit_spritesheet.png', {
+            frameWidth: 150,
+            frameHeight: 143
         });
     }
 
@@ -229,7 +242,8 @@ class GameScene extends Phaser.Scene {
             playersAll[1].username = 'other'
             playersAll[1].avatar = '4'
             playersAll[1].playedCardFinish = false
-
+            //drawWinnerShown
+            //finishedChoiceAnim
             socket.send(JSON.stringify({
                 type: 'drawWinnerShown',
             }))
@@ -273,12 +287,27 @@ class GameScene extends Phaser.Scene {
             frameRate: 2,
             repeat: -1
         });
+
+        this.anims.create({
+            key: 'animCardHit',
+            frames: this.anims.generateFrameNumbers('cardhit', {
+                start: 0,
+                end: 7
+            }),
+            frameRate: 30
+        });
+
         this.game.canvas.setAttribute('willReadFrequently', 'true');
         this.backChoices = []
         this.attrTexts = []
         this.backChoiceImgs = []
         this.choiceAttrData = {}
         this.arrowSide = null
+        this.card_back_other = 0
+        this.winnerAnimTween = null
+        this.showAttrTexts = []
+        this.backShowScores = []
+        this.myCardImg = null
     }
     createBackImage() {
         const backimage = this.add.image(0, 0, 'game_back');
@@ -428,7 +457,6 @@ class GameScene extends Phaser.Scene {
                 }))
             }, 2650)
         }
-
     }
 
     drawCard(data) {
@@ -447,6 +475,7 @@ class GameScene extends Phaser.Scene {
         }
 
         if (playerId != myid) {
+            playedCardOther = cardid
             imgName = 'card_back'
             xDest = inGameFrameX_p2
             yDest = inGameFrameY_p2
@@ -462,6 +491,7 @@ class GameScene extends Phaser.Scene {
         }
         const b = this.add.image(xStart, yStart, 'card_back');
         b.setScale(cardScaleDraw + 0.03)
+        b.setDepth(25)
 
         let tt = g.tweens.add({
             targets: b,
@@ -473,9 +503,9 @@ class GameScene extends Phaser.Scene {
             context: this,
             onComplete: function() {
                 if (isMine) {
-                    g.add.image(inGameFrameX_p1, inGameFrameY_p1, 'card_' + cardid);
+                    g.myCardImg = g.add.image(inGameFrameX_p1, inGameFrameY_p1, 'card_' + cardid);
                 } else {
-                    g.add.image(inGameFrameX_p2, inGameFrameY_p2, 'card_back');
+                    g.card_back_other = g.add.image(inGameFrameX_p2, inGameFrameY_p2, 'card_back');
                 }
                 b.destroy()
                 tt.stop()
@@ -584,8 +614,8 @@ class GameScene extends Phaser.Scene {
 
         bck.setDepth(1)
         if (debug) {
-            if (myid == 'player2')
-                playedCard = 12
+            //if (myid == 'player2')
+            //    playedCard = 12
         }
         this.backChoiceImgs.push(bck)
 
@@ -676,12 +706,21 @@ class GameScene extends Phaser.Scene {
         var attName = 'at_' + (data.attrId + 1)
         this.choiceAttrData = data
         cardPlayed.setAttributes()
-
+        var isReversed = false
+        var ind = selectedCover - 1
+        if (scoreReversed[ind]) {
+            for (var i = 0; i < scoreReversed[ind].length; i++) {
+                if (scoreReversed[ind][i] == data.attrId) {
+                    isReversed = true
+                }
+            }
+        }
         socket.send(JSON.stringify({
             type: 'attrResults',
             val: cardPlayed.attributes[attName],
             col: cardPlayed['color'],
-            caller: myid
+            caller: myid,
+            isReversed: isReversed
         }))
     }
 
@@ -710,18 +749,20 @@ class GameScene extends Phaser.Scene {
         animChoiceTextAdded = false
         this.animChoiceText(tt, txt, true)
     }
+
     attrResults(data) {
         if (attrResultsAdded) return
 
         attrResultsAdded = true
         currentWinner = data.winner
+        playedCardValP1 = data.valP1
+        playedCardValP2 = data.valP2
 
         if (myid != startingPlayer) {
             this.addPickedChoiceNotTurn(data)
             return
         }
         var foundIndex
-
         for (var i = 0; i < this.backChoiceImgs.length; i++) {
             this.backChoiceImgs[i].destroy()
         }
@@ -739,9 +780,7 @@ class GameScene extends Phaser.Scene {
             }
             this.backChoices[i].destroy()
         }
-
         var remainingTxt = this.attrTexts[foundIndex]
-
         if (remainingTxt != undefined) {
 
             remainingTxt.setStyle({
@@ -759,71 +798,347 @@ class GameScene extends Phaser.Scene {
             this.animChoiceText(remainingBack, remainingTxt, true)
         } else
             this.animChoiceText(remainingBack, remainingTxt, data.override)
-
     }
 
-    animChoiceText(back, text, override) {
+    animChoiceText(back, text, override, noback, speed, scale) {
 
         if (animChoiceTextAdded) return
         animChoiceTextAdded = true
-        let tt = g.tweens.add({
-            targets: back,
-            scale: 1.2,
-            ease: Phaser.Math.Easing.Cubic.Out,
-            duration: 1390,
-            context: this,
-            onComplete: function() {
-                tt.stop()
-                tt.remove()
-            }
-        })
+
+        var sp = 1390
+        var sc = 1.4
+        if (speed) {
+            sp = speed
+        }
+        if (scale) {
+            sc = scale
+        }
+        if (!noback) {
+            let tt = g.tweens.add({
+                targets: back,
+                scale: 1.2,
+                ease: Phaser.Math.Easing.Cubic.Out,
+                duration: 1390,
+                context: this,
+                onComplete: function() {
+                    tt.stop()
+                    tt.remove()
+                }
+            })
+        }
         let tt2 = g.tweens.add({
             targets: text,
-            scale: 1.4,
+            scale: sc,
             ease: Phaser.Math.Easing.Cubic.Out,
-            duration: 1390,
+            duration: sp,
             context: this,
             onComplete: function() {
                 tt2.stop()
                 tt2.remove()
             }
         })
-        let tt3 = g.tweens.add({
-            targets: back,
-            scale: 0.01,
-            alpha: 0,
-            ease: Phaser.Math.Easing.Cubic.Out,
-            duration: 1390,
-            context: this,
-            delay: 1300,
-            onComplete: function() {
-                tt3.stop()
-                tt3.remove()
-            }
-        })
-        let tt4 = g.tweens.add({
-            targets: text,
-            scale: 0.01,
-            alpha: 0,
-            ease: Phaser.Math.Easing.Cubic.Out,
-            duration: 1390,
-            context: this,
-            delay: 1300,
-            onComplete: function() {
-                tt4.stop()
-                tt4.remove()
-                var ret = {
-                    type: 'finishedChoiceAnim'
+        if (!noback) {
+            let tt3 = g.tweens.add({
+                targets: back,
+                scale: 0.01,
+                alpha: 0,
+                ease: Phaser.Math.Easing.Cubic.Out,
+                duration: 1390,
+                context: this,
+                delay: 1300,
+                onComplete: function() {
+                    tt3.stop()
+                    tt3.remove()
                 }
-                animChoiceTextAdded = true
-                socket.send(JSON.stringify(ret))
-            }
-        })
+            })
+
+            let tt4 = g.tweens.add({
+                targets: text,
+                scale: 0.01,
+                alpha: 0,
+                ease: Phaser.Math.Easing.Cubic.Out,
+                duration: sp,
+                context: this,
+                delay: 1300,
+                onComplete: function() {
+                    if (!noback) {
+                        tt4.stop()
+                        tt4.remove()
+                        var ret = {
+                            type: 'finishedChoiceAnim'
+                        }
+                        animChoiceTextAdded = true
+                        socket.send(JSON.stringify(ret))
+                    }
+                }
+            })
+        }
     }
 
     finishedChoiceAnim() {
 
+        if (debug) {
+            currentWinner = 'player1'
+            playedCardValP1 = 2000
+            playedCardValP2 = 1900
+        }
         console.log('WINNER :' + currentWinner)
+
+        this.card_back_other.destroy()
+        this.card_back_other = g.add.image(inGameFrameX_p2, inGameFrameY_p2, 'card_' + playedCardOther);
+        this.stopTweens()
+        timeoutHandle = setTimeout(function() {
+            timeoutHandle = null
+            g.showAttrVals(currentWinner)
+        }, 1200)
+
+        if (myid == currentWinner) {
+            winnerCard = this.myCardImg
+        } else {
+            winnerCard = this.card_back_other
+        }
+        this.showAttrVals()
+    }
+
+    showAttrVals(winner) {
+        var xpos
+        var ypos
+        var val
+
+        if (winner != undefined) {
+            if (winner == 'player1') {
+                val = playedCardValP1
+            } else {
+                val = playedCardValP2
+            }
+            if (myid == winner) {
+                xpos = xPos_p1 + 275
+                ypos = yPos_p1 - 312
+            } else {
+                xpos = xPos_p2 - 285
+                ypos = yPos_p2 + 272
+            }
+        } else {
+            if (currentWinner == 'player1') {
+                val = playedCardValP2
+            } else {
+                val = playedCardValP1
+            }
+            if (myid != currentWinner) {
+                xpos = xPos_p1 + 275
+                ypos = yPos_p1 - 312
+            } else {
+                xpos = xPos_p2 - 285
+                ypos = yPos_p2 + 272
+            }
+        }
+        var sc = 1.0
+        if (winner) {
+            sc = 1.2
+            const sound = this.sound.add('showScoreWin');
+            sound.play();
+        } else {
+            const sound = this.sound.add('showScore');
+            sound.play();
+        }
+        var bckImg = this.add.image(xpos, ypos, 'backShowScore').setOrigin(0.5);
+        bckImg.setScale(0.6)
+        this.backShowScores.push(bckImg)
+        var tt = this.add.text(xpos, ypos, val, {
+            fontSize: '28px',
+            fontFamily: 'Tahoma',
+            color: '#fcba03',
+            fontWeight: 'bold',
+            padding: {
+                x: 10,
+                y: 5
+            },
+            lineSpacing: 10,
+            stroke: '#1a540e',
+            strokeThickness: 4,
+            strokeRounded: true,
+        }).setOrigin(0.5);
+        tt.setDepth(16)
+        this.showAttrTexts.push(tt)
+        animChoiceTextAdded = false
+        this.animChoiceText(null, tt, false, true, 300, sc, winner)
+
+        if (winner) {
+            var t1 = setTimeout(function() {
+                var tdir = sc
+                g.winnerAnimTween = g.tweens.add({
+                    targets: tt,
+                    scale: 1.0,
+                    ease: 'Linear',
+                    duration: 390,
+                    context: this,
+                    yoyo: true,
+                    repeat: -1,
+                })
+            }, 500)
+            var t2 = setTimeout(function() {
+                const sound = g.sound.add('avatar' + mySelectedAvatar);
+                sound.play();
+            }, 700)
+
+            var t3 = setTimeout(function() {
+                socket.send(JSON.stringify({
+                    type: 'showAttrValsDone'
+                }))
+            }, 1000)
+        }
+    }
+
+    showAttrValsDone() {
+        this.winnerAnimTween.stop()
+        this.winnerAnimTween.remove()
+        for (var i = 0; i < this.backShowScores.length; i++) {
+            this.backShowScores[i].destroy();
+        }
+
+        for (var i = 0; i < this.showAttrTexts.length; i++) {
+            this.showAttrTexts[i].destroy();
+        }
+        winnerCard.setDepth(30)
+        var tt = g.tweens.add({
+            targets: winnerCard,
+            scale: 1.1,
+            ease: 'Linear',
+            duration: 190,
+            onComplete: function() {
+                g.playCardAttack()
+            }
+        })
+    }
+
+    playCardAttack() {
+        var path_spline = {
+            t: 0,
+            vec: new Phaser.Math.Vector2()
+        };
+        var points = [];
+        if (currentWinner == myid) {
+            points.push(new Phaser.Math.Vector2(inGameFrameX_p1, inGameFrameY_p1));
+            points.push(new Phaser.Math.Vector2(inGameFrameX_p1 - 30, inGameFrameY_p1 + 15));
+            points.push(new Phaser.Math.Vector2(inGameFrameX_p2 - 130, inGameFrameY_p2 - 20));
+            points.push(new Phaser.Math.Vector2(inGameFrameX_p2 - 200, inGameFrameY_p2 - 80));
+        } else {
+            points.push(new Phaser.Math.Vector2(inGameFrameX_p2, inGameFrameY_p2));
+            points.push(new Phaser.Math.Vector2(inGameFrameX_p2 + 30, inGameFrameY_p2 - 15));
+            points.push(new Phaser.Math.Vector2(inGameFrameX_p1 + 165, inGameFrameY_p1 + 65));
+            points.push(new Phaser.Math.Vector2(inGameFrameX_p1 + 200, inGameFrameY_p1 + 30));
+        }
+        var curve = new Phaser.Curves.Spline(points);
+
+        var xpos = inGameFrameX_p1 + 40
+        var ypos = inGameFrameY_p1 + 40
+        if (currentWinner == myid) {
+            xpos = inGameFrameX_p2 + 40
+            ypos = inGameFrameY_p2 + 10
+        }
+        g.tweens.add({
+            targets: path_spline,
+            t: 1,
+            ease: 'Sine.easeInOut',
+            duration: 300,
+            onUpdate: function() {
+                curve.getPoint(path_spline.t, path_spline.vec);
+                winnerCard.x = path_spline.vec.x;
+                winnerCard.y = path_spline.vec.y;
+            },
+            onComplete: function() {
+                const sound = g.sound.add('thump');
+                sound.setVolume(1.3)
+                sound.play();
+                var thump = g.add.sprite(xpos, ypos, 'cardhit')
+                thump.setDepth(35)
+                thump.setScale(3.5)
+                thump.alpha = 1
+                thump.play('animCardHit')
+                thump.on('animationcomplete', function() {
+                    thump.destroy();
+                    socket.send(JSON.stringify({
+                        type: 'playCardAttackDone'
+                    }))
+                });
+            }
+        });
+    }
+
+    playCardAttackDone() {
+        var cid
+        var cido
+        var dposx
+        var dposy
+        if (currentWinner == myid) {
+            dposx = xPos_p1 + xOffset_avatar_deck
+            dposy = yPos_p1 + yOffset_avatar_deck
+            cid = this.myCardImg
+            cido = this.card_back_other
+        } else {
+            dposx = xPos_p2 - xOffset_avatar_deck - 5
+            dposy = yPos_p2 + yOffset_avatar_deck
+            cid = this.card_back_other
+            cido = this.myCardImg
+        }
+        var tt = g.tweens.add({
+            targets: cid,
+            x: dposx,
+            y: dposy,
+            scale: cardScaleDraw,
+            alpha: 0,
+            ease: Phaser.Math.Easing.Cubic.In,
+            duration: 900,
+            onComplete: function() {
+                tt.stop()
+                tt.remove()
+                cid.destroy()
+            }
+        });
+        var tt2 = g.tweens.add({
+            targets: cido,
+            x: dposx,
+            y: dposy,
+            scale: cardScaleDraw,
+            alpha: 0.3,
+            ease: Phaser.Math.Easing.Cubic.In,
+            duration: 900,
+            delay: 300,
+            onComplete: function() {
+                tt2.stop()
+                tt2.remove()
+                cido.destroy()
+                if (currentWinner == myid) {
+                    g.deckP1.addCard()
+                    g.deckP1.addCard()
+                } else {
+                    g.deckP2.addCard()
+                    g.deckP2.addCard()
+                }
+            }
+        });
+    }
+
+    getCoordsByPlayer() {
+        var xpos = xPos_p1
+        var ypos = yPos_p1
+        var flip = true
+        var offx = 70
+        var offy = 57
+        if (startingPlayer != myid) {
+            xpos = xPos_p2
+            ypos = yPos_p2
+            flip = false
+            offx = -70
+            offy = 57
+        }
+        return {
+            xpos: xpos,
+            ypos: ypos,
+            flip: flip,
+            offx: offx,
+            offy: offy
+        }
     }
 
     changeArrowSide() {
@@ -855,7 +1170,6 @@ class GameScene extends Phaser.Scene {
     drawWinnerShown(caller) {
 
         this.changeArrowSide()
-
         const frame1 = this.add.image(inGameFrameX_p1, inGameFrameY_p1, 'frameInGame');
         frame1.setScale(1.1)
         const frame2 = this.add.image(inGameFrameX_p2, inGameFrameY_p2, 'frameInGame');
@@ -905,5 +1219,12 @@ class GameScene extends Phaser.Scene {
         playersAll = []
         buttonLocked = false
         mySelectedAvatar = ''
+    }
+    stopTweens() {
+        let tweens = g.tweens.getAllTweens();
+        for (let i = 0; i < tweens.length; i++) {
+            tweens[i].stop();
+            tweens[i].remove();
+        }
     }
 }

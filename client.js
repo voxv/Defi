@@ -34,9 +34,9 @@ socket.addEventListener('message', (event) => {
 
 
     let data = JSON.parse(event);
-	if (data.type!='drawDone') {
-		mylog('msg:' + event)
-	}
+    if (data.type != 'drawDone') {
+        mylog('msg:' + event)
+    }
     switch (data.type) {
         case 'setID':
             myid = data.id
@@ -51,7 +51,6 @@ socket.addEventListener('message', (event) => {
                     playersAll[i].id = 'player1'
                 }
             }
-
             playersAll = playersAll.filter(function(player) {
                 return player !== undefined;
             });
@@ -90,7 +89,6 @@ socket.addEventListener('message', (event) => {
                     g.addCoverClick(g.covers[i], i)
                 }
             }
-
             break;
 
         case 'player2DC':
@@ -170,11 +168,6 @@ socket.addEventListener('message', (event) => {
             break;
         case 'drawDone':
             startingPlayer = data.starting
-			console.log('STARTING:'+startingPlayer)
-            //const p1 = playersAll.find((u) => u.id == 'player1');
-            //const p2 = playersAll.find((u) => u.id == 'player2');
-            //console.dir(data.p1Cards)
-            //console.dir(data.p2Cards)
             if (g && g.showBonneChance)
                 g.showBonneChance()
             break
@@ -187,12 +180,11 @@ socket.addEventListener('message', (event) => {
                 g.quiVaCommencerDone()
             break
         case 'drawWinnerShown':
-       		if (debug) {
+            if (debug) {
                 socket.send(JSON.stringify({
                     type: 'drawDoneConfirm',
                 }))
-			}
-			//console.dir(data)
+            }
             if (g && g.drawWinnerShown)
                 g.drawWinnerShown(data.caller)
             break
@@ -203,27 +195,36 @@ socket.addEventListener('message', (event) => {
         case 'playedCardFinish':
             if (g && g.playedCardFinish)
                 g.playedCardFinish(data)
-        	break
+            break
         case 'attributeSet':
             if (g && g.attributeSet)
                 g.attributeSet(data)
-        	break
+            break
         case 'attrResults':
             if (g && g.attributeSet)
                 g.attrResults(data)
-        	break
+            break
         case 'finishedChoiceAnim':
             if (g && g.finishedChoiceAnim)
                 g.finishedChoiceAnim(data)
-        	break
+            break
         case 'showColOverride':
             if (g && g.showColOverride)
                 g.showColOverride(data)
-        	break
+            break
         case 'showColOverrideDone':
             if (g && g.showColOverride)
                 g.showColOverrideDone(data)
-        	break
+            break
+        case 'showAttrValsDone':
+            if (g && g.showAttrValsDone)
+                g.showAttrValsDone(data)
+            break
+        case 'playCardAttackDone':
+            if (g && g.playCardAttackDone)
+                g.playCardAttackDone(data)
+            break
+
     }
 });
 

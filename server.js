@@ -64,6 +64,8 @@ const playerState = {
     attrResultsFound: false,
     finishedChoiceAnim: false,
     showColOverrideDone: false,
+    showAttrValsDone: false,
+    playCardAttackDone: false,
     selectedCover: '',
     cards: []
 };
@@ -322,8 +324,10 @@ server.on('connection', (socket) => {
                 var winner
                 myAttrResult = data.val
                 players[socket.player.state.id].state.attrResultsFound = data
+                var attrIsReversed = data.isReversed
 
                 if (players['player1'].state.attrResultsFound && players['player2'].state.attrResultsFound) {
+
 
                     valP1 = players['player1'].state.attrResultsFound['val']
                     valP2 = players['player2'].state.attrResultsFound['val']
@@ -362,6 +366,12 @@ server.on('connection', (socket) => {
                         sendToAll(ret)
                         colOverrideSent = true
                     } else {
+                        var valTemp
+                        if (attrIsReversed) {
+                            valTemp = valP2
+                            valP2 = valP1
+                            valP1 = valTemp
+                        }
                         if (valP1 > valP2) {
                             winner = 'player1'
                             console.log('winner:player1')
@@ -377,7 +387,9 @@ server.on('connection', (socket) => {
                             winner: winner,
                             currentTurn: currentTurn,
                             override: colOverrideSent,
-                            caller: socket.player.state.id
+                            caller: socket.player.state.id,
+                            valP1: valP1,
+                            valP2: valP2
                         }
                         sendToAll(ret)
                         colOverrideSent = false
@@ -389,7 +401,7 @@ server.on('connection', (socket) => {
                 players[socket.player.state.id].state.finishedChoiceAnim = true
                 if (players['player1'].state.finishedChoiceAnim && players['player2'].state.finishedChoiceAnim) {
                     var ret = {
-                        type: 'finishedChoiceAnim'
+                        type: 'finishedChoiceAnim',
                     }
                     sendToAll(ret)
                 }
@@ -400,6 +412,26 @@ server.on('connection', (socket) => {
                 if (players['player1'].state.showColOverrideDone && players['player2'].state.showColOverrideDone) {
                     sendToAll({
                         type: 'playedCardFinish',
+                        caller: socket.player.state.id
+                    })
+                }
+                break
+
+            case 'showAttrValsDone':
+                players[socket.player.state.id].state.showAttrValsDone = true
+                if (players['player1'].state.showAttrValsDone && players['player2'].state.showAttrValsDone) {
+                    sendToAll({
+                        type: 'showAttrValsDone',
+                        caller: socket.player.state.id
+                    })
+                }
+                break
+
+            case 'playCardAttackDone':
+                players[socket.player.state.id].state.playCardAttackDone = true
+                if (players['player1'].state.playCardAttackDone && players['player2'].state.playCardAttackDone) {
+                    sendToAll({
+                        type: 'playCardAttackDone',
                         caller: socket.player.state.id
                     })
                 }

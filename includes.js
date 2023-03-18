@@ -7,7 +7,7 @@ var otherName
 var myName
 
 const debug = true
-const debugCard = 0
+const debugCard = 4
 
 if (debug) {
     mySelectedAvatar = 2
@@ -42,30 +42,22 @@ var currentAttrChoice = 0
 var attrMetricsAdded = false
 var gameStarted = false
 var cardPlayed = null
-
-/*var inGameFrameX_p1 = 210
-var inGameFrameY_p1 = 240
-var inGameFrameY_p2 = 570
-var inGameFrameY_p2 = 360*/
-
+var playedCardOther = 0
+var playedCardValP2 = 0
+var playedCardValP1 = 0
+var winnerCard = 0
 var inGameFrameX_p1 = 145
 var inGameFrameY_p1 = 230
 var inGameFrameX_p2 = 650
 var inGameFrameY_p2 = 368
-
 var choiceXStart = 395
 var choiceYStart = 77
 var choiceStep = 100
-
-
-var cardScaleAnimRange = cardScaleDraw+0.02
+var cardScaleAnimRange = cardScaleDraw + 0.02
 var cardScaleAnim = cardScaleAnimRange
-
 var stoppedScaleCardAnim = false
-
 var attrResultsAdded = false
 var animChoiceTextAdded = false
-
 var currentWinner
 
 var attrs_labels = {
@@ -375,4 +367,9 @@ var attrs = {
             name: 'Minotaure'
         }
     }
+}
+
+var scoreReversed = {
+    0: [3],
+    1: 0
 }
