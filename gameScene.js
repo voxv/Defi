@@ -123,7 +123,7 @@ var drawDeck = function(tot, x, y, playerId) {
         var stepY = 2
 
         for (var i = 0; i < this.currentTot; i++) {
-            if (i % 6 == 0) {
+            if (i % 4 == 0) {
                 var img = g.add.image(this.x + offsetX, this.y + offsetY, 'card_back')
                 img.setScale(cardScaleDraw)
                 img.visible = true
@@ -134,14 +134,19 @@ var drawDeck = function(tot, x, y, playerId) {
         }
         this.lastImage = this.backImages.slice(-1)[0];
         if ((myid == 'player1' && this.playerId == 'player1' || myid == 'player2' && this.playerId == 'player1') && this.lastImage && !stoppedScaleCardAnim) {
+
             this.lastImage.setInteractive()
             const onClick = () => {
-                if (!gameStarted) return
+                if (!gameStarted || coverClickBlock) return
+                coverClickBlock = true
+                this.lastImage.removeListener('pointerdown', onClick);
                 stoppedScaleCardAnim = true;
                 socket.send(JSON.stringify({
                     type: 'drawCard'
                 }));
-                this.lastImage.removeListener('pointerdown', onClick);
+                const sound = g.sound.add('cardflip');
+                sound.play();
+
             }
             this.lastImage.on('pointerdown', onClick);
         }
@@ -178,7 +183,7 @@ var drawDeck = function(tot, x, y, playerId) {
             y: this.yDir,
             x: this.xDir,
             ease: Phaser.Math.Easing.Cubic.In,
-            duration: 30,
+            duration: 90,
             context: this,
             onComplete: function() {
 
@@ -193,6 +198,7 @@ var drawDeck = function(tot, x, y, playerId) {
                     g.drawDeck.tweensDraw.pop()
                     nimg.destroy()
                 } else {
+                    nimg.destroy()
                     socket.send(JSON.stringify({
                         type: 'drawDoneConfirm',
                     }))
@@ -239,12 +245,12 @@ class GameScene extends Phaser.Scene {
         this.load.image('backShowScore', 'images/backShowScore2.png');
         this.load.image('lifebarEmpty', 'images/lifebarEmpty2.jpg');
         this.load.image('lifebar', 'images/lifebar.png');
-        this.load.image('lifebarEmpty_rev', 'images/lifebarEmpty2_rev.jpg');
-        this.load.image('lifebar_rev', 'images/lifebar_rev.png');
 
         this.load.audio('cardflip', 'sounds/cardflip.mp3');
         this.load.audio('bonnechance', 'sounds/bonnechance.mp3');
+        //this.load.audio('bonnechance', 'sounds/choiceClick.mp3');
         this.load.audio('drumroll', 'sounds/drumroll.mp3');
+        //this.load.audio('drumroll', 'sounds/choiceClick.mp3');
         this.load.audio('colorChange', 'sounds/colorChange.mp3');
         this.load.audio('showScore', 'sounds/showScore.mp3');
         this.load.audio('showScoreWin', 'sounds/showScoreWin.mp3');
@@ -254,6 +260,9 @@ class GameScene extends Phaser.Scene {
         this.load.audio('avatar4', 'sounds/avatar4.mp3');
         this.load.audio('avatar5', 'sounds/avatar5.mp3');
         this.load.audio('thump', 'sounds/thump.mp3');
+        this.load.audio('choiceClick', 'sounds/choiceClick.mp3');
+        this.load.audio('choiceShow', 'sounds/choiceShow3.mp3');
+        this.load.audio('cardPlaced', 'sounds/cardPlaced.mp3');
 
         this.load.spritesheet('arrows', 'images/arrows.png', {
             frameWidth: 60,
@@ -284,8 +293,6 @@ class GameScene extends Phaser.Scene {
             playersAll[1].username = 'other'
             playersAll[1].avatar = '4'
             playersAll[1].playedCardFinish = false
-            //drawWinnerShown
-            //finishedChoiceAnim
             socket.send(JSON.stringify({
                 type: 'drawWinnerShown',
             }))
@@ -409,13 +416,16 @@ class GameScene extends Phaser.Scene {
         }
     }
     startPlayerPick() {
+        if (bonneChanceimage) {
+            bonneChanceimage.destroy()
+        }
         const x = canvasW / 2 - 169
         const y = canvasH / 2 - 125
-        const backimage = this.add.image(x, y - 80, 'playerpickback');
-        backimage.setDepth(4)
-        backimage.setScale(1.2)
+        quiVaCommencerBackimage = this.add.image(x, y - 80, 'playerpickback');
+        quiVaCommencerBackimage.setDepth(4)
+        quiVaCommencerBackimage.setScale(1.2)
 
-        var tt = this.add.text(x, y - 80, 'Qui va commencer?', {
+        quiVaCommencerText = this.add.text(x, y - 80, 'Qui va commencer?', {
             fontSize: '28px',
             fontFamily: 'Tahoma',
             color: '#fcba03',
@@ -428,23 +438,28 @@ class GameScene extends Phaser.Scene {
             strokeThickness: 5,
             strokeRounded: true,
         }).setOrigin(0.5);
-        tt.setDepth(5)
+        quiVaCommencerText.setDepth(5)
 
         const sound = this.sound.add('drumroll');
         sound.play();
-        if (!timeoutHandle) {
-            timeoutHandle = setTimeout(function() {
-                timeoutHandle = null;
-                backimage.destroy();
-                tt.destroy();
-                socket.send(JSON.stringify({
-                    type: 'quiVaCommencerDone'
-                }))
-            }, 2650)
-        }
+        timeoutHandle = setTimeout(function() {
+            timeoutHandle = null;
+            quiVaCommencerBackimage.destroy();
+            quiVaCommencerText.destroy();
+            socket.send(JSON.stringify({
+                type: 'quiVaCommencerDone'
+            }))
+        }, 2650)
     }
 
     quiVaCommencerDone() {
+        quiVaCommencerBackimage.destroy();
+        if (quiVaCommencerText != undefined) {
+            quiVaCommencerText.destroy()
+        }
+        if (quiVaCommencerBackimage != undefined) {
+            quiVaCommencerBackimage.destroy()
+        }
         const x = canvasW / 2 - 169
         const y = canvasH / 2 - 125
         var uname = ''
@@ -464,8 +479,8 @@ class GameScene extends Phaser.Scene {
         }
         for (var i = 0; i < playersAll.length; i++) {
             if (playersAll[i].id == startingPlayer) {
-                uname = playersAll[1].username
-                av = playersAll[1].avatar
+                uname = playersAll[i].username
+                av = playersAll[i].avatar
             }
         }
         var av = this.add.image(x - 20, y - 30, 'avatar' + av);
@@ -553,6 +568,8 @@ class GameScene extends Phaser.Scene {
                 b.destroy()
                 tt.stop()
                 tt.remove()
+                const sound = g.sound.add('cardPlaced');
+                sound.play();
                 if (playerId == myid) {
                     socket.send(JSON.stringify({
                         type: 'playedCard'
@@ -577,8 +594,7 @@ class GameScene extends Phaser.Scene {
                 type: 'showColOverrideDone',
             }));
         });
-        var cc
-        var cc2
+
         if (myid == startingPlayer) {
             var p = data.col_p2
             var p2 = data.col_p1
@@ -586,9 +602,9 @@ class GameScene extends Phaser.Scene {
                 p = data.col_p1
                 p2 = data.col_p2
             }
-            cc = g.add.image(inGameFrameX_p2 - 88, inGameFrameY_p2 - 172, p);
-            cc2 = g.add.image(inGameFrameX_p1 - 97, inGameFrameY_p1 - 181, p2);
-            cc2.setScale(0.19, 0.19)
+            colorWinnerImg = g.add.image(inGameFrameX_p2 - 88, inGameFrameY_p2 - 172, p);
+            colorLoserImg = g.add.image(inGameFrameX_p1 - 97, inGameFrameY_p1 - 181, p2);
+            colorLoserImg.setScale(0.19, 0.19)
         } else {
             var p = data.col_p1
             var p2 = data.col_p2
@@ -596,16 +612,16 @@ class GameScene extends Phaser.Scene {
                 p = data.col_p2
                 p2 = data.col_p1
             }
-            cc = g.add.image(inGameFrameX_p1 - 99, inGameFrameY_p1 - 180, p);
-            cc2 = g.add.image(inGameFrameX_p2 - 90, inGameFrameY_p2 - 174, p2);
-            cc2.setScale(0.22, 0.22)
+            colorWinnerImg = g.add.image(inGameFrameX_p1 - 99, inGameFrameY_p1 - 180, p);
+            colorLoserImg = g.add.image(inGameFrameX_p2 - 90, inGameFrameY_p2 - 174, p2);
+            colorLoserImg.setScale(0.22, 0.22)
         }
-        cc.setDepth(15)
-        cc.setScale(0.18, 0.18)
-        cc2.setDepth(15)
+        colorWinnerImg.setDepth(15)
+        colorWinnerImg.setScale(0.18, 0.18)
+        colorLoserImg.setDepth(15)
 
         let ttc = g.tweens.add({
-            targets: cc,
+            targets: colorWinnerImg,
             scale: 0.25,
             ease: Phaser.Math.Easing.Cubic.Out,
             duration: 490,
@@ -640,6 +656,7 @@ class GameScene extends Phaser.Scene {
                 return
             }
         }
+        cardPlayed = this.cardsMain.find(item => item.id == playedCard)
 
         if (attrMetricsAdded || myid != startingPlayer) {
             return
@@ -662,7 +679,7 @@ class GameScene extends Phaser.Scene {
         }
         this.backChoiceImgs.push(bck)
 
-        cardPlayed = this.cardsMain.find(item => item.id == playedCard)
+
 
         for (var i = 0; i < 4; i++) {
             let ii = i
@@ -744,7 +761,12 @@ class GameScene extends Phaser.Scene {
             if (myid == 'player2') {
                 cardPlayed = this.cardsMain.find(item => item.id == debugCard)
             }
+        } else {
+            if (myid != data.playerId) {
+                cardPlayed = this.cardsMain.find(item => item.id == playedCard)
+            }
         }
+
         currentAttrChoice = data.attrVal
         var attName = 'at_' + (data.attrId + 1)
         this.choiceAttrData = data
@@ -827,7 +849,7 @@ class GameScene extends Phaser.Scene {
         if (remainingTxt != undefined) {
 
             remainingTxt.setStyle({
-                fontSize: 30
+                fontSize: '22px'
             });
             remainingTxt.text = this.attrTexts[foundIndex].myLabel
 
@@ -858,7 +880,11 @@ class GameScene extends Phaser.Scene {
         if (scale) {
             sc = scale
         }
+
         if (!noback) {
+            const sound = g.sound.add('choiceShow');
+            sound.setVolume(1)
+            sound.play();
             let tt = g.tweens.add({
                 targets: back,
                 scale: 1.2,
@@ -927,15 +953,22 @@ class GameScene extends Phaser.Scene {
             playedCardValP1 = 2000
             playedCardValP2 = 1900
         }
-        console.log('WINNER :' + currentWinner)
-
+        const sound = g.sound.add('cardflip');
+        sound.setVolume(0.6)
+        sound.play();
+        if (colorWinnerImg) {
+            colorWinnerImg.destroy()
+        }
+        if (colorLoserImg) {
+            colorLoserImg.destroy()
+        }
         this.card_back_other.destroy()
         this.card_back_other = g.add.image(inGameFrameX_p2, inGameFrameY_p2, 'card_' + playedCardOther);
         this.stopTweens()
         timeoutHandle = setTimeout(function() {
             timeoutHandle = null
             g.showAttrVals(currentWinner)
-        }, 1900)
+        }, 3300)
 
         if (myid == currentWinner) {
             winnerCard = this.myCardImg
@@ -944,7 +977,7 @@ class GameScene extends Phaser.Scene {
         }
         setTimeout(function() {
             g.showAttrVals()
-        }, 1200)
+        }, 2500)
     }
 
     showAttrVals(winner) {
@@ -955,8 +988,10 @@ class GameScene extends Phaser.Scene {
         if (winner != undefined) {
             if (winner == 'player1') {
                 val = playedCardValP1
+
             } else {
                 val = playedCardValP2
+
             }
             if (myid == winner) {
                 xpos = xPos_p1 + 275
@@ -965,6 +1000,7 @@ class GameScene extends Phaser.Scene {
                 xpos = xPos_p2 - 285
                 ypos = yPos_p2 + 272
             }
+
         } else {
             if (currentWinner == 'player1') {
                 val = playedCardValP2
@@ -981,9 +1017,9 @@ class GameScene extends Phaser.Scene {
         }
         var sc = 1.0
         if (winner) {
-            sc = 1.2
+            sc = 1.0
             const sound = this.sound.add('showScoreWin');
-            sound.setVolume(0.7)
+            sound.setVolume(0.5)
             sound.play();
         } else {
             const sound = this.sound.add('showScore');
@@ -1017,7 +1053,7 @@ class GameScene extends Phaser.Scene {
                 var tdir = sc
                 g.winnerAnimTween = g.tweens.add({
                     targets: tt,
-                    scale: 1.0,
+                    scale: 1.04,
                     ease: 'Linear',
                     duration: 390,
                     context: this,
@@ -1025,16 +1061,23 @@ class GameScene extends Phaser.Scene {
                     repeat: -1,
                 })
             }, 500)
+
+            var ava
+            if (myid == winner) {
+                ava = mySelectedAvatar
+            } else {
+                ava = otherSelectedAvatar
+            }
             var t2 = setTimeout(function() {
-                const sound = g.sound.add('avatar' + mySelectedAvatar);
+                const sound = g.sound.add('avatar' + ava);
                 sound.play();
-            }, 700)
+            }, 1000)
 
             var t3 = setTimeout(function() {
                 socket.send(JSON.stringify({
                     type: 'showAttrValsDone'
                 }))
-            }, 1000)
+            }, 2000)
         }
     }
 
@@ -1082,7 +1125,7 @@ class GameScene extends Phaser.Scene {
         var xpos = inGameFrameX_p1 + 40
         var ypos = inGameFrameY_p1 + 40
         if (currentWinner == myid) {
-            xpos = inGameFrameX_p2 + 40
+            xpos = inGameFrameX_p2 + 0
             ypos = inGameFrameY_p2 + 10
         }
         g.tweens.add({
@@ -1106,9 +1149,7 @@ class GameScene extends Phaser.Scene {
                 thump.play('animCardHit')
                 thump.on('animationcomplete', function() {
                     thump.destroy();
-                    socket.send(JSON.stringify({
-                        type: 'playCardAttackDone'
-                    }))
+                    g.playCardAttackDone()
                 });
             }
         });
@@ -1166,7 +1207,9 @@ class GameScene extends Phaser.Scene {
                     stoppedScaleCardAnim = false
                     g.deckP2.addCard()
                 }
-
+                attrMetricsAdded = false
+                attrResultsAdded = false
+                animChoiceTextAdded = false
                 socket.send(JSON.stringify({
                     type: 'readyNextTurn',
                     c1: playedCard,
@@ -1177,10 +1220,41 @@ class GameScene extends Phaser.Scene {
         });
     }
 
+    gameOver(data) {
+        console.log('gameover')
+        console.dir(data)
+    }
+
     readyNextTurn(data) {
+        coverClickBlock = false
         g.deckP1.update(true)
         g.deckP2.update(true)
         g.animScaleCard(myid)
+        g.changeArrowSide()
+        if (this.backChoices) {
+            for (var i = 0; i < this.backChoices.length; i++) {
+                if (this.backChoices[i]) {
+                    this.backChoices[i].destroy()
+                }
+            }
+        }
+        this.backChoices = []
+        if (this.backChoiceImgs) {
+            for (var i = 0; i < this.backChoiceImgs.length; i++) {
+                if (this.backChoiceImgs[i]) {
+                    this.backChoiceImgs[i].destroy()
+                }
+            }
+        }
+        this.backChoiceImgs = []
+        if (this.attrTexts) {
+            for (var i = 0; i < this.attrTexts.length; i++) {
+                if (this.attrTexts[i]) {
+                    this.attrTexts[i].destroy()
+                }
+            }
+        }
+        this.attrTexts = []
     }
 
     getCoordsByPlayer() {
@@ -1232,7 +1306,6 @@ class GameScene extends Phaser.Scene {
     }
 
     drawWinnerShown(caller) {
-
         this.changeArrowSide()
         const frame1 = this.add.image(inGameFrameX_p1, inGameFrameY_p1, 'frameInGame');
         frame1.setScale(1.1)
@@ -1243,7 +1316,7 @@ class GameScene extends Phaser.Scene {
     }
 
     animScaleCard(caller) {
-        if (!stoppedScaleCardAnim && caller == myid) {
+        if (!stoppedScaleCardAnim) {
             let tt = g.tweens.add({
                 targets: g.deckP1.lastImage,
                 scale: cardScaleAnim,
@@ -1257,11 +1330,11 @@ class GameScene extends Phaser.Scene {
     }
 
     showBonneChance() {
-        const backimage = this.add.image(canvasW / 2 - 169, canvasH / 2 - 125, 'bonnechance');
+        bonneChanceimage = this.add.image(canvasW / 2 - 169, canvasH / 2 - 125, 'bonnechance');
         const sound = this.sound.add('bonnechance');
         sound.play();
         sound.on('complete', function() {
-            backimage.destroy()
+            bonneChanceimage.destroy()
             g.sound.stopAll()
             socket.send(JSON.stringify({
                 type: 'bonneChanceDone'

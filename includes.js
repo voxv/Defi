@@ -6,7 +6,7 @@ var otherSelectedAvatar
 var otherName
 var myName
 
-const debug = true
+const debug = false
 const debugCard = 4
 
 if (debug) {
@@ -61,6 +61,12 @@ var stoppedScaleCardAnim = false
 var attrResultsAdded = false
 var animChoiceTextAdded = false
 var currentWinner
+var bonneChanceimage
+var quiVaCommencerText
+var quiVaCommencerBackimage
+var colorWinnerImg
+var colorLoserImg
+var coverClickBlock = false
 
 var attrs_labels = {
     0: {

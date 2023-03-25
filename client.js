@@ -228,7 +228,10 @@ socket.addEventListener('message', (event) => {
              if (g && g.readyNextTurn)
                 g.readyNextTurn(data)
             break
-
+		case 'gameOver':
+             if (g && g.gameOver)
+                g.gameOver(data)
+			break
     }
 });
 

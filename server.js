@@ -21,7 +21,7 @@ const {
     attrs
 } = require('./server_defs.js');
 
-const debug = true
+const debug = false
 
 app.get('/healthcheck', (req, res) => {
     res.status(200).json({
@@ -50,6 +50,8 @@ let playersReady = []
 let currentTurn = 'player1';
 let colOverrideSent = false
 const sockets = new Set();
+var cardsPlayedP1 = []
+var cardsPlayedP2 = []
 
 const playerState = {
     id: -1,
@@ -68,7 +70,8 @@ const playerState = {
     playCardAttackDone: false,
     readyNextTurn: false,
     selectedCover: '',
-    cards: []
+    cards: [],
+    cardsPlayed: []
 };
 var players = {
     'player1': null,
@@ -218,7 +221,7 @@ server.on('connection', (socket) => {
 
                     for (var i = 0; i < 36; i++) {
                         var c = cardsMain.pop()
-                        if (i % 2 == 0) {
+                        if (i % 11 == 0) {
                             players['player1'].state.cards.push(c)
                         } else {
                             players['player2'].state.cards.push(c)
@@ -279,10 +282,12 @@ server.on('connection', (socket) => {
 
             case 'drawCard':
                 var c = players[socket.player.state.id].state.cards.pop()
-
+                var ctempid = c.id
+                if (socket.player.state.id == 'player1')
+                    ctempid = 13
                 var ret = {
                     type: 'drawCard',
-                    cardId: c.id,
+                    cardId: ctempid,
                     playerId: socket.player.state.id
                 }
                 sendToAll(ret)
@@ -329,13 +334,13 @@ server.on('connection', (socket) => {
 
                 if (players['player1'].state.attrResultsFound && players['player2'].state.attrResultsFound) {
 
-
                     valP1 = players['player1'].state.attrResultsFound['val']
                     valP2 = players['player2'].state.attrResultsFound['val']
                     colP1 = players['player1'].state.attrResultsFound['col']
                     colP2 = players['player2'].state.attrResultsFound['col']
 
                     var colOverride = false
+                    var origCurrentTurn = currentTurn
 
                     const colorCombinations = {
                         green: ['orange', 'yellow', 'red'],
@@ -363,25 +368,25 @@ server.on('connection', (socket) => {
                         }
                         players['player1'].state.finishedChoiceAnim = false
                         players['player2'].state.finishedChoiceAnim = false
-
+                        players['player1'].state.attrResultsFound = null
+                        players['player2'].state.attrResultsFound = null
                         sendToAll(ret)
                         colOverrideSent = true
                     } else {
-                        var valTemp
-                        if (attrIsReversed) {
-                            valTemp = valP2
-                            valP2 = valP1
-                            valP1 = valTemp
-                        }
                         if (valP1 > valP2) {
-                            winner = 'player1'
-                            console.log('winner:player1')
+                            if (attrIsReversed) {
+                                winner = 'player2'
+                            } else {
+                                winner = 'player1'
+                            }
                         } else if (valP1 < valP2) {
-                            winner = 'player2'
-                            console.log('winner:player2')
+                            if (attrIsReversed) {
+                                winner = 'player1'
+                            } else {
+                                winner = 'player2'
+                            }
                         } else {
-                            winner = 'tie'
-                            console.log('winner:tie')
+                            winner = origCurrentTurn
                         }
                         var ret = {
                             type: 'attrResults',
@@ -431,6 +436,7 @@ server.on('connection', (socket) => {
             case 'playCardAttackDone':
                 players[socket.player.state.id].state.playCardAttackDone = true
                 if (players['player1'].state.playCardAttackDone && players['player2'].state.playCardAttackDone) {
+                    console.log('sending playCardAttackDone ')
                     sendToAll({
                         type: 'playCardAttackDone',
                         caller: socket.player.state.id
@@ -443,18 +449,50 @@ server.on('connection', (socket) => {
                     var card2 = new card(data.c2)
                     card1.setAttributes(attrs)
                     card2.setAttributes(attrs)
-                    players[data.winner].state.cards.push(card1)
-                    players[data.winner].state.cards.push(card2)
+                    if (data.winner == 'player1') {
+                        cardsPlayedP1.push(card1)
+                        cardsPlayedP1.push(card2)
+                    } else {
+                        cardsPlayedP2.push(card1)
+                        cardsPlayedP2.push(card2)
+                    }
                 }
                 players[socket.player.state.id].state.readyNextTurn = true
                 if (players['player1'].state.readyNextTurn && players['player2'].state.readyNextTurn) {
                     reinit(players['player1'].state)
                     reinit(players['player2'].state)
+                    console.log('nextturn REINIT')
                     colOverrideSent = false
-                    sendToAll({
-                        type: 'readyNextTurn',
-                        caller: socket.player.state.id
-                    })
+                    var gameover = false
+                    console.log('player 1 has ' + players['player1'].state.cards.length + ' cards and ' + cardsPlayedP1.length + ' in reserve')
+                    console.log('player 2 has ' + players['player2'].state.cards.length + ' cards and ' + cardsPlayedP2.length + ' in reserve')
+                    if (players['player1'].state.cards.length == 0 && cardsPlayedP1.length > 0) {
+                        for (var i = 0; i < cardsPlayedP1.length; i++) {
+                            players['player1'].state.cards.push(cardsPlayedP1[i])
+                        }
+                        cardsPlayedP1 = []
+                        players['player1'].state.cards = shuffleArray(players['player1'].state.cards)
+                    }
+                    if (players['player2'].state.cards.length == 0 && cardsPlayedP2.length > 0) {
+                        for (var i = 0; i < cardsPlayedP2.length; i++) {
+                            players['player2'].state.cards.push(cardsPlayedP2[i])
+                        }
+                        cardsPlayedP2 = []
+                        players['player2'].state.cards = shuffleArray(players['player2'].state.cards)
+                    }
+                    if (players['player1'].state.cards.length == 0 && cardsPlayedP1.length == 0 || players['player2'].state.cards.length == 0 && cardsPlayedP2.length == 0) {
+                        sendToAll({
+                            type: 'gameOver',
+                            caller: socket.player.state.id,
+                            winner: data.winner
+                        })
+                    } else {
+                        console.log('sending readynextturn')
+                        sendToAll({
+                            type: 'readyNextTurn',
+                            caller: socket.player.state.id
+                        })
+                    }
                 }
                 break
         }
