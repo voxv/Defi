@@ -52,6 +52,7 @@ let colOverrideSent = false
 const sockets = new Set();
 var cardsPlayedP1 = []
 var cardsPlayedP2 = []
+let inGame = false
 
 const playerState = {
     id: -1,
@@ -211,6 +212,7 @@ server.on('connection', (socket) => {
                 for (var i = 0; i < cardsMain.length; i++) {
                     cardsMain[i].setAttributes(attrs)
                 }
+                inGame = true
                 break;
 
             case 'drawDoneConfirm':
@@ -221,7 +223,7 @@ server.on('connection', (socket) => {
 
                     for (var i = 0; i < 36; i++) {
                         var c = cardsMain.pop()
-                        if (i % 11 == 0) {
+                        if (i % 2 == 0) {
                             players['player1'].state.cards.push(c)
                         } else {
                             players['player2'].state.cards.push(c)
@@ -282,12 +284,14 @@ server.on('connection', (socket) => {
 
             case 'drawCard':
                 var c = players[socket.player.state.id].state.cards.pop()
-                var ctempid = c.id
-                if (socket.player.state.id == 'player1')
-                    ctempid = 13
+
+                //TODO
+                //var ctempid = c.id
+                //if (socket.player.state.id == 'player1')
+                //    ctempid = 13
                 var ret = {
                     type: 'drawCard',
-                    cardId: ctempid,
+                    cardId: c.id,
                     playerId: socket.player.state.id
                 }
                 sendToAll(ret)
@@ -436,7 +440,6 @@ server.on('connection', (socket) => {
             case 'playCardAttackDone':
                 players[socket.player.state.id].state.playCardAttackDone = true
                 if (players['player1'].state.playCardAttackDone && players['player2'].state.playCardAttackDone) {
-                    console.log('sending playCardAttackDone ')
                     sendToAll({
                         type: 'playCardAttackDone',
                         caller: socket.player.state.id
@@ -461,7 +464,6 @@ server.on('connection', (socket) => {
                 if (players['player1'].state.readyNextTurn && players['player2'].state.readyNextTurn) {
                     reinit(players['player1'].state)
                     reinit(players['player2'].state)
-                    console.log('nextturn REINIT')
                     colOverrideSent = false
                     var gameover = false
                     console.log('player 1 has ' + players['player1'].state.cards.length + ' cards and ' + cardsPlayedP1.length + ' in reserve')
@@ -487,7 +489,6 @@ server.on('connection', (socket) => {
                             winner: data.winner
                         })
                     } else {
-                        console.log('sending readynextturn')
                         sendToAll({
                             type: 'readyNextTurn',
                             caller: socket.player.state.id
@@ -541,6 +542,9 @@ server.on('connection', (socket) => {
         players['player1'].state.cards = []
         resetCardsMain();
         totPlayers--
+        colOverrideSent = false
+        cardsPlayedP1 = []
+        cardsPlayedP2 = []
     });
     socket.send(JSON.stringify({
         type: 'setID',

@@ -67,6 +67,10 @@ var quiVaCommencerBackimage
 var colorWinnerImg
 var colorLoserImg
 var coverClickBlock = false
+//var drawDelay = 50
+var drawDelay = 10
+//var drawSpeed = 100
+var drawSpeed = 20
 
 var attrs_labels = {
     0: {

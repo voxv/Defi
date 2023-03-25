@@ -89,6 +89,21 @@ socket.addEventListener('message', (event) => {
                     g.addCoverClick(g.covers[i], i)
                 }
             }
+            console.log('Scene is :' + g.scene.key)
+            if (g.scene.key == 'GameScene') {
+                console.log('going to prescene')
+                if (g.removeClickListener)
+                    g.removeClickListener()
+                if (g.sound.stopAll)
+                    g.sound.stopAll();
+                buttonLocked = false
+                g.scene.pause();
+                g.scene.shutdown()
+                g.scene.start('PreScene');
+            }
+            if (g.stopTweens)
+                g.stopTweens()
+            g.sound.stopAll()
             break;
 
         case 'player2DC':
@@ -118,6 +133,21 @@ socket.addEventListener('message', (event) => {
                 g.addAvatar({
                     nosound: playclick
                 })
+
+            if (g.scene.key == 'GameScene') {
+                if (g.removeClickListener)
+                    g.removeClickListener()
+                if (g.sound.stopAll)
+                    g.sound.stopAll()
+                buttonLocked = false
+                g.scene.pause();
+                g.scene.shutdown()
+                g.scene.start('PreScene');
+            }
+            if (g.stopTweens)
+                g.stopTweens()
+            g.sound.stopAll()
+            buttonLocked = false
             break
 
         case 'updateNames':
@@ -225,13 +255,13 @@ socket.addEventListener('message', (event) => {
                 g.playCardAttackDone(data)
             break
         case 'readyNextTurn':
-             if (g && g.readyNextTurn)
+            if (g && g.readyNextTurn)
                 g.readyNextTurn(data)
             break
-		case 'gameOver':
-             if (g && g.gameOver)
+        case 'gameOver':
+            if (g && g.gameOver)
                 g.gameOver(data)
-			break
+            break
     }
 });
 

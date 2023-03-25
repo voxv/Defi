@@ -90,9 +90,8 @@ class PreScene extends Phaser.Scene {
         });
 
         this.bkmusic.play()
-
-        this.vsTweenDir = 1
         this.battleSoundPlayed = false;
+        gameStarted = false
 
     }
 
@@ -118,7 +117,13 @@ class PreScene extends Phaser.Scene {
         }
         g.covers[coverid].setScale(g.covers_scale_selected)
     }
-
+    stopTweens() {
+        let tweens = g.tweens.getAllTweens();
+        for (let i = 0; i < tweens.length; i++) {
+            tweens[i].stop();
+            tweens[i].remove();
+        }
+    }
     startGame() {
         let tweens = g.tweens.getAllTweens();
         for (let i = 0; i < tweens.length; i++) {
@@ -145,41 +150,34 @@ class PreScene extends Phaser.Scene {
             })
             this.battleSoundPlayed = true
         }
-        if (this.vsTweenDir == 1) {
-            let tween = g.tweens.add({
-                targets: this.vs,
-                scale: 1.3,
-                ease: Phaser.Math.Easing.Cubic.Out,
-                duration: 500,
-                context: g,
-                onComplete: function() {
-                    g.vsTweenDir *= -1
-                    tween.stop()
-                    tween.remove()
-                       // tween.destroy()
-                    g.startGameSequence()
-                }
-            });
-        } else {
-            let tween = g.tweens.add({
-                targets: this.vs,
-                scale: 1,
-                ease: 'Linear',
-                duration: 500,
-                context: this,
-                onComplete: function() {
-                    g.vsTweenDir *= -1
-                    if (tween.destroy)
-                        tween.destroy()
-                    g.startGameSequence()
-                }
-            });
-        }
+        let tween = g.tweens.add({
+            targets: this.vs,
+            scale: 1.3,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 500,
+            context: g,
+            yoyo: true,
+            repeat: -1
+        });
+    }
+    readdButton() {
+        var newButton = document.createElement("button");
+        newButton.id = "join-button";
+        newButton.classList.add('btn')
+        newButton.classList.add('btn-secondary')
+        document.body.appendChild(newButton);
+        this.joinButton = newButton;
+        this.vs.setScale(1)
+        buttonLocked = false
+        this.battleSoundPlayed = false
     }
     addAvatar(options) {
         var otherp = playersAll.find(player => player.id !== myid);
-
+        if (document.getElementById('join-button') == undefined) {
+            this.readdButton()
+        }
         if (!buttonLocked && myid == 'player1') {
+
             this.joinButton = document.getElementById('join-button')
             this.joinButton.innerHTML = 'Débuter'
             this.joinButton.style.display = 'block'
@@ -192,9 +190,9 @@ class PreScene extends Phaser.Scene {
                     type: 'startGameSequence'
                 }))
                 buttonLocked = true
-				if (g.joinButton) {
-					g.joinButton.remove()
-				}
+                if (g.joinButton) {
+                    g.joinButton.remove()
+                }
             })
             if (!otherp || otherp.avatar == '') {
                 this.joinButton.disabled = true
@@ -218,7 +216,7 @@ class PreScene extends Phaser.Scene {
         this.myAvatarImg = this.add.image(xpos, this.frameY, 'avatar' + a.avatar);
         this.myAvatarImg.setScale(this.avatarScale)
         this.myName = this.addName(xpos, this.frameY, a.username)
-		myName = a.username
+        myName = a.username
 
         if (playersAll.length > 1) {
 

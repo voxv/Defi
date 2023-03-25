@@ -183,7 +183,7 @@ var drawDeck = function(tot, x, y, playerId) {
             y: this.yDir,
             x: this.xDir,
             ease: Phaser.Math.Easing.Cubic.In,
-            duration: 90,
+            duration: drawSpeed,
             context: this,
             onComplete: function() {
 
@@ -204,7 +204,7 @@ var drawDeck = function(tot, x, y, playerId) {
                     }))
                 }
             },
-            delay: 10
+            delay: drawDelay
         }));
 
         this.countTweens++
@@ -235,7 +235,7 @@ class GameScene extends Phaser.Scene {
         this.load.image('gameBackName', 'images/gameBackName.png');
         this.load.image('backChoice', 'images/backChoice.png');
         this.load.image('frameInGame', 'images/frameInGame.png');
-        this.load.image('playerpickback', 'images/playerpickback.jpg');
+        this.load.image('commenceback', 'images/commenceBack.jpg');
         this.load.image('bonnechance', 'images/bonnechance.jpg');
         this.load.image('choiceBackground', 'images/choiceBackground2.jpg');
         this.load.image('red', 'images/red.png');
@@ -247,10 +247,9 @@ class GameScene extends Phaser.Scene {
         this.load.image('lifebar', 'images/lifebar.png');
 
         this.load.audio('cardflip', 'sounds/cardflip.mp3');
-        this.load.audio('bonnechance', 'sounds/bonnechance.mp3');
-        //this.load.audio('bonnechance', 'sounds/choiceClick.mp3');
+        this.load.audio('bonnechance', 'sounds/bonnechance3.mp3');
+        //this.load.audio('bonnechance', 'sounds/playerquit.mp3')
         this.load.audio('drumroll', 'sounds/drumroll.mp3');
-        //this.load.audio('drumroll', 'sounds/choiceClick.mp3');
         this.load.audio('colorChange', 'sounds/colorChange.mp3');
         this.load.audio('showScore', 'sounds/showScore.mp3');
         this.load.audio('showScoreWin', 'sounds/showScoreWin.mp3');
@@ -263,6 +262,7 @@ class GameScene extends Phaser.Scene {
         this.load.audio('choiceClick', 'sounds/choiceClick.mp3');
         this.load.audio('choiceShow', 'sounds/choiceShow3.mp3');
         this.load.audio('cardPlaced', 'sounds/cardPlaced.mp3');
+        this.load.audio('countryWin', 'sounds/countryWin.mp3');
 
         this.load.spritesheet('arrows', 'images/arrows.png', {
             frameWidth: 60,
@@ -419,13 +419,13 @@ class GameScene extends Phaser.Scene {
         if (bonneChanceimage) {
             bonneChanceimage.destroy()
         }
-        const x = canvasW / 2 - 169
+        const x = canvasW / 2 - 199
         const y = canvasH / 2 - 125
-        quiVaCommencerBackimage = this.add.image(x, y - 80, 'playerpickback');
+        quiVaCommencerBackimage = this.add.image(x, y - 40, 'commenceback');
         quiVaCommencerBackimage.setDepth(4)
         quiVaCommencerBackimage.setScale(1.2)
 
-        quiVaCommencerText = this.add.text(x, y - 80, 'Qui va commencer?', {
+        quiVaCommencerText = this.add.text(x, y - 40, 'Qui va commencer?', {
             fontSize: '28px',
             fontFamily: 'Tahoma',
             color: '#fcba03',
@@ -581,8 +581,6 @@ class GameScene extends Phaser.Scene {
 
     showColOverrideDone() {
         this.playedCardFinish()
-
-
     }
 
     showColOverride(data) {
@@ -673,13 +671,7 @@ class GameScene extends Phaser.Scene {
         var metrics = []
 
         bck.setDepth(1)
-        if (debug) {
-            //if (myid == 'player2')
-            //    playedCard = 12
-        }
         this.backChoiceImgs.push(bck)
-
-
 
         for (var i = 0; i < 4; i++) {
             let ii = i
@@ -1016,6 +1008,13 @@ class GameScene extends Phaser.Scene {
             }
         }
         var sc = 1.0
+        var fnt = '28px'
+        var tweenScMax = 1.04
+        if (val.toString().length > 5) {
+            sc = 0.80
+            fnt = '24px'
+            tweenScMax = 1.00
+        }
         if (winner) {
             sc = 1.0
             const sound = this.sound.add('showScoreWin');
@@ -1030,7 +1029,7 @@ class GameScene extends Phaser.Scene {
         bckImg.setScale(0.6)
         this.backShowScores.push(bckImg)
         var tt = this.add.text(xpos, ypos, val, {
-            fontSize: '28px',
+            fontSize: fnt,
             fontFamily: 'Tahoma',
             color: '#fcba03',
             fontWeight: 'bold',
@@ -1053,7 +1052,7 @@ class GameScene extends Phaser.Scene {
                 var tdir = sc
                 g.winnerAnimTween = g.tweens.add({
                     targets: tt,
-                    scale: 1.04,
+                    scale: tweenScMax,
                     ease: 'Linear',
                     duration: 390,
                     context: this,
