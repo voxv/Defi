@@ -305,6 +305,7 @@ socket.addEventListener('message', (event) => {
     }
 });
 
+
 socket.addEventListener('disconnect', (event) => {
     mylog('WebSocket connection closed');
 });

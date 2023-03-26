@@ -33,8 +33,6 @@ class GameoverScene extends Phaser.Scene {
         this.load.audio('thump', 'sounds/thump.mp3');
         this.load.audio('loserfly', 'sounds/loserfly.mp3');
         this.load.audio('kingMusic', 'sounds/kingMusic.mp3');
-
-
         this.load.spritesheet('pow', 'images/cardhit_spritesheet.png', {
             frameWidth: 150,
             frameHeight: 143

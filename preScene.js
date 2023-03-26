@@ -27,6 +27,7 @@ class PreScene extends Phaser.Scene {
         this.load.audio('playerquit', 'sounds/playerquit.mp3');
         this.load.audio('battlestart', 'sounds/battlestart.mp3');
         //this.load.audio('battlestart', 'sounds/playerquit.mp3');
+
     }
 
     create() {

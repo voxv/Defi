@@ -199,6 +199,7 @@ server.on('connection', (socket) => {
                 sendToAll({
                     type: 'startGameSequence'
                 })
+
                 break;
 
             case 'finishedStartSequence':
