@@ -179,7 +179,7 @@ server.on('connection', (socket) => {
 
             case 'startGameSequence':
                 //TODO
-                let ww = 'player1'
+                /*let ww = 'player1'
                 reinit(players['player1'].state)
                 reinit(players['player2'].state)
                 players['player2'].state.cards = []
@@ -194,11 +194,11 @@ server.on('connection', (socket) => {
                     winner: ww,
                     remaining_p1: 28,
                     remaining_p2: 8
-                })
+                })*/
                 ///
-                //sendToAll({
-                //    type: 'startGameSequence'
-                //})
+                sendToAll({
+                    type: 'startGameSequence'
+                })
                 break;
 
             case 'finishedStartSequence':
