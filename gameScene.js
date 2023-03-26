@@ -282,7 +282,6 @@ class GameScene extends Phaser.Scene {
         this.createCards()
         this.createFrames()
         if (debug) {
-
             playersAll[0] = {}
             playersAll[0].id = 'player1'
             playersAll[0].username = 'myself'
