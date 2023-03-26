@@ -70,6 +70,10 @@ const playerState = {
     showAttrValsDone: false,
     playCardAttackDone: false,
     readyNextTurn: false,
+    showGameoverDone: false,
+    showTotCardsDone: false,
+    readyToKick: false,
+    makeLoserFlyDone: false,
     selectedCover: '',
     cards: [],
     cardsPlayed: []
@@ -174,9 +178,27 @@ server.on('connection', (socket) => {
                 break;
 
             case 'startGameSequence':
+                //TODO
+                let ww = 'player1'
+                reinit(players['player1'].state)
+                reinit(players['player2'].state)
+                players['player2'].state.cards = []
+                players['player1'].state.cards = []
+                resetCardsMain();
+                colOverrideSent = false
+                cardsPlayedP1 = []
+                cardsPlayedP2 = []
                 sendToAll({
-                    type: 'startGameSequence'
+                    type: 'gameOver',
+                    caller: socket.player.state.id,
+                    winner: ww,
+                    remaining_p1: 28,
+                    remaining_p2: 8
                 })
+                ///
+                //sendToAll({
+                //    type: 'startGameSequence'
+                //})
                 break;
 
             case 'finishedStartSequence':
@@ -216,7 +238,6 @@ server.on('connection', (socket) => {
                 break;
 
             case 'drawDoneConfirm':
-
                 if (socket.player.state.id == 'player1' && players[socket.player.state.id].state.cards.length == 0) {
                     players['player1'].state.cards = []
                     players['player2'].state.cards = []
@@ -284,11 +305,6 @@ server.on('connection', (socket) => {
 
             case 'drawCard':
                 var c = players[socket.player.state.id].state.cards.pop()
-
-                //TODO
-                //var ctempid = c.id
-                //if (socket.player.state.id == 'player1')
-                //    ctempid = 13
                 var ret = {
                     type: 'drawCard',
                     cardId: c.id,
@@ -298,7 +314,6 @@ server.on('connection', (socket) => {
                 break
 
             case 'playedCard':
-
                 if (debug) {
                     players[socket.player.state.id].state.playedCard = true
                 } else {
@@ -362,7 +377,6 @@ server.on('connection', (socket) => {
                             colOverride = true;
                         }
                     }
-
                     if (!colOverrideSent && colOverride) {
                         var ret = {
                             type: 'showColOverride',
@@ -460,6 +474,7 @@ server.on('connection', (socket) => {
                         cardsPlayedP2.push(card2)
                     }
                 }
+
                 players[socket.player.state.id].state.readyNextTurn = true
                 if (players['player1'].state.readyNextTurn && players['player2'].state.readyNextTurn) {
                     reinit(players['player1'].state)
@@ -483,10 +498,28 @@ server.on('connection', (socket) => {
                         players['player2'].state.cards = shuffleArray(players['player2'].state.cards)
                     }
                     if (players['player1'].state.cards.length == 0 && cardsPlayedP1.length == 0 || players['player2'].state.cards.length == 0 && cardsPlayedP2.length == 0) {
+                        reinit(players['player1'].state)
+                        reinit(players['player2'].state)
+                        players['player2'].state.cards = []
+                        players['player1'].state.cards = []
+                        resetCardsMain();
+                        colOverrideSent = false
+                        cardsPlayedP1 = []
+                        cardsPlayedP2 = []
+                        //TODO
+                        if (data.winner == undefined) {
+                            data.winner = 'player1'
+                            p1rem = 18
+                            p2rem = 18
+                        }
+                        var p1rem = players['player1'].state.cards.length + cardsPlayedP1.length
+                        var p2rem = players['player2'].state.cards.length + cardsPlayedP2.length
                         sendToAll({
                             type: 'gameOver',
                             caller: socket.player.state.id,
-                            winner: data.winner
+                            winner: data.winner,
+                            remaining_p1: p1rem,
+                            remaining_p2: p2rem,
                         })
                     } else {
                         sendToAll({
@@ -496,6 +529,44 @@ server.on('connection', (socket) => {
                     }
                 }
                 break
+            case 'showGameoverDone':
+                players[socket.player.state.id].state.showGameoverDone = true
+                if (players['player1'].state.showGameoverDone && players['player2'].state.showGameoverDone) {
+                    sendToAll({
+                        type: 'showGameoverDone',
+                        caller: socket.player.state.id
+                    })
+                }
+                break
+            case 'showTotCardsDone':
+                players[socket.player.state.id].state.showTotCardsDone = true
+                if (players['player1'].state.showTotCardsDone && players['player2'].state.showTotCardsDone) {
+                    sendToAll({
+                        type: 'showTotCardsDone',
+                        caller: socket.player.state.id
+                    })
+                }
+                break
+
+            case 'readyToKick':
+                players[socket.player.state.id].state.readyToKick = true
+                if (players['player1'].state.readyToKick && players['player2'].state.readyToKick) {
+                    sendToAll({
+                        type: 'readyToKick',
+                        caller: socket.player.state.id
+                    })
+                }
+                break
+            case 'makeLoserFlyDone':
+                players[socket.player.state.id].state.makeLoserFlyDone = true
+                if (players['player1'].state.makeLoserFlyDone && players['player2'].state.makeLoserFlyDone) {
+                    sendToAll({
+                        type: 'makeLoserFlyDone',
+                        caller: socket.player.state.id
+                    })
+                }
+                break
+
         }
     });
 
@@ -507,6 +578,10 @@ server.on('connection', (socket) => {
         pl_state.showAttrValsDone = false
         pl_state.playCardAttackDone = false
         pl_state.readyNextTurn = false
+        pl_state.showGameoverDone = false
+        pl_state.showTotCardsDone = false
+        pl_state.readyToKick = false
+        pl_state.makeLoserFlyDone = false
     }
     socket.on('disconnect', () => {
         playersReady = []

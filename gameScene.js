@@ -358,6 +358,11 @@ class GameScene extends Phaser.Scene {
         this.showAttrTexts = []
         this.backShowScores = []
         this.myCardImg = null
+        countryWinSoundAdded = false
+        buttonLocked = false
+        remaining_p1 = 0
+        remaining_p2 = 0
+        showGameoverDoneShowned = false
     }
     createBackImage() {
         const backimage = this.add.image(0, 0, 'game_back');
@@ -1217,11 +1222,6 @@ class GameScene extends Phaser.Scene {
                 }))
             }
         });
-    }
-
-    gameOver(data) {
-        console.log('gameover')
-        console.dir(data)
     }
 
     readyNextTurn(data) {

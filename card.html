@@ -14,6 +14,7 @@
     <script src="gameScene.js"></script>
     <script src="preScene.js"></script>
     <script src="startScene.js"></script>
+    <script src="gameoverScene.js"></script>
     <script src="client.js"></script>
     <style>
 		.form-group {
@@ -46,7 +47,7 @@
 			width: 800,
 			height: 600,
 			parent: 'game-container',
-			scene: [StartScreen, PreScene, GameScene],
+			scene: [StartScreen, PreScene, GameScene, GameoverScene],
 			//scene: [GameScene],
 		  };
 	  }

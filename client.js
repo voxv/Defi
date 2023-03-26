@@ -89,9 +89,7 @@ socket.addEventListener('message', (event) => {
                     g.addCoverClick(g.covers[i], i)
                 }
             }
-            console.log('Scene is :' + g.scene.key)
-            if (g.scene.key == 'GameScene') {
-                console.log('going to prescene')
+            if (g && g.scene.key == 'GameScene') {
                 if (g.removeClickListener)
                     g.removeClickListener()
                 if (g.sound.stopAll)
@@ -101,9 +99,15 @@ socket.addEventListener('message', (event) => {
                 g.scene.shutdown()
                 g.scene.start('PreScene');
             }
-            if (g.stopTweens)
+            if (g && g.stopTweens)
                 g.stopTweens()
-            g.sound.stopAll()
+            if (g && g.sound)
+                g.sound.stopAll()
+            remaining_p1 = 0
+            remaining_p2 = 0
+            showGameoverDoneShowned = false
+            countryWinSoundAdded = false
+            gameoverSceneStarted = false
             break;
 
         case 'player2DC':
@@ -148,6 +152,11 @@ socket.addEventListener('message', (event) => {
                 g.stopTweens()
             g.sound.stopAll()
             buttonLocked = false
+            remaining_p1 = 0
+            remaining_p2 = 0
+            showGameoverDoneShowned = false
+            countryWinSoundAdded = false
+            gameoverSceneStarted = false
             break
 
         case 'updateNames':
@@ -259,8 +268,39 @@ socket.addEventListener('message', (event) => {
                 g.readyNextTurn(data)
             break
         case 'gameOver':
-            if (g && g.gameOver)
-                g.gameOver(data)
+            if (gameoverSceneStarted) {
+                return
+            }
+            if (g.removeClickListener)
+                g.removeClickListener()
+            if (g.sound.stopAll)
+                g.sound.stopAll();
+            if (g.sound.stopTweens)
+                g.stopTweens()
+            buttonLocked = false
+            currentWinner = data.winner
+            remaining_p1 = data.remaining_p1
+            remaining_p2 = data.remaining_p2
+            g.scene.pause();
+            g.scene.shutdown()
+            g.scene.start('GameoverScene');
+            gameoverSceneStarted = true
+            break
+        case 'showGameoverDone':
+            if (g && g.showGameoverDone)
+                g.showGameoverDone(data)
+            break
+        case 'showTotCardsDone':
+            if (g && g.showTotCardsDone)
+                g.showTotCardsDone(data)
+            break
+        case 'readyToKick':
+            if (g && g.kickLoser)
+                g.kickLoser()
+            break
+        case 'makeLoserFlyDone':
+            if (g && g.makeLoserFlyDone)
+                g.makeLoserFlyDone()
             break
     }
 });

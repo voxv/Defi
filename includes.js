@@ -71,6 +71,12 @@ var coverClickBlock = false
 var drawDelay = 10
 //var drawSpeed = 100
 var drawSpeed = 20
+var remaining_p1 = 0
+var remaining_p2 = 0
+var showGameoverDoneShowned = false
+var countryWinSoundAdded = false
+var gameoverStartText = null
+var gameoverSceneStarted = false
 
 var attrs_labels = {
     0: {
