@@ -141,6 +141,7 @@ var drawDeck = function(tot, x, y, playerId) {
                 coverClickBlock = true
                 this.lastImage.removeListener('pointerdown', onClick);
                 stoppedScaleCardAnim = true;
+                readyNextTurnSent = false
                 socket.send(JSON.stringify({
                     type: 'drawCard'
                 }));
@@ -1213,12 +1214,15 @@ class GameScene extends Phaser.Scene {
                 attrMetricsAdded = false
                 attrResultsAdded = false
                 animChoiceTextAdded = false
-                socket.send(JSON.stringify({
-                    type: 'readyNextTurn',
-                    c1: playedCard,
-                    c2: playedCardOther,
-                    winner: currentWinner
-                }))
+                if (!readyNextTurnSent) {
+					readyNextTurnSent = true
+					socket.send(JSON.stringify({
+						type: 'readyNextTurn',
+						c1: playedCard,
+						c2: playedCardOther,
+						winner: currentWinner
+					}))
+				}
             }
         });
     }

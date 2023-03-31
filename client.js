@@ -109,6 +109,7 @@ socket.addEventListener('message', (event) => {
             showGameoverDoneShowned = false
             countryWinSoundAdded = false
             gameoverSceneStarted = false
+            readyNextTurnSent = false
             break;
 
         case 'player2DC':
@@ -159,6 +160,7 @@ socket.addEventListener('message', (event) => {
             showGameoverDoneShowned = false
             countryWinSoundAdded = false
             gameoverSceneStarted = false
+            readyNextTurnSent = false
             break
 
         case 'updateNames':
