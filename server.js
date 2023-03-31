@@ -148,7 +148,7 @@ server.on('connection', (socket) => {
     players[theid] = player
     socket.player = player
 
-    websocket.onerror = function(evt) {
+    socket.onerror = function(evt) {
        onError(evt)
     };
 
