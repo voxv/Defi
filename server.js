@@ -120,6 +120,15 @@ function resetCardsMain() {
 
 resetCardsMain();
 
+      function onClose(evt) {
+         console.log("DISCONNECTED");
+         console.log(evt);
+      }
+      function onError(evt) {
+		 console.log("ERROR");
+         console.log(evt);
+      }
+
 server.on('connection', (socket) => {
 
     let theid
@@ -139,9 +148,13 @@ server.on('connection', (socket) => {
     players[theid] = player
     socket.player = player
 
-	socket.addEventListener("error", (event) => {
-	  console.log(event);
-	});
+    websocket.onerror = function(evt) {
+       onError(evt)
+    };
+
+    socket.onclose = function(evt) {
+       onClose(evt)
+    };
     socket.on('message', (message) => {
         console.log('message:' + message)
         let data = JSON.parse(message);
