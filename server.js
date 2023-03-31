@@ -138,6 +138,10 @@ server.on('connection', (socket) => {
     };
     players[theid] = player
     socket.player = player
+
+	socket.addEventListener("error", (event) => {
+	  console.log(event);
+	});
     socket.on('message', (message) => {
         console.log('message:' + message)
         let data = JSON.parse(message);

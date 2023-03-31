@@ -90,6 +90,7 @@ socket.addEventListener('message', (event) => {
                 }
             }
             if (g && g.scene.key == 'GameScene') {
+				console.log('Im in gamescene and got changeToPlayer1')
                 if (g.removeClickListener)
                     g.removeClickListener()
                 if (g.sound.stopAll)
@@ -139,6 +140,7 @@ socket.addEventListener('message', (event) => {
                 })
 
             if (g.scene.key == 'GameScene') {
+				console.log('Im in gamescene and got player2DC')
                 if (g.removeClickListener)
                     g.removeClickListener()
                 if (g.sound.stopAll)
