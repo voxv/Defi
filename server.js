@@ -601,7 +601,8 @@ server.on('connection', (socket) => {
         pl_state.readyToKick = false
         pl_state.makeLoserFlyDone = false
     }
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (reason) => {
+		console.log(reason)
 		console.log(socket.player.state.id+' disconnected');
         playersReady = []
         if (socket.player.state.id == 'player1') {
