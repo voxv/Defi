@@ -42,7 +42,7 @@ const io = require('socket.io')
 
 const server = new io.Server(serv, {
   pingInterval: 2000,
-  pingTimeout: 8000});
+  pingTimeout: 15000});
 
 serv.listen(3000);
 
