@@ -40,9 +40,13 @@ const serv = http.createServer(app)
 
 const io = require('socket.io')
 
-const server = new io.Server(serv);
-server.set('pingInterval', 5000);
-server.set('pingTimeout', 5000);
+//const server = new io.Server(serv);
+const server = io(server, {
+  pingInterval: 2000,
+  pingTimeout: 8000
+});
+//server.set('pingInterval', 2000);
+//server.set('pingTimeout', 10000);
 serv.listen(3000);
 
 let gameState = {};
