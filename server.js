@@ -428,6 +428,7 @@ server.on('connection', (socket) => {
                         } else {
                             winner = origCurrentTurn
                         }
+                        console.log('Sending attrResults winnner IS '+winner)
                         var ret = {
                             type: 'attrResults',
                             winner: winner,
@@ -551,7 +552,8 @@ server.on('connection', (socket) => {
                     } else {
                         sendToAll({
                             type: 'readyNextTurn',
-                            caller: socket.player.state.id
+                            caller: socket.player.state.id,
+                            winner: data.winner
                         })
                     }
                 }

@@ -817,9 +817,10 @@ class GameScene extends Phaser.Scene {
 
         attrResultsAdded = true
         currentWinner = data.winner
+
         playedCardValP1 = data.valP1
         playedCardValP2 = data.valP2
-
+		console.log('attrResults winner is '+currentWinner)
         if (myid != startingPlayer) {
             this.addPickedChoiceNotTurn(data)
             return
@@ -1232,6 +1233,8 @@ class GameScene extends Phaser.Scene {
         g.deckP1.update(true)
         g.deckP2.update(true)
         g.animScaleCard(myid)
+        currentWinner = data.winner
+        startingPlayer = currentWinner
         g.changeArrowSide()
         if (this.backChoices) {
             for (var i = 0; i < this.backChoices.length; i++) {
@@ -1284,19 +1287,23 @@ class GameScene extends Phaser.Scene {
     changeArrowSide() {
         if (this.arrowSide) {
             this.arrowSide.destroy()
+            console.log('destroyed old')
         }
         var xpos = xPos_p1
         var ypos = yPos_p1
         var flip = true
         var offx = 70
         var offy = 57
-        if (startingPlayer != myid) {
+        //if ((currentWinner && currentWinner!=myid) || startingPlayer != myid) {
+		if (startingPlayer != myid) {
             xpos = xPos_p2
             ypos = yPos_p2
             flip = false
             offx = -70
             offy = 57
         }
+        console.log('ARROW XPOS:'+xpos + offx+'  ARROW YPOS:'+ypos + offy)
+        console.log('WON:'+currentWinner)
         var arr = g.add.sprite(xpos + offx, ypos + offy, 'arrows')
         if (flip) {
             arr.setFlipX(true);

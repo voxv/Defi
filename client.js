@@ -45,6 +45,7 @@ socket.addEventListener('message', (event) => {
     switch (data.type) {
         case 'setID':
             myid = data.id
+            console.log('MY ID IS '+myid)
             break;
         case 'changeToPlayer1':
             myid = 'player1'
