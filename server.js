@@ -606,7 +606,7 @@ server.on('connection', (socket) => {
     socket.on('disconnect', (reason) => {
 		console.log(reason)
 		console.log(socket.player.state.id+' disconnected');
-        playersReady = []
+        /*playersReady = []
         if (socket.player.state.id == 'player1') {
             for (const sock of sockets) {
                 if (sock.player.state.id === 'player1') {
@@ -641,7 +641,7 @@ server.on('connection', (socket) => {
         totPlayers--
         colOverrideSent = false
         cardsPlayedP1 = []
-        cardsPlayedP2 = []
+        cardsPlayedP2 = []*/
     });
     socket.send(JSON.stringify({
         type: 'setID',
