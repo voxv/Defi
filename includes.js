@@ -77,7 +77,6 @@ var showGameoverDoneShowned = false
 var countryWinSoundAdded = false
 var gameoverStartText = null
 var gameoverSceneStarted = false
-var readyNextTurnSent = false
 
 var attrs_labels = {
     0: {

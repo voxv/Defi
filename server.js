@@ -40,9 +40,11 @@ const serv = http.createServer(app)
 
 const io = require('socket.io')
 
-const server = new io.Server(serv, {
+/*const server = new io.Server(serv, {
   pingInterval: 10,
-  pingTimeout: 90000});
+  pingTimeout: 190000});*/
+
+const server = new io.Server(serv);
 
 serv.listen(3000);
 

@@ -1,7 +1,8 @@
 var proto = 'ws'
 var is_local = false
-if (window.location.hostname === 'defi-nature.onrender.com') {
-    url = 'defi-nature.onrender.com'
+//if (window.location.hostname === 'defi-nature.onrender.com') {
+if (window.location.hostname === 'defi.voxv.repl.co') {
+    url = 'defi.voxv.repl.co'
     proto = 'wss'
 } else {
     url = 'localhost:3000'
@@ -11,7 +12,7 @@ if (window.location.hostname === 'defi-nature.onrender.com') {
 var socket = io(proto + "://" + url, {
     transports: ['websocket'],
     reconnection: true,
-    reconnectionDelay: 10,
+    reconnectionDelay: 1000,
     reconnectionDelayMax : 5000,
     reconnectionAttempts: Infinity
 });
@@ -32,7 +33,6 @@ var playersTemplate = function() {
 
 socket.addEventListener('connect', (event) => {
     players = new playersTemplate()
-    console.log('connn')
 });
 
 socket.addEventListener('message', (event) => {
