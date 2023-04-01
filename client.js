@@ -32,6 +32,7 @@ var playersTemplate = function() {
 
 socket.addEventListener('connect', (event) => {
     players = new playersTemplate()
+    console.log('connn')
 });
 
 socket.addEventListener('message', (event) => {
