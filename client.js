@@ -287,6 +287,8 @@ socket.addEventListener('message', (event) => {
             if (g.sound.stopTweens)
                 g.stopTweens()
             buttonLocked = false
+            console.log('GAMEOVER received')
+            console.dir(data)
             currentWinner = data.winner
             remaining_p1 = data.remaining_p1
             remaining_p2 = data.remaining_p2

@@ -120,7 +120,9 @@ class GameoverScene extends Phaser.Scene {
         });
     }
     showGameoverDone() {
+		console.log('showGameoverDoneShowned is '+showGameoverDoneShowned)
         if (showGameoverDoneShowned) {
+			console.log('nope')
             return
         }
         showGameoverDoneShowned = true

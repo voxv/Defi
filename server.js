@@ -530,12 +530,17 @@ server.on('connection', (socket) => {
                         cardsPlayedP2 = []
                         //TODO
                         if (data.winner == undefined) {
+							console.log('winner undefined')
                             data.winner = 'player1'
                             p1rem = 18
                             p2rem = 18
                         }
                         var p1rem = players['player1'].state.cards.length + cardsPlayedP1.length
                         var p2rem = players['player2'].state.cards.length + cardsPlayedP2.length
+                        console.log('p1rem: '+p1rem)
+                        console.log('p2rem: '+p2rem)
+                        console.log(data)
+                        console.log('sending gameOver, winner is  '+data.winner)
                         sendToAll({
                             type: 'gameOver',
                             caller: socket.player.state.id,
