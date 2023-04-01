@@ -9,7 +9,11 @@ if (window.location.hostname === 'defi-nature.onrender.com') {
 }
 
 var socket = io(proto + "://" + url, {
-    transports: ['websocket']
+    transports: ['websocket'],
+    reconnection: true,
+    reconnectionDelay: 10,
+    reconnectionDelayMax : 5000,
+    reconnectionAttempts: Infinity
 });
 
 let players;
