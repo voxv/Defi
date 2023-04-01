@@ -1,6 +1,6 @@
 var proto = 'ws'
 var is_local = false
-//if (window.location.hostname === 'defi-nature.onrender.com') {
+/////if (window.location.hostname === 'defi-nature.onrender.com') {
 if (window.location.hostname === 'defi.voxv.repl.co') {
     url = 'defi.voxv.repl.co'
     proto = 'wss'
