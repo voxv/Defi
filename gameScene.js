@@ -248,6 +248,7 @@ class GameScene extends Phaser.Scene {
         this.load.image('backShowScore', 'images/backShowScore2.png');
         this.load.image('lifebarEmpty', 'images/lifebarEmpty2.jpg');
         this.load.image('lifebar', 'images/lifebar.png');
+        this.load.image('derniertour', 'images/derniertour.png');
 
         this.load.audio('cardflip', 'sounds/cardflip.mp3');
         this.load.audio('bonnechance', 'sounds/bonnechance3.mp3');
@@ -265,6 +266,7 @@ class GameScene extends Phaser.Scene {
         this.load.audio('choiceShow', 'sounds/choiceShow3.mp3');
         this.load.audio('cardPlaced', 'sounds/cardPlaced.mp3');
         this.load.audio('countryWin', 'sounds/countryWin.mp3');
+        this.load.audio('derniertour', 'sounds/derniertour.mp3');
 
         this.load.spritesheet('arrows', 'images/arrows.png', {
             frameWidth: 60,
@@ -331,6 +333,7 @@ class GameScene extends Phaser.Scene {
         remaining_p1 = 0
         remaining_p2 = 0
         showGameoverDoneShowned = false
+        lastTurnSent = false
     }
     createBackImage() {
         const backimage = this.add.image(0, 0, 'game_back');
@@ -1238,7 +1241,22 @@ class GameScene extends Phaser.Scene {
             }
         });
     }
-
+    showLastTurn(data) {
+        var dernierImg = g.add.image(190, 260, 'derniertour').setOrigin(0, 0);
+        const sound = this.sound.add('derniertour');
+        sound.play();
+        sound.on('complete', function() {
+            socket.send(JSON.stringify({
+                type: 'showLastTurnDone',
+                caller: myid,
+                winner: data.winner
+            }))
+            dernierImg.destroy()
+        });
+    }
+    showLastTurnDone(data) {
+        g.readyNextTurn(data)
+    }
     readyNextTurn(data) {
         coverClickBlock = false
         g.deckP1.update(true)

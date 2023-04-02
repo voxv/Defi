@@ -47,6 +47,9 @@ const sockets = new Set();
 var cardsPlayedP1 = []
 var cardsPlayedP2 = []
 let inGame = false
+let startTime = 0
+let gameOverTimeout = false
+let gameMaxLength = 1
 
 const playerState = {
     id: -1,
@@ -68,6 +71,7 @@ const playerState = {
     showTotCardsDone: false,
     readyToKick: false,
     makeLoserFlyDone: false,
+    showLastTurnDone: false,
     selectedCover: '',
     cards: [],
     cardsPlayed: []
@@ -222,6 +226,7 @@ server.on('connection', (socket) => {
                     cardsMain[i].setAttributes(attrs)
                 }
                 inGame = true
+                gameOverTimeout = false
                 break;
 
             case 'drawDoneConfirm':
@@ -275,6 +280,7 @@ server.on('connection', (socket) => {
                 break
 
             case 'drawWinnerShown':
+                startTime = new Date()
                 players[socket.player.state.id].state.drawWinnerShown = true
                 if (players['player1'].state.drawWinnerShown && players['player2'].state.drawWinnerShown) {
                     sendToAll({
@@ -470,7 +476,7 @@ server.on('connection', (socket) => {
                         cardsPlayedP2 = []
                         players['player2'].state.cards = shuffleArray(players['player2'].state.cards)
                     }
-                    if (players['player1'].state.cards.length == 0 && cardsPlayedP1.length == 0 || players['player2'].state.cards.length == 0 && cardsPlayedP2.length == 0) {
+                    if (gameOverTimeout || players['player1'].state.cards.length == 0 && cardsPlayedP1.length == 0 || players['player2'].state.cards.length == 0 && cardsPlayedP2.length == 0) {
                         var p1rem = players['player1'].state.cards.length + cardsPlayedP1.length
                         var p2rem = players['player2'].state.cards.length + cardsPlayedP2.length
                         reinit(players['player1'].state)
@@ -489,12 +495,35 @@ server.on('connection', (socket) => {
                             remaining_p2: p2rem,
                         })
                     } else {
-                        sendToAll({
-                            type: 'readyNextTurn',
-                            caller: socket.player.state.id,
-                            winner: data.winner
-                        })
+                        const now = new Date();
+                        const timeDiff = now.getTime() - startTime.getTime();
+                        const diffInSeconds = Math.floor(timeDiff / 1000);
+
+                        if (diffInSeconds >= gameMaxLength) {
+                            sendToAll({
+                                type: 'showLastTurn',
+                                caller: socket.player.state.id,
+                                winner: data.winner
+                            })
+                        } else {
+                            sendToAll({
+                                type: 'readyNextTurn',
+                                caller: socket.player.state.id,
+                                winner: data.winner
+                            })
+                        }
                     }
+                }
+                break
+            case 'showLastTurnDone':
+                players[socket.player.state.id].state.showLastTurnDone = true
+                if (players['player1'].state.showLastTurnDone && players['player2'].state.showLastTurnDone) {
+                    sendToAll({
+                        type: 'showLastTurnDone',
+                        caller: socket.player.state.id,
+                        winner: data.winner
+                    })
+                    gameOverTimeout = true
                 }
                 break
             case 'showGameoverDone':
@@ -550,6 +579,7 @@ server.on('connection', (socket) => {
         pl_state.showTotCardsDone = false
         pl_state.readyToKick = false
         pl_state.makeLoserFlyDone = false
+        pl_state.showLastTurnDone = false
     }
     socket.on('disconnect', (reason) => {
         console.log(reason)

@@ -59,6 +59,7 @@ var countryWinSoundAdded = false
 var gameoverStartText = null
 var gameoverSceneStarted = false
 var animChoiceTextAdded2 = false
+var lastTurnSent = false
 
 var attrs_labels = {
     0: {

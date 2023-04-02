@@ -114,6 +114,7 @@ socket.addEventListener('message', (event) => {
             countryWinSoundAdded = false
             gameoverSceneStarted = false
             readyNextTurnSent = false
+            lastTurnSent = false
             if (g && g.battleSoundPlayed) {
                 g.battleSoundPlayed = false
             }
@@ -166,6 +167,7 @@ socket.addEventListener('message', (event) => {
             gameoverSceneStarted = false
             readyNextTurnSent = false
             g.battleSoundPlayed = false
+            lastTurnSent = false
             if (g && g.resetCovers) {
                 g.resetCovers()
             }
@@ -298,9 +300,16 @@ socket.addEventListener('message', (event) => {
             if (g && g.makeLoserFlyDone)
                 g.makeLoserFlyDone()
             break
+        case 'showLastTurn':
+            if (g && g.showLastTurn)
+                g.showLastTurn(data)
+            break
+        case 'showLastTurnDone':
+            if (g && g.showLastTurnDone)
+                g.showLastTurnDone(data)
+            break
     }
 });
-
 
 socket.addEventListener('disconnect', (event) => {
     mylog('WebSocket connection closed');
