@@ -25,7 +25,6 @@ class GameoverScene extends Phaser.Scene {
         this.load.audio('avatar4', 'sounds/avatar4.mp3');
         this.load.audio('avatar5', 'sounds/avatar5.mp3');
         this.load.audio('countryWin', 'sounds/countryWin.mp3');
-        //this.load.audio('countryWin', 'sounds/avatar1.mp3');
         this.load.audio('cardPile', 'sounds/cardPile.mp3')
         this.load.audio('showScore', 'sounds/showScore.mp3');
         this.load.audio('showScoreWin', 'sounds/showScoreWin.mp3');
@@ -120,9 +119,7 @@ class GameoverScene extends Phaser.Scene {
         });
     }
     showGameoverDone() {
-		console.log('showGameoverDoneShowned is '+showGameoverDoneShowned)
         if (showGameoverDoneShowned) {
-			console.log('nope')
             return
         }
         showGameoverDoneShowned = true

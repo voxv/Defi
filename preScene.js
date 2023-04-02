@@ -14,9 +14,12 @@ class PreScene extends Phaser.Scene {
         this.load.image('frame', 'images/frame.png');
         this.load.image('question', 'images/question.png');
         this.load.image('vs', 'images/vs.png');
-        this.load.image('cover1', 'images/cover_froid.png');
-        this.load.image('cover2', 'images/cover_legende.png');
-        this.load.image('cover3', 'images/cover_froid.png');
+        this.load.image('cover2', 'images/cover_froid.png');
+        this.load.image('cover1', 'images/cover_legende.png');
+        this.load.image('cover3', 'images/cover_extra.png');
+        this.load.image('title1', 'images/creatures_legendaires_raw.png')
+        this.load.image('title2', 'images/froid_extreme_raw.png')
+        this.load.image('title3', 'images/extra_raw.png')
 
         this.load.audio('bkmusic', 'sounds/backintro.mp3');
         this.load.audio('avatar1', 'sounds/avatar1.mp3');
@@ -26,7 +29,6 @@ class PreScene extends Phaser.Scene {
         this.load.audio('avatar5', 'sounds/avatar5.mp3');
         this.load.audio('playerquit', 'sounds/playerquit.mp3');
         this.load.audio('battlestart', 'sounds/battlestart.mp3');
-        //this.load.audio('battlestart', 'sounds/playerquit.mp3');
     }
 
     create() {
@@ -92,6 +94,7 @@ class PreScene extends Phaser.Scene {
         this.bkmusic.play()
         this.battleSoundPlayed = false;
         gameStarted = false
+        selectedCover = 1
 
     }
 
@@ -116,6 +119,7 @@ class PreScene extends Phaser.Scene {
             g.covers[i].setScale(g.covers_scale)
         }
         g.covers[coverid].setScale(g.covers_scale_selected)
+        selectedCover = coverid
     }
     stopTweens() {
         let tweens = g.tweens.getAllTweens();
@@ -129,6 +133,7 @@ class PreScene extends Phaser.Scene {
         for (let i = 0; i < tweens.length; i++) {
             tweens[i].stop();
         }
+        g.titleImg.destroy()
         if (g.joinButton)
             g.joinButton.remove();
         g.sound.stopAll();
@@ -152,6 +157,22 @@ class PreScene extends Phaser.Scene {
         }
         let tween = g.tweens.add({
             targets: this.vs,
+            scale: 1.3,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 500,
+            context: g,
+            yoyo: true,
+            repeat: -1
+        });
+        for (var i = 1; i < 4; i++) {
+            this.covers[i].destroy()
+        }
+        this.titleImg = this.add.image(canvasW / 2 - 190, this.frameY + 250, 'title' + selectedCover)
+        if (selectedCover == 3) {
+            this.titleImg.setScale(1.6)
+        }
+        let tween2 = g.tweens.add({
+            targets: this.titleImg,
             scale: 1.3,
             ease: Phaser.Math.Easing.Cubic.Out,
             duration: 500,

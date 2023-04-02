@@ -251,7 +251,6 @@ class GameScene extends Phaser.Scene {
 
         this.load.audio('cardflip', 'sounds/cardflip.mp3');
         this.load.audio('bonnechance', 'sounds/bonnechance3.mp3');
-        //this.load.audio('bonnechance', 'sounds/playerquit.mp3')
         this.load.audio('drumroll', 'sounds/drumroll.mp3');
         this.load.audio('colorChange', 'sounds/colorChange.mp3');
         this.load.audio('showScore', 'sounds/showScore.mp3');
@@ -284,52 +283,19 @@ class GameScene extends Phaser.Scene {
         this.cardsMain = []
         this.createCards()
         this.createFrames()
-        if (debug) {
-            playersAll[0] = {}
-            playersAll[0].id = 'player1'
-            playersAll[0].username = 'myself'
-            playersAll[0].avatar = '2'
-            playersAll[0].playedCardFinish = false
-            playersAll[1] = {}
-            playersAll[1].id = 'player2'
-            playersAll[1].username = 'other'
-            playersAll[1].avatar = '4'
-            playersAll[1].playedCardFinish = false
-            socket.send(JSON.stringify({
-                type: 'drawWinnerShown',
-            }))
-        } else {
-            socket.send(JSON.stringify({
-                type: 'inGameConfirm',
-            }))
-        }
-
-        if (debug) {
-            this.drawDeck = new drawDeck(0, 420, 300)
-        } else {
-            this.drawDeck = new drawDeck(totCards, 420, 300)
-        }
+        socket.send(JSON.stringify({
+            type: 'inGameConfirm',
+        }))
+        this.drawDeck = new drawDeck(totCards, 420, 300)
         this.drawDeck.update()
-
-        if (!debug) {
-            this.drawDeck.doDraw()
-        }
-
+        this.drawDeck.doDraw()
         this.frame1X = xPos_p1
         this.frame1Y = yPos_p1
         this.frame2X = xPos_p2
         this.frame2Y = yPos_p2
-
-
         this.deckP1 = new drawDeck(0, xPos_p1 + xOffset_avatar_deck, yPos_p1 - yOffset_avatar_deck, 'player1')
         this.deckP2 = new drawDeck(0, xPos_p2 - xOffset_avatar_deck - 12, yPos_p2 - yOffset_avatar_deck, 'player2')
 
-        if (debug) {
-            for (var i = 0; i < totCards / 2; i++) {
-                this.deckP1.addCard()
-                this.deckP2.addCard()
-            }
-        }
         this.anims.create({
             key: 'animarrows',
             frames: this.anims.generateFrameNumbers('arrows', {
@@ -472,18 +438,6 @@ class GameScene extends Phaser.Scene {
         var uname = ''
         var av = ''
 
-        if (debug && playersAll.length == 0) {
-            playersAll[0] = {}
-            playersAll[0].id = 'player1'
-            playersAll[0].username = 'myself'
-            playersAll[0].avatar = '2'
-            playersAll[0].playedCardFinish = false
-            playersAll[1] = {}
-            playersAll[1].id = 'player2'
-            playersAll[1].username = 'other'
-            playersAll[1].avatar = '4'
-            playersAll[1].playedCardFinish = false
-        }
         for (var i = 0; i < playersAll.length; i++) {
             if (playersAll[i].id == startingPlayer) {
                 uname = playersAll[i].username
@@ -759,16 +713,10 @@ class GameScene extends Phaser.Scene {
     }
 
     attributeSet(data) {
-        if (debug) {
-            if (myid == 'player2') {
-                cardPlayed = this.cardsMain.find(item => item.id == debugCard)
-            }
-        } else {
-            if (myid != data.playerId) {
-                cardPlayed = this.cardsMain.find(item => item.id == playedCard)
-            }
-        }
 
+        if (myid != data.playerId) {
+            cardPlayed = this.cardsMain.find(item => item.id == playedCard)
+        }
         currentAttrChoice = data.attrVal
         var attName = 'at_' + (data.attrId + 1)
         this.choiceAttrData = data
@@ -791,7 +739,7 @@ class GameScene extends Phaser.Scene {
         }))
     }
 
-    addPickedChoiceNotTurn(data,skip) {
+    addPickedChoiceNotTurn(data, skip) {
         var x = choiceXStart
         var yStart = 275
 
@@ -816,10 +764,10 @@ class GameScene extends Phaser.Scene {
         animChoiceTextAdded = false
         animChoiceTextAdded2 = false
         if (skip) {
-			this.animChoiceText2(tt, txt, true)
-		} else {
-        	this.animChoiceText(tt, txt, true)
-		}
+            this.animChoiceText2(tt, txt, true)
+        } else {
+            this.animChoiceText(tt, txt, true)
+        }
     }
 
     attrResults(data) {
@@ -827,10 +775,8 @@ class GameScene extends Phaser.Scene {
 
         attrResultsAdded = true
         currentWinner = data.winner
-
         playedCardValP1 = data.valP1
         playedCardValP2 = data.valP2
-		console.log('attrResults winner is '+currentWinner)
         if (myid != startingPlayer) {
             this.addPickedChoiceNotTurn(data)
             return
@@ -958,23 +904,20 @@ class GameScene extends Phaser.Scene {
 
         if (animChoiceTextAdded2) return
         animChoiceTextAdded2 = true
-
-       // if (!noback) {
-            const sound = g.sound.add('choiceShow');
-            sound.setVolume(1)
-            sound.play();
-            let tt = g.tweens.add({
-                targets: back,
-                scale: 1.2,
-                ease: Phaser.Math.Easing.Cubic.Out,
-                duration: 1390,
-                context: this,
-                onComplete: function() {
-                    tt.stop()
-                    tt.remove()
-                }
-            })
-       // }
+        const sound = g.sound.add('choiceShow');
+        sound.setVolume(1)
+        sound.play();
+        let tt = g.tweens.add({
+            targets: back,
+            scale: 1.2,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 1390,
+            context: this,
+            onComplete: function() {
+                tt.stop()
+                tt.remove()
+            }
+        })
         let tt2 = g.tweens.add({
             targets: text,
             scale: 1.4,
@@ -986,45 +929,37 @@ class GameScene extends Phaser.Scene {
                 tt2.remove()
             }
         })
-       // if (!noback) {
-            let tt3 = g.tweens.add({
-                targets: back,
-                scale: 0.01,
-                alpha: 0,
-                ease: Phaser.Math.Easing.Cubic.Out,
-                duration: 1390,
-                context: this,
-                delay: 1300,
-                onComplete: function() {
-                    tt3.stop()
-                    tt3.remove()
-                }
-            })
-
-            let tt4 = g.tweens.add({
-                targets: text,
-                scale: 0.01,
-                alpha: 0,
-                ease: Phaser.Math.Easing.Cubic.Out,
-                duration: 1390,
-                context: this,
-                delay: 1300,
-                onComplete: function() {
-                    tt4.stop()
-                    tt4.remove()
-                    animChoiceTextAdded2 = true
-                }
-            })
-       // }
+        let tt3 = g.tweens.add({
+            targets: back,
+            scale: 0.01,
+            alpha: 0,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 1390,
+            context: this,
+            delay: 1300,
+            onComplete: function() {
+                tt3.stop()
+                tt3.remove()
+            }
+        })
+        let tt4 = g.tweens.add({
+            targets: text,
+            scale: 0.01,
+            alpha: 0,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 1390,
+            context: this,
+            delay: 1300,
+            onComplete: function() {
+                tt4.stop()
+                tt4.remove()
+                animChoiceTextAdded2 = true
+            }
+        })
     }
 
     finishedChoiceAnim() {
 
-        if (debug) {
-            currentWinner = 'player1'
-            playedCardValP1 = 2000
-            playedCardValP2 = 1900
-        }
         const sound = g.sound.add('cardflip');
         sound.setVolume(0.6)
         sound.play();
@@ -1292,14 +1227,14 @@ class GameScene extends Phaser.Scene {
                 animChoiceTextAdded = false
                 animChoiceTextAdded2 = false
                 if (!readyNextTurnSent) {
-					readyNextTurnSent = true
-					socket.send(JSON.stringify({
-						type: 'readyNextTurn',
-						c1: playedCard,
-						c2: playedCardOther,
-						winner: currentWinner
-					}))
-				}
+                    readyNextTurnSent = true
+                    socket.send(JSON.stringify({
+                        type: 'readyNextTurn',
+                        c1: playedCard,
+                        c2: playedCardOther,
+                        winner: currentWinner
+                    }))
+                }
             }
         });
     }
@@ -1363,23 +1298,19 @@ class GameScene extends Phaser.Scene {
     changeArrowSide() {
         if (this.arrowSide) {
             this.arrowSide.destroy()
-            console.log('destroyed old')
         }
         var xpos = xPos_p1
         var ypos = yPos_p1
         var flip = true
         var offx = 70
         var offy = 57
-        //if ((currentWinner && currentWinner!=myid) || startingPlayer != myid) {
-		if (startingPlayer != myid) {
+        if (startingPlayer != myid) {
             xpos = xPos_p2
             ypos = yPos_p2
             flip = false
             offx = -70
             offy = 57
         }
-        console.log('ARROW XPOS:'+xpos + offx+'  ARROW YPOS:'+ypos + offy)
-        console.log('WON:'+currentWinner)
         var arr = g.add.sprite(xpos + offx, ypos + offy, 'arrows')
         if (flip) {
             arr.setFlipX(true);

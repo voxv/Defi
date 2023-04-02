@@ -1,6 +1,6 @@
 var proto = 'ws'
 var is_local = false
-/////if (window.location.hostname === 'defi-nature.onrender.com') {
+
 if (window.location.hostname === 'defi-nature.voxv.repl.co') {
     url = 'defi.voxv.repl.co'
     proto = 'wss'
@@ -13,7 +13,7 @@ var socket = io(proto + "://" + url, {
     transports: ['websocket'],
     reconnection: true,
     reconnectionDelay: 1000,
-    reconnectionDelayMax : 5000,
+    reconnectionDelayMax: 5000,
     reconnectionAttempts: Infinity
 });
 
@@ -45,7 +45,6 @@ socket.addEventListener('message', (event) => {
     switch (data.type) {
         case 'setID':
             myid = data.id
-            console.log('MY ID IS '+myid)
             break;
         case 'changeToPlayer1':
             myid = 'player1'
@@ -96,7 +95,6 @@ socket.addEventListener('message', (event) => {
                 }
             }
             if (g && g.scene.key == 'GameScene') {
-				console.log('Im in gamescene and got changeToPlayer1')
                 if (g.removeClickListener)
                     g.removeClickListener()
                 if (g.sound.stopAll)
@@ -147,7 +145,6 @@ socket.addEventListener('message', (event) => {
                 })
 
             if (g.scene.key == 'GameScene') {
-				console.log('Im in gamescene and got player2DC')
                 if (g.removeClickListener)
                     g.removeClickListener()
                 if (g.sound.stopAll)
@@ -192,18 +189,6 @@ socket.addEventListener('message', (event) => {
                 g.selectCover(data.coverid)
             break;
         case 'startGameSequence':
-            if (debug && playersAll.length == 0) {
-                playersAll.push({
-                    id: 'player1',
-                    username: 'myself',
-                    avatar: 2
-                })
-                playersAll.push({
-                    id: 'player2',
-                    username: 'other',
-                    avatar: 4
-                })
-            }
             if (g && g.startGameSequence)
                 g.startGameSequence()
             break;
@@ -229,11 +214,6 @@ socket.addEventListener('message', (event) => {
                 g.quiVaCommencerDone()
             break
         case 'drawWinnerShown':
-            if (debug) {
-                socket.send(JSON.stringify({
-                    type: 'drawDoneConfirm',
-                }))
-            }
             if (g && g.drawWinnerShown)
                 g.drawWinnerShown(data.caller)
             break
@@ -288,8 +268,6 @@ socket.addEventListener('message', (event) => {
             if (g.sound.stopTweens)
                 g.stopTweens()
             buttonLocked = false
-            console.log('GAMEOVER received')
-            console.dir(data)
             currentWinner = data.winner
             remaining_p1 = data.remaining_p1
             remaining_p2 = data.remaining_p2

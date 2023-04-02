@@ -1,25 +1,10 @@
 var canvasW = 1200
 var canvasH = 850
 var g
-var mySelectedAvatar
-var otherSelectedAvatar
-var otherName
-var myName
-
-const debug = false
-const debugCard = 4
-
-if (debug) {
-    mySelectedAvatar = 2
-    otherSelectedAvatar = 4
-    otherName = 'other'
-    myName = 'myself'
-} else {
-    mySelectedAvatar = -1
-    otherSelectedAvatar = -1
-    otherName = ''
-    myName = ''
-}
+var mySelectedAvatar = -1
+var otherSelectedAvatar = -1
+var otherName = ''
+var myName = ''
 var avatars = []
 var playersAll = []
 var buttonLocked = false
@@ -30,10 +15,8 @@ var cardScale = 1
 var cardScaleDraw = 0.20
 var totCards = 36
 var xPos_p1 = 60
-//var xPos_p1 = 100
 var yPos_p1 = 525
 var xPos_p2 = 740
-//var xPos_p2 = 700
 var yPos_p2 = 60
 var xOffset_avatar_deck = 80
 var yOffset_avatar_deck = 4
@@ -67,10 +50,8 @@ var quiVaCommencerBackimage
 var colorWinnerImg
 var colorLoserImg
 var coverClickBlock = false
-//var drawDelay = 50
-var drawDelay = 10
-//var drawSpeed = 100
-var drawSpeed = 20
+var drawDelay = 50
+var drawSpeed = 100
 var remaining_p1 = 0
 var remaining_p2 = 0
 var showGameoverDoneShowned = false
