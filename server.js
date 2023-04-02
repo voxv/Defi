@@ -33,17 +33,9 @@ app.get('/', (req, res) => {
 });
 
 app.use(express.static(__dirname));
-
 const serv = http.createServer(app)
-
 const io = require('socket.io')
-
-/*const server = new io.Server(serv, {
-  pingInterval: 10,
-  pingTimeout: 190000});*/
-
 const server = new io.Server(serv);
-
 serv.listen(3000);
 
 let gameState = {};
@@ -127,7 +119,6 @@ function onClose(evt) {
 }
 
 function onError(evt) {
-    console.log("ERROR");
     console.log(evt);
 }
 
@@ -221,7 +212,6 @@ server.on('connection', (socket) => {
                 break;
 
             case 'inGameConfirm':
-
                 players[socket.player.state.id].state.inGame = true
                 if (players['player1'].state.inGame && players['player2'].state.inGame) {
                     sendToAll({
@@ -285,7 +275,6 @@ server.on('connection', (socket) => {
                 break
 
             case 'drawWinnerShown':
-
                 players[socket.player.state.id].state.drawWinnerShown = true
                 if (players['player1'].state.drawWinnerShown && players['player2'].state.drawWinnerShown) {
                     sendToAll({
@@ -306,10 +295,7 @@ server.on('connection', (socket) => {
                 break
 
             case 'playedCard':
-
                 players[socket.player.state.id].state.playedCard = true
-
-
                 if (players['player1'].state.playedCard && players['player2'].state.playedCard) {
                     sendToAll({
                         type: 'playedCardFinish',
@@ -346,10 +332,8 @@ server.on('connection', (socket) => {
                     valP2 = players['player2'].state.attrResultsFound['val']
                     colP1 = players['player1'].state.attrResultsFound['col']
                     colP2 = players['player2'].state.attrResultsFound['col']
-
                     var colOverride = false
                     var origCurrentTurn = currentTurn
-
                     const colorCombinations = {
                         green: ['orange', 'yellow', 'red'],
                         yellow: ['orange', 'red'],
@@ -566,9 +550,10 @@ server.on('connection', (socket) => {
         pl_state.showTotCardsDone = false
         pl_state.readyToKick = false
         pl_state.makeLoserFlyDone = false
-        pl_state.state.selectedCover = 1
     }
     socket.on('disconnect', (reason) => {
+        console.log(reason)
+        console.log(socket.player.state.id + ' disconnected');
         playersReady = []
         if (socket.player.state.id == 'player1') {
             for (const sock of sockets) {
