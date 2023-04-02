@@ -1303,13 +1303,13 @@ class GameScene extends Phaser.Scene {
         var ypos = yPos_p1
         var flip = true
         var offx = 70
-        var offy = 57
+        var offy = 61
         if (startingPlayer != myid) {
             xpos = xPos_p2
             ypos = yPos_p2
             flip = false
             offx = -70
-            offy = 57
+            offy = 61
         }
         var arr = g.add.sprite(xpos + offx, ypos + offy, 'arrows')
         if (flip) {
