@@ -361,7 +361,7 @@ server.on('connection', (socket) => {
                     name: data.name,
                     playerId: socket.player.state.id
                 }
-
+				currentTurn = data.currentTurn
                 sendToAll(ret)
                 break;
 
@@ -374,7 +374,7 @@ server.on('connection', (socket) => {
                 var attrIsReversed = data.isReversed
 
                 if (players['player1'].state.attrResultsFound && players['player2'].state.attrResultsFound) {
-
+					console.log('attrResults: IN')
                     valP1 = players['player1'].state.attrResultsFound['val']
                     valP2 = players['player2'].state.attrResultsFound['val']
                     colP1 = players['player1'].state.attrResultsFound['col']
@@ -388,23 +388,33 @@ server.on('connection', (socket) => {
                         yellow: ['orange', 'red'],
                         orange: ['red']
                     };
+                    console.log('---- currentTurn:'+currentTurn)
                     if (currentTurn == 'player1' && colP1 != 'red') {
+						console.log('---- player1 colp1'+colP1+' colp2:'+colP2)
+						console.dir(colorCombinations[colP1])
                         if (colorCombinations[colP1].includes(colP2)) {
                             currentTurn = 'player2'
                             colOverride = true;
+                            console.log('col overide p:'+currentTurn)
                         }
                     } else if (currentTurn == 'player2' && colP2 != 'red') {
+						console.log('---- player2 colp2'+colP2+' colp1:'+colP1)
+						console.dir(colorCombinations[colP2])
                         if (colorCombinations[colP2].includes(colP1)) {
                             currentTurn = 'player1'
                             colOverride = true;
+                            console.log('col overide p:'+currentTurn)
                         }
                     }
+                    console.log('colOverrideSent:'+colOverrideSent)
                     if (!colOverrideSent && colOverride) {
                         var ret = {
                             type: 'showColOverride',
                             currentTurn: currentTurn,
                             col_p1: colP1,
-                            col_p2: colP2
+                            col_p2: colP2,
+                            valP1: valP1,
+                            valP2: valP2
                         }
                         players['player1'].state.finishedChoiceAnim = false
                         players['player2'].state.finishedChoiceAnim = false
@@ -521,6 +531,19 @@ server.on('connection', (socket) => {
                         players['player2'].state.cards = shuffleArray(players['player2'].state.cards)
                     }
                     if (players['player1'].state.cards.length == 0 && cardsPlayedP1.length == 0 || players['player2'].state.cards.length == 0 && cardsPlayedP2.length == 0) {
+
+                        var p1rem
+                        var p2rem
+                        if (data.winner == undefined) {
+							console.log('winner undefined')
+                            data.winner = 'player1'
+                            p1rem = 18
+                            p2rem = 18
+                        } else {
+                        	p1rem = players['player1'].state.cards.length + cardsPlayedP1.length
+                        	p2rem = players['player2'].state.cards.length + cardsPlayedP2.length
+						}
+
                         reinit(players['player1'].state)
                         reinit(players['player2'].state)
                         players['player2'].state.cards = []
@@ -530,14 +553,9 @@ server.on('connection', (socket) => {
                         cardsPlayedP1 = []
                         cardsPlayedP2 = []
                         //TODO
-                        if (data.winner == undefined) {
-							console.log('winner undefined')
-                            data.winner = 'player1'
-                            p1rem = 18
-                            p2rem = 18
-                        }
-                        var p1rem = players['player1'].state.cards.length + cardsPlayedP1.length
-                        var p2rem = players['player2'].state.cards.length + cardsPlayedP2.length
+                       // var p1rem
+                       // var p2rem
+
                         console.log('p1rem: '+p1rem)
                         console.log('p2rem: '+p2rem)
                         console.log(data)

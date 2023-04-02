@@ -79,13 +79,14 @@ var drawDeck = function(tot, x, y, playerId) {
         var offsetY = 0
         this.topOffsetX = offsetX
         this.topOffsetY = offsetY
-        var stepX = 3
+        var stepX = 2
         var stepY = 4
         for (var i = 0; i < this.currentTot; i++) {
             if (i % 4 == 0) {
                 var img = g.add.image(this.x + offsetX, this.y + offsetY, 'card_back')
                 img.setScale(cardScaleDraw)
                 img.visible = false
+                img.setDepth(11)
                 this.backImages.push(img)
                 offsetX += stepX
                 offsetY += stepY
@@ -119,7 +120,7 @@ var drawDeck = function(tot, x, y, playerId) {
         this.backImages = []
         var offsetX = 0
         var offsetY = 0
-        var stepX = 3
+        var stepX = 2
         var stepY = 2
 
         for (var i = 0; i < this.currentTot; i++) {
@@ -127,6 +128,7 @@ var drawDeck = function(tot, x, y, playerId) {
                 var img = g.add.image(this.x + offsetX, this.y + offsetY, 'card_back')
                 img.setScale(cardScaleDraw)
                 img.visible = true
+                img.setDepth(11)
                 this.backImages.push(img)
                 offsetX += stepX
                 offsetY += stepY
@@ -320,7 +322,7 @@ class GameScene extends Phaser.Scene {
 
 
         this.deckP1 = new drawDeck(0, xPos_p1 + xOffset_avatar_deck, yPos_p1 - yOffset_avatar_deck, 'player1')
-        this.deckP2 = new drawDeck(0, xPos_p2 - xOffset_avatar_deck - 5, yPos_p2 - yOffset_avatar_deck, 'player2')
+        this.deckP2 = new drawDeck(0, xPos_p2 - xOffset_avatar_deck - 12, yPos_p2 - yOffset_avatar_deck, 'player2')
 
         if (debug) {
             for (var i = 0; i < totCards / 2; i++) {
@@ -589,7 +591,9 @@ class GameScene extends Phaser.Scene {
     }
 
     showColOverride(data) {
-
+        if (myid != startingPlayer) {
+            this.addPickedChoiceNotTurn(data, true)
+        }
         const sound = this.sound.add('colorChange');
         sound.play();
         sound.on('complete', function() {
@@ -705,7 +709,8 @@ class GameScene extends Phaser.Scene {
                     attrId: ii,
                     color: cardPlayed.color,
                     name: cardPlayed.name,
-                    attrVal: currentAttrChoice
+                    attrVal: currentAttrChoice,
+                    currentTurn: startingPlayer
                 }));
                 tt.removeListener('pointerdown', onClick);
             }
@@ -786,7 +791,7 @@ class GameScene extends Phaser.Scene {
         }))
     }
 
-    addPickedChoiceNotTurn(data) {
+    addPickedChoiceNotTurn(data,skip) {
         var x = choiceXStart
         var yStart = 275
 
@@ -809,7 +814,12 @@ class GameScene extends Phaser.Scene {
         }).setOrigin(0.5);
         txt.setDepth(5)
         animChoiceTextAdded = false
-        this.animChoiceText(tt, txt, true)
+        animChoiceTextAdded2 = false
+        if (skip) {
+			this.animChoiceText2(tt, txt, true)
+		} else {
+        	this.animChoiceText(tt, txt, true)
+		}
     }
 
     attrResults(data) {
@@ -944,6 +954,70 @@ class GameScene extends Phaser.Scene {
         }
     }
 
+    animChoiceText2(back, text, override) {
+
+        if (animChoiceTextAdded2) return
+        animChoiceTextAdded2 = true
+
+       // if (!noback) {
+            const sound = g.sound.add('choiceShow');
+            sound.setVolume(1)
+            sound.play();
+            let tt = g.tweens.add({
+                targets: back,
+                scale: 1.2,
+                ease: Phaser.Math.Easing.Cubic.Out,
+                duration: 1390,
+                context: this,
+                onComplete: function() {
+                    tt.stop()
+                    tt.remove()
+                }
+            })
+       // }
+        let tt2 = g.tweens.add({
+            targets: text,
+            scale: 1.4,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 1390,
+            context: this,
+            onComplete: function() {
+                tt2.stop()
+                tt2.remove()
+            }
+        })
+       // if (!noback) {
+            let tt3 = g.tweens.add({
+                targets: back,
+                scale: 0.01,
+                alpha: 0,
+                ease: Phaser.Math.Easing.Cubic.Out,
+                duration: 1390,
+                context: this,
+                delay: 1300,
+                onComplete: function() {
+                    tt3.stop()
+                    tt3.remove()
+                }
+            })
+
+            let tt4 = g.tweens.add({
+                targets: text,
+                scale: 0.01,
+                alpha: 0,
+                ease: Phaser.Math.Easing.Cubic.Out,
+                duration: 1390,
+                context: this,
+                delay: 1300,
+                onComplete: function() {
+                    tt4.stop()
+                    tt4.remove()
+                    animChoiceTextAdded2 = true
+                }
+            })
+       // }
+    }
+
     finishedChoiceAnim() {
 
         if (debug) {
@@ -1051,6 +1125,7 @@ class GameScene extends Phaser.Scene {
         tt.setDepth(16)
         this.showAttrTexts.push(tt)
         animChoiceTextAdded = false
+        animChoiceTextAdded2 = false
         this.animChoiceText(null, tt, false, true, 300, sc, winner)
 
         if (winner) {
@@ -1215,6 +1290,7 @@ class GameScene extends Phaser.Scene {
                 attrMetricsAdded = false
                 attrResultsAdded = false
                 animChoiceTextAdded = false
+                animChoiceTextAdded2 = false
                 if (!readyNextTurnSent) {
 					readyNextTurnSent = true
 					socket.send(JSON.stringify({
