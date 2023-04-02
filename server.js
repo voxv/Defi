@@ -583,10 +583,14 @@ server.on('connection', (socket) => {
                 }))
             }
         }
-        players['player1'].state.selectedCover = 1
-        players['player2'].state.selectedCover = 1
-        players['player2'].state.cards = []
-        players['player1'].state.cards = []
+        if (players['player1']) {
+            players['player1'].state.selectedCover = 1
+            players['player1'].state.cards = []
+        }
+        if (players['player2']) {
+            players['player2'].state.selectedCover = 1
+            players['player2'].state.cards = []
+        }
         resetCardsMain();
         totPlayers--
         colOverrideSent = false
