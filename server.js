@@ -49,7 +49,7 @@ var cardsPlayedP2 = []
 let inGame = false
 let startTime = 0
 let gameOverTimeout = false
-let gameMaxLength = 1
+let gameMaxLength = 900
 
 const playerState = {
     id: -1,
