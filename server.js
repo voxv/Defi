@@ -102,7 +102,6 @@ var card = function(id) {
             selectedCover = 1
         } else {
             selectedCover = players['player1'].state.selectedCover
-            console.log('WTF:' + selectedCover)
         }
         var selectedCover = players['player1'].state.selectedCover
         this.attributes.at_1 = attrs[0][this.id].at_1
@@ -124,7 +123,6 @@ function resetCardsMain() {
 resetCardsMain();
 
 function onClose(evt) {
-    console.log("DISCONNECTED");
     console.log(evt);
 }
 
@@ -218,7 +216,6 @@ server.on('connection', (socket) => {
                     type: 'selectedCover',
                     coverid: data.coverid
                 }, socket)
-                console.log('selectedCover GOT COVER:' + data.coverid)
                 socket.player.state.selectedCover = data.coverid
                 players['player1'].state.selectedCover = data.coverid
                 break;
@@ -345,7 +342,6 @@ server.on('connection', (socket) => {
                 var attrIsReversed = data.isReversed
 
                 if (players['player1'].state.attrResultsFound && players['player2'].state.attrResultsFound) {
-                    console.log('attrResults: IN')
                     valP1 = players['player1'].state.attrResultsFound['val']
                     valP2 = players['player2'].state.attrResultsFound['val']
                     colP1 = players['player1'].state.attrResultsFound['col']
@@ -359,25 +355,17 @@ server.on('connection', (socket) => {
                         yellow: ['orange', 'red'],
                         orange: ['red']
                     };
-                    console.log('---- currentTurn:' + currentTurn)
                     if (currentTurn == 'player1' && colP1 != 'red') {
-                        console.log('---- player1 colp1' + colP1 + ' colp2:' + colP2)
-                        console.dir(colorCombinations[colP1])
                         if (colorCombinations[colP1].includes(colP2)) {
                             currentTurn = 'player2'
                             colOverride = true;
-                            console.log('col overide p:' + currentTurn)
                         }
                     } else if (currentTurn == 'player2' && colP2 != 'red') {
-                        console.log('---- player2 colp2' + colP2 + ' colp1:' + colP1)
-                        console.dir(colorCombinations[colP2])
                         if (colorCombinations[colP2].includes(colP1)) {
                             currentTurn = 'player1'
                             colOverride = true;
-                            console.log('col overide p:' + currentTurn)
                         }
                     }
-                    console.log('colOverrideSent:' + colOverrideSent)
                     if (!colOverrideSent && colOverride) {
                         var ret = {
                             type: 'showColOverride',
@@ -409,7 +397,6 @@ server.on('connection', (socket) => {
                         } else {
                             winner = origCurrentTurn
                         }
-                        console.log('Sending attrResults winnner IS ' + winner)
                         var ret = {
                             type: 'attrResults',
                             winner: winner,
@@ -485,8 +472,6 @@ server.on('connection', (socket) => {
                     reinit(players['player2'].state)
                     colOverrideSent = false
                     var gameover = false
-                    console.log('player 1 has ' + players['player1'].state.cards.length + ' cards and ' + cardsPlayedP1.length + ' in reserve')
-                    console.log('player 2 has ' + players['player2'].state.cards.length + ' cards and ' + cardsPlayedP2.length + ' in reserve')
                     if (players['player1'].state.cards.length == 0 && cardsPlayedP1.length > 0) {
                         for (var i = 0; i < cardsPlayedP1.length; i++) {
                             players['player1'].state.cards.push(cardsPlayedP1[i])
@@ -502,19 +487,8 @@ server.on('connection', (socket) => {
                         players['player2'].state.cards = shuffleArray(players['player2'].state.cards)
                     }
                     if (players['player1'].state.cards.length == 0 && cardsPlayedP1.length == 0 || players['player2'].state.cards.length == 0 && cardsPlayedP2.length == 0) {
-
-                        var p1rem
-                        var p2rem
-                        if (data.winner == undefined) {
-                            console.log('winner undefined')
-                            data.winner = 'player1'
-                            p1rem = 18
-                            p2rem = 18
-                        } else {
-                            p1rem = players['player1'].state.cards.length + cardsPlayedP1.length
-                            p2rem = players['player2'].state.cards.length + cardsPlayedP2.length
-                        }
-
+                        var p1rem = players['player1'].state.cards.length + cardsPlayedP1.length
+                        var p2rem = players['player2'].state.cards.length + cardsPlayedP2.length
                         reinit(players['player1'].state)
                         reinit(players['player2'].state)
                         players['player2'].state.cards = []
@@ -593,11 +567,8 @@ server.on('connection', (socket) => {
         pl_state.readyToKick = false
         pl_state.makeLoserFlyDone = false
         pl_state.state.selectedCover = 1
-        console.log('reinit:' + pl_state.state.selectedCover)
     }
     socket.on('disconnect', (reason) => {
-        console.log(reason)
-        console.log(socket.player.state.id + ' disconnected');
         playersReady = []
         if (socket.player.state.id == 'player1') {
             for (const sock of sockets) {
