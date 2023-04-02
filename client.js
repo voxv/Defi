@@ -45,6 +45,7 @@ socket.addEventListener('message', (event) => {
     switch (data.type) {
         case 'setID':
             myid = data.id
+            avatarTaken = data.avatarTaken
             break;
         case 'changeToPlayer1':
             myid = 'player1'
@@ -118,6 +119,12 @@ socket.addEventListener('message', (event) => {
             if (g && g.battleSoundPlayed) {
                 g.battleSoundPlayed = false
             }
+            if (avatarTaken) {
+                var avatar = avatars.find(item => item.id == avatarTaken)
+                avatar.clearTint()
+                avatar.on('pointerup', () => g.onClickAvatar('avatar' + avatar.id, avatar, true), g);
+                avatarTaken = false
+            }
             break;
 
         case 'player2DC':
@@ -171,7 +178,12 @@ socket.addEventListener('message', (event) => {
             if (g && g.resetCovers) {
                 g.resetCovers()
             }
-
+            if (avatarTaken) {
+                var avatar = avatars.find(item => item.id == avatarTaken)
+                avatar.clearTint()
+                avatar.on('pointerup', () => g.onClickAvatar('avatar' + avatar.id, avatar), g);
+                avatarTaken = false
+            }
             break
 
         case 'updateNames':
@@ -185,6 +197,10 @@ socket.addEventListener('message', (event) => {
                     g.scene.shutdown()
                     g.scene.start('PreScene');
                 }
+            } else {
+                if (data.avatarTaken && g && g.updateAvatarTaken)
+                    g.updateAvatarTaken(data.avatarTaken)
+                avatarTaken = data.avatarTaken
             }
             if (g && g.addAvatar)
                 g.addAvatar()

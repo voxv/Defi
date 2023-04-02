@@ -170,13 +170,15 @@ server.on('connection', (socket) => {
                         playedCardFinish: false
                     })
                 }
+
+                players[socket.player.state.id].state.username = data.name
+                players[socket.player.state.id].state.avatar = data.avatar
                 var dat = {
                     type: 'updateNames',
                     players: ret,
-                    callerp: socket.player.state.id
+                    callerp: socket.player.state.id,
+                    avatarTaken: players[socket.player.state.id].state.avatar
                 }
-                players[socket.player.state.id].state.username = data.name
-                players[socket.player.state.id].state.avatar = data.avatar
                 sendToAll(dat)
                 break;
 
@@ -580,6 +582,7 @@ server.on('connection', (socket) => {
         pl_state.readyToKick = false
         pl_state.makeLoserFlyDone = false
         pl_state.showLastTurnDone = false
+        pl_state.avatar = ''
     }
     socket.on('disconnect', (reason) => {
         console.log(reason)
@@ -603,11 +606,13 @@ server.on('connection', (socket) => {
         for (const sock of sockets) {
 
             if (sock.player.state.id == 'player2') {
+                players['player1'].state.avatar = ''
                 sock.send(JSON.stringify({
                     type: 'changeToPlayer1'
                 }))
                 sock.player.state.id = 'player1'
             } else {
+                players['player2'].state.avatar = ''
                 sock.send(JSON.stringify({
                     type: 'player2DC'
                 }))
@@ -627,9 +632,14 @@ server.on('connection', (socket) => {
         cardsPlayedP1 = []
         cardsPlayedP2 = []
     });
+    var avatarTaken = false
+    if (socket.player.state.id == 'player2' && players['player1'] && players['player1'].state && players['player1'].state.avatar != '') {
+        avatarTaken = players['player1'].state.avatar
+    }
     socket.send(JSON.stringify({
         type: 'setID',
-        id: socket.player.state.id
+        id: socket.player.state.id,
+        avatarTaken: avatarTaken
     }));
     sockets.add(socket);
 });

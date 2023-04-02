@@ -48,42 +48,68 @@ class StartScreen extends Phaser.Scene {
         backimage.setScale(scale);
         backimage.setPosition(canvasWidth / 2, canvasHeight / 2);
 
+
         const scaleAvatar = 0.7
-        const avatar1 = this.add.image(avatarX, avatarY, 'avatar1');
-        avatar1.setInteractive();
-        avatar1.on('pointerup', () => this.selectAvatar(1, avatar1));
-        avatar1.setScale(scaleAvatar)
+        this.avatar1 = this.add.image(avatarX, avatarY, 'avatar1');
+        if (avatarTaken != 1) {
+            this.avatar1.setInteractive();
+            this.avatar1.on('pointerup', () => this.onClickAvatar('avatar1', this.avatar1), this);
+        } else {
+            this.avatar1.setTint(0x777777);
+        }
+        this.avatar1.setScale(scaleAvatar)
+        this.avatar1.id = 1
         avatarX = avatarX + step
-        avatars.push(avatar1)
+        avatars.push(this.avatar1)
 
-        const avatar2 = this.add.image(avatarX, avatarY, 'avatar2');
-        avatar2.setInteractive();
-        avatar2.on('pointerup', () => this.selectAvatar(2, avatar2));
-        avatar2.setScale(scaleAvatar)
+        this.avatar2 = this.add.image(avatarX, avatarY, 'avatar2');
+        if (avatarTaken != 2) {
+            this.avatar2.setInteractive();
+            this.avatar2.on('pointerup', () => this.onClickAvatar('avatar2', this.avatar2), this);
+        } else {
+            this.avatar2.setTint(0x777777);
+        }
+        this.avatar2.setScale(scaleAvatar)
+        this.avatar2.id = 2
         avatarX = avatarX + step
-        avatars.push(avatar2)
+        avatars.push(this.avatar2)
 
-        const avatar3 = this.add.image(avatarX, avatarY, 'avatar3');
-        avatar3.setInteractive();
-        avatar3.on('pointerup', () => this.selectAvatar(3, avatar3));
-        avatar3.setScale(scaleAvatar)
+        this.avatar3 = this.add.image(avatarX, avatarY, 'avatar3');
+        if (avatarTaken != 3) {
+            this.avatar3.setInteractive();
+            this.avatar3.on('pointerup', () => this.onClickAvatar('avatar3', this.avatar3), this);
+        } else {
+            this.avatar3.setTint(0x777777);
+        }
+        this.avatar3.setScale(scaleAvatar)
+        this.avatar3.id = 3
         avatarX = avatarX + step
-        avatars.push(avatar3)
+        avatars.push(this.avatar3)
 
-        const avatar4 = this.add.image(avatarX, avatarY, 'avatar4');
-        avatar4.setInteractive();
-        avatar4.on('pointerup', () => this.selectAvatar(4, avatar4));
-        avatar4.setScale(scaleAvatar)
+        this.avatar4 = this.add.image(avatarX, avatarY, 'avatar4');
+        this.avatar4.id = 4
+        if (avatarTaken != 4) {
+            this.avatar4.setInteractive();
+            this.avatar4.on('pointerup', () => this.onClickAvatar('avatar4', this.avatar4), this);
+        } else {
+            this.avatar4.setTint(0x777777);
+        }
+        this.avatar4.setScale(scaleAvatar)
+
         avatarX = avatarX + step
-        avatars.push(avatar4)
+        avatars.push(this.avatar4)
 
-        const avatar5 = this.add.image(avatarX, avatarY, 'avatar5');
-        avatar5.setInteractive();
-        avatar5.on('pointerup', () => this.selectAvatar(5, avatar5));
-        avatar5.setScale(scaleAvatar)
+        this.avatar5 = this.add.image(avatarX, avatarY, 'avatar5');
+        if (avatarTaken != 5) {
+            this.avatar5.setInteractive();
+            this.avatar5.on('pointerup', () => this.onClickAvatar('avatar5', this.avatar5), this);
+        } else {
+            this.avatar5.setTint(0x777777);
+        }
+        this.avatar5.setScale(scaleAvatar)
+        this.avatar5.id = 5
         avatarX = avatarX + step
-        avatars.push(avatar5)
-
+        avatars.push(this.avatar5)
         this.add.text(canvasW / 2 - 200, 260, 'Choisis un avatar', {
             fontSize: '26px',
             fontFamily: 'Tahoma',
@@ -126,6 +152,19 @@ class StartScreen extends Phaser.Scene {
         this.events.on('pause', this.onPause, this);
     }
 
+    onClickAvatar(avatarName, avImg) {
+        if (avatarName === 'avatar1') {
+            this.selectAvatar(1, this.avatar1)
+        } else if (avatarName === 'avatar2') {
+            this.selectAvatar(2, this.avatar2)
+        } else if (avatarName === 'avatar3') {
+            this.selectAvatar(3, this.avatar3)
+        } else if (avatarName === 'avatar4') {
+            this.selectAvatar(4, this.avatar4)
+        } else if (avatarName === 'avatar5') {
+            this.selectAvatar(5, this.avatar5)
+        }
+    }
     onPause() {
         g.div.style.display = "none";
         g.div2.style.display = "none";
@@ -133,6 +172,17 @@ class StartScreen extends Phaser.Scene {
 
     removeClickListener() {
         this.joinButton.removeEventListener('click', this.sendRegisterName);
+    }
+
+    updateAvatarTaken(av) {
+        var avatar = avatars.find(item => item.id == av)
+        avatar.setScale(0.7)
+        avatar.setTint(0x777777);
+        avatar.removeListener('pointerup', this.onClickAvatar('avatar' + avatar.id, avatar));
+        for (const a of avatars) {
+            a.setScale(0.7)
+        }
+        mySelectedAvatar = ''
     }
 
     selectAvatar(avatarIndex, avatar) {

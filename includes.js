@@ -3,6 +3,7 @@ var canvasH = 850
 var g
 var mySelectedAvatar = -1
 var otherSelectedAvatar = -1
+var avatarTaken = false
 var otherName = ''
 var myName = ''
 var avatars = []
