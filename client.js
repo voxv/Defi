@@ -67,7 +67,11 @@ socket.addEventListener('message', (event) => {
             if (g && g.otherName) {
                 playclick = true
             }
-
+            if (g && g.sound)
+                g.sound.stopAll()
+            if (g && g.resetCovers) {
+                g.resetCovers()
+            }
             if (g && g.otherAvatarImg) {
                 g.otherAvatarImg.destroy()
                 g.otherAvatarImg = null
@@ -104,16 +108,15 @@ socket.addEventListener('message', (event) => {
                 g.scene.shutdown()
                 g.scene.start('PreScene');
             }
-            if (g && g.stopTweens)
-                g.stopTweens()
-            if (g && g.sound)
-                g.sound.stopAll()
             remaining_p1 = 0
             remaining_p2 = 0
             showGameoverDoneShowned = false
             countryWinSoundAdded = false
             gameoverSceneStarted = false
             readyNextTurnSent = false
+            if (g && g.battleSoundPlayed) {
+                g.battleSoundPlayed = false
+            }
             break;
 
         case 'player2DC':
@@ -154,8 +157,6 @@ socket.addEventListener('message', (event) => {
                 g.scene.shutdown()
                 g.scene.start('PreScene');
             }
-            if (g.stopTweens)
-                g.stopTweens()
             g.sound.stopAll()
             buttonLocked = false
             remaining_p1 = 0
@@ -164,6 +165,11 @@ socket.addEventListener('message', (event) => {
             countryWinSoundAdded = false
             gameoverSceneStarted = false
             readyNextTurnSent = false
+            g.battleSoundPlayed = false
+            if (g && g.resetCovers) {
+                g.resetCovers()
+            }
+
             break
 
         case 'updateNames':

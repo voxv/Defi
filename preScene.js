@@ -99,7 +99,9 @@ class PreScene extends Phaser.Scene {
     }
 
     addCoverClick(c, id) {
-
+        if (!c || c == undefined || c.active == false) {
+            return
+        }
         c.setInteractive();
         c.coverid = id
         c.on('pointerdown', function() {
@@ -121,6 +123,28 @@ class PreScene extends Phaser.Scene {
         g.covers[coverid].setScale(g.covers_scale_selected)
         selectedCover = coverid
     }
+    resetCovers() {
+        if (this.titleImg) {
+            this.titleImg.destroy()
+        }
+        this.stopTweens()
+        this.covers = {}
+
+        for (var i = 1; i < 4; i++) {
+            var c = this.add.image(this.frame1X + 50 + (i - 1) * 150, this.frameY + 240, 'cover' + i)
+            if (i == 1) {
+                c.setScale(this.covers_scale_selected)
+            } else {
+                c.setScale(this.covers_scale)
+            }
+            this.addCoverClick(c, i)
+            this.covers[i] = c
+        }
+        g.bkmusic = g.sound.add('bkmusic', {
+            loop: true
+        });
+        g.bkmusic.play()
+    }
     stopTweens() {
         let tweens = g.tweens.getAllTweens();
         for (let i = 0; i < tweens.length; i++) {
@@ -134,8 +158,11 @@ class PreScene extends Phaser.Scene {
             tweens[i].stop();
         }
         g.titleImg.destroy()
-        if (g.joinButton)
+        if (g.joinButton) {
+            this.joinButton.removeEventListener("click", g.clickBut);
             g.joinButton.remove();
+
+        }
         g.sound.stopAll();
         g.scene.pause();
         g.scene.shutdown()
@@ -192,6 +219,16 @@ class PreScene extends Phaser.Scene {
         buttonLocked = false
         this.battleSoundPlayed = false
     }
+
+    clickBut() {
+        socket.send(JSON.stringify({
+            type: 'startGameSequence'
+        }))
+        buttonLocked = true
+        if (g.joinButton) {
+            g.joinButton.remove()
+        }
+    }
     addAvatar(options) {
         var otherp = playersAll.find(player => player.id !== myid);
         if (document.getElementById('join-button') == undefined) {
@@ -206,15 +243,9 @@ class PreScene extends Phaser.Scene {
             this.joinButton.style.position = 'absolute';
             this.joinButton.style.left = '370px';
             this.joinButton.style.top = (canvasH - 330) + 'px';
-            this.joinButton.addEventListener("click", function() {
-                socket.send(JSON.stringify({
-                    type: 'startGameSequence'
-                }))
-                buttonLocked = true
-                if (g.joinButton) {
-                    g.joinButton.remove()
-                }
-            })
+            this.joinButton.removeEventListener("click", this.clickBut);
+
+            this.joinButton.addEventListener("click", this.clickBut)
             if (!otherp || otherp.avatar == '') {
                 this.joinButton.disabled = true
             }
@@ -312,6 +343,13 @@ class PreScene extends Phaser.Scene {
             }
             this.joinButton.classList.add("btn-primary");
             this.joinButton.disabled = false
+        }
+    }
+    stopTweens() {
+        let tweens = g.tweens.getAllTweens();
+        for (let i = 0; i < tweens.length; i++) {
+            tweens[i].stop();
+            tweens[i].remove();
         }
     }
 }
