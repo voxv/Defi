@@ -226,6 +226,8 @@ class GameScene extends Phaser.Scene {
         suffix = ''
         if (selectedCover == 2) {
             suffix = '_froid'
+        } else if (selectedCover == 3) {
+            suffix = '_extra'
         }
         for (var i = 0; i < totCards; i++) {
             this.load.image('card_' + i + suffix, 'images/pack' + (selectedCover - 1) + '/card_' + i + suffix + '.png');
@@ -692,8 +694,41 @@ class GameScene extends Phaser.Scene {
         var txts = []
         for (var i = 0; i < 4; i++) {
             if (i == 3) x += 3
-            var txt = this.add.text(x, y, labels[i] + ': ' + attributes[i] + ' ' + metrics[i], {
-                fontSize: '22px',
+            var valBase
+            var met
+            if (metrics[i] == 'ans') {
+                var str = attributes[i].toString();
+                var d = str.split('.')
+                var dec = d[1]
+                var b = d[0]
+                var ext = ''
+                if (dec) {
+                    if (dec == '25') {
+                        ext = '¼'
+                    } else if (dec == '5') {
+                        ext = '½'
+                    }
+                }
+                valBase = b
+                var met = metrics[i]
+                if (metrics[i] == 'ans' && metrics[i] == '1') {
+                    met = 'an'
+                }
+                if (ext != '') {
+                    valBase += ' ' + met + ' ' + ext
+                } else {
+                    valBase += ' ' + met
+                }
+            } else {
+                valBase = attributes[i] + ' ' + metrics[i]
+            }
+            var lcheck = labels[i] + ': ' + valBase
+            var fsize = '22px'
+            if (lcheck.length > 18) {
+                fsize = '21px'
+            }
+            var txt = this.add.text(x, y, labels[i] + ': ' + valBase, {
+                fontSize: fsize,
                 fontFamily: 'Tahoma',
                 color: '#fcba03',
                 padding: {
@@ -998,13 +1033,69 @@ class GameScene extends Phaser.Scene {
         var xpos
         var ypos
         var val
+        var valBaseP1 = playedCardValP1
+        var valBaseP2 = playedCardValP2
+
+        if (playedCardMetricP1 == 'ans') {
+            var str = playedCardValP1.toString();
+            var d = str.split('.')
+            var dec = d[1]
+            var b = d[0]
+            var ext = ''
+            if (dec) {
+                if (dec == '25') {
+                    ext = '¼'
+                } else if (dec == '5') {
+                    ext = '½'
+                }
+            }
+            valBaseP1 = b
+            var metP1 = playedCardMetricP1
+            if (playedCardMetricP1 == 'ans' && playedCardValP1 == '1') {
+                metP1 = 'an'
+            }
+            if (ext != '') {
+                valBaseP1 += ' ' + metP1 + ' ' + ext
+            } else {
+                valBaseP1 += ' ' + metP1
+            }
+        } else {
+            valBaseP1 += ' ' + playedCardMetricP1
+        }
+
+        if (playedCardMetricP2 == 'ans') {
+            var str = playedCardValP2.toString();
+            var d = str.split('.')
+            var dec = d[1]
+            var b = d[0]
+            var ext = ''
+            if (dec) {
+                if (dec == '25') {
+                    ext = '¼'
+                } else if (dec == '5') {
+                    ext = '½'
+                }
+            }
+            valBaseP2 = b
+            var metP2 = playedCardMetricP2
+            if (playedCardMetricP2 == 'ans' && playedCardValP2 == '1') {
+                metP2 = 'an'
+            }
+            if (ext != '') {
+                valBaseP2 += ' ' + metP2 + ' ' + ext
+            } else {
+                valBaseP2 += ' ' + metP2
+            }
+        } else {
+            valBaseP2 += ' ' + playedCardMetricP2
+        }
 
         if (winner != undefined) {
             if (winner == 'player1') {
-                val = playedCardValP1 + ' ' + playedCardMetricP1
+                val = valBaseP1
 
             } else {
-                val = playedCardValP2 + ' ' + playedCardMetricP2
+                val = valBaseP2
 
             }
             if (myid == winner) {
@@ -1017,9 +1108,9 @@ class GameScene extends Phaser.Scene {
 
         } else {
             if (currentWinner == 'player1') {
-                val = playedCardValP2 + ' ' + playedCardMetricP2
+                val = valBaseP2
             } else {
-                val = playedCardValP1 + ' ' + playedCardMetricP1
+                val = valBaseP1
             }
             if (myid != currentWinner) {
                 xpos = xPos_p1 + 275
@@ -1035,6 +1126,11 @@ class GameScene extends Phaser.Scene {
         if (val.toString().length > 5) {
             sc = 0.80
             fnt = '24px'
+            tweenScMax = 1.00
+        }
+        if (val.toString().length > 6) {
+            sc = 0.80
+            fnt = '23px'
             tweenScMax = 1.00
         }
         if (val.toString().length > 6) {

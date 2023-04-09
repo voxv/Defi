@@ -81,6 +81,12 @@ var attrs_labels = {
         at_2: 'Longueur',
         at_3: 'Longévité',
         at_4: "Gestation"
+    },
+    2: {
+        at_1: 'Poids',
+        at_2: 'Longueur',
+        at_3: 'Longévité',
+        at_4: "Gestation"
     }
 }
 var attrs_metrics = {
@@ -88,12 +94,18 @@ var attrs_metrics = {
         at_1: 'cm',
         at_2: 'kg',
         at_3: '',
-        at_4: ""
+        at_4: ''
     },
     1: {
         at_1: 'kg',
         at_2: 'cm',
-        at_3: 'an',
+        at_3: 'ans',
+        at_4: "jours"
+    },
+    2: {
+        at_1: 'kg',
+        at_2: 'cm',
+        at_3: 'ans',
         at_4: "jours"
     }
 }
@@ -677,10 +689,301 @@ var attrs = {
             col: 'red',
             name: 'Boeuf musqué'
         }
+    },
+    2: { // pack id
+        0: {
+            at_1: 1.7,
+            at_2: 50,
+            at_3: 12,
+            at_4: 26,
+            col: 'green',
+            name: 'Ornithorynque'
+        },
+        1: {
+            at_1: 110,
+            at_2: 200,
+            at_3: 24,
+            at_4: 319,
+            col: 'orange',
+            name: 'Baiji'
+        },
+        2: {
+            at_1: 15,
+            at_2: 64,
+            at_3: 25,
+            at_4: 166,
+            col: 'orange',
+            name: "Nasique"
+        },
+        3: {
+            at_1: 480,
+            at_2: 290,
+            at_3: 29,
+            at_4: 328,
+            col: 'yellow',
+            name: "Lamantin D'amazonie"
+        },
+        4: {
+            at_1: 275,
+            at_2: 220,
+            at_3: 33,
+            at_4: 458,
+            col: 'orange',
+            name: 'Okapi'
+        },
+        5: {
+            at_1: 72,
+            at_2: 98,
+            at_3: 23,
+            at_4: 153,
+            col: 'yellow',
+            name: 'Babiroussa'
+        },
+        6: {
+            at_1: 14,
+            at_2: 88,
+            at_3: 12,
+            at_4: 190,
+            col: 'yellow',
+            name: 'Hydropote'
+        },
+        7: {
+            at_1: 500,
+            at_2: 400,
+            at_3: 15,
+            at_4: 252,
+            col: 'green',
+            name: 'Elephant de mer du Nord'
+        },
+        8: {
+            at_1: 3900,
+            at_2: 800,
+            at_3: 32,
+            at_4: 1080,
+            col: 'yellow',
+            name: 'Requin Pèlerin'
+        },
+        9: {
+            at_1: 44,
+            at_2: 150,
+            at_3: 11,
+            at_4: 204,
+            col: 'green',
+            name: 'Gazelle de Waller'
+        },
+        10: {
+            at_1: 0.038,
+            at_2: 9,
+            at_3: 15,
+            at_4: 118,
+            col: 'green',
+            name: 'Moloch hérissé'
+        },
+        11: {
+            at_1: 4,
+            at_2: 40,
+            at_3: 30,
+            at_4: 30,
+            col: 'green',
+            name: 'Crabe de cocotier'
+        },
+        12: {
+            at_1: 0.12,
+            at_2: 12,
+            at_3: 10.5,
+            at_4: 157,
+            col: 'yellow',
+            name: 'Tarsier spectre'
+        },
+        13: {
+            at_1: 0.80,
+            at_2: 70,
+            at_3: 8,
+            at_4: 32,
+            col: 'green',
+            name: 'Hoazin huppé'
+        },
+        14: {
+            at_1: 0.04,
+            at_2: 21,
+            at_3: 4,
+            at_4: 105,
+            col: 'green',
+            name: 'Caméléon de Namaqua'
+        },
+        15: {
+            at_1: 4,
+            at_2: 35,
+            at_3: 20,
+            at_4: 5,
+            col: 'green',
+            name: 'Antennaire déant'
+        },
+        16: {
+            at_1: 0.04,
+            at_2: 7.3,
+            at_3: 2.25,
+            at_4: 127,
+            col: 'yellow',
+            name: 'Weta géant des îles Poor Knights'
+        },
+        17: {
+            at_1: 1.8,
+            at_2: 80,
+            at_3: 8,
+            at_4: 38,
+            col: 'green',
+            name: 'Lamproie marine'
+        },
+        18: {
+            at_1: 0.05,
+            at_2: 19,
+            at_3: 2.5,
+            at_4: 40,
+            col: 'green',
+            name: 'Condylure étoilé'
+        },
+        19: {
+            at_1: 70,
+            at_2: 190,
+            at_3: 11,
+            at_4: 61,
+            col: 'orange',
+            name: 'Torute de Cantor'
+        },
+        20: {
+            at_1: 600,
+            at_2: 125,
+            at_3: 1,
+            at_4: 10,
+            col: 'green',
+            name: 'Méduse à crinière de lion'
+        },
+        21: {
+            at_1: 0.11,
+            at_2: 30,
+            at_3: 9,
+            at_4: 28,
+            col: 'green',
+            name: 'Hippocampe feuille'
+        },
+        22: {
+            at_1: 0.035,
+            at_2: 15,
+            at_3: 31,
+            at_4: 70,
+            col: 'green',
+            name: 'Rat-taupe nu'
+        },
+        23: {
+            at_1: 0.009,
+            at_2: 2.5,
+            at_3: 12.5,
+            at_4: 12,
+            col: 'green',
+            name: "Grenouille de verre"
+        },
+        24: {
+            at_1: 1.2,
+            at_2: 33,
+            at_3: 10,
+            at_4: 4,
+            col: 'green',
+            name: 'Rascasse volante'
+        },
+        25: {
+            at_1: 0.1,
+            at_2: 36,
+            at_3: 34,
+            at_4: 21,
+            col: 'green',
+            name: 'Sterne arctique'
+        },
+        26: {
+            at_1: 1,
+            at_2: 22,
+            at_3: 11.5,
+            at_4: 3,
+            col: 'green',
+            name: 'Poisson chauve-souris des Galàpagos'
+        },
+        27: {
+            at_1: 0.03,
+            at_2: 8,
+            at_3: 6,
+            at_4: 73,
+            col: 'yellow',
+            name: 'Gecko foliacé'
+        },
+        28: {
+            at_1: 12,
+            at_2: 38,
+            at_3: 10.5,
+            at_4: 200,
+            col: 'green',
+            name: 'Matamata'
+        },
+        29: {
+            at_1: 10,
+            at_2: 53,
+            at_3: 10,
+            at_4: 130,
+            col: 'red',
+            name: 'Pangolin de Malaisie'
+        },
+        30: {
+            at_1: 5,
+            at_2: 45,
+            at_3: 13,
+            at_4: 56,
+            col: 'orange',
+            name: 'Holothurie ananas'
+        },
+        31: {
+            at_1: 0.02,
+            at_2: 3,
+            at_3: 3.5,
+            at_4: 13,
+            col: 'green',
+            name: 'Galathée poilue'
+        },
+        32: {
+            at_1: 0.001,
+            at_2: 2.8,
+            at_3: 0.25,
+            at_4: 20,
+            col: 'green',
+            name: 'Greta oto'
+        },
+        33: {
+            at_1: 1.5,
+            at_2: 31,
+            at_3: 9,
+            at_4: 60,
+            col: 'green',
+            name: 'Pichi'
+        },
+        34: {
+            at_1: 0.08,
+            at_2: 23,
+            at_3: 6,
+            at_4: 18,
+            col: 'red',
+            name: 'Axolotl'
+        },
+        35: {
+            at_1: 0.09,
+            at_2: 7,
+            at_3: 5.5,
+            at_4: 100,
+            col: 'orange',
+            name: 'Grenouille pourpre'
+        }
     }
 }
 
 var scoreReversed = {
     0: [3],
-    1: 0
+    1: 0,
+    2: 0
 }
