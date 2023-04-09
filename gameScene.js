@@ -222,9 +222,13 @@ class GameScene extends Phaser.Scene {
     }
 
     preload() {
-
+        this.load.reset();
+        suffix = ''
+        if (selectedCover == 2) {
+            suffix = '_froid'
+        }
         for (var i = 0; i < totCards; i++) {
-            this.load.image('card_' + i, 'images/pack' + (selectedCover - 1) + '/card_' + i + '.png');
+            this.load.image('card_' + i + suffix, 'images/pack' + (selectedCover - 1) + '/card_' + i + suffix + '.png');
         }
         this.load.image('card_back', 'images/card_back.png');
         this.load.image('card_sp_tornade', 'images/card_sp_tornade.png');
@@ -245,7 +249,7 @@ class GameScene extends Phaser.Scene {
         this.load.image('yellow', 'images/yellow.png');
         this.load.image('orange', 'images/orange.png');
         this.load.image('green', 'images/green.png');
-        this.load.image('backShowScore', 'images/backShowScore2.png');
+        this.load.image('backShowScore', 'images/backShowScore3.png');
         this.load.image('lifebarEmpty', 'images/lifebarEmpty2.jpg');
         this.load.image('lifebar', 'images/lifebar.png');
         this.load.image('derniertour', 'images/derniertour.png');
@@ -362,9 +366,7 @@ class GameScene extends Phaser.Scene {
         this.addName(xPos_p1, yPos_p1 - 85, myName)
         this.addName(xPos_p2, yPos_p2 - 85, otherName)
     }
-
     addName(x, y, name) {
-
         const gameBackName = this.add.image(x, y + 144, 'gameBackName');
         gameBackName.setDepth(2)
         var tt = this.add.text(x, y + 141, name, {
@@ -382,7 +384,7 @@ class GameScene extends Phaser.Scene {
     }
     createCards() {
         for (var i = 0; i < totCards; i++) {
-            const cardimg = this.add.image(cardResetPosX, cardResetPosY, 'card_' + i);
+            const cardimg = this.add.image(cardResetPosX, cardResetPosY, 'card_' + i + suffix);
             cardimg.setScale(cardScale)
             cardimg.x = cardResetPosX
             cardimg.y = cardResetPosY
@@ -482,10 +484,9 @@ class GameScene extends Phaser.Scene {
     }
 
     drawCard(data) {
-
         var cardid = data.cardId
         var playerId = data.playerId
-        var imgName = 'card_' + cardid
+        var imgName = 'card_' + cardid + suffix
         var xDest = inGameFrameX_p1
         var yDest = inGameFrameY_p1
         var xStart = g.deckP1.x + 10
@@ -525,7 +526,7 @@ class GameScene extends Phaser.Scene {
             context: this,
             onComplete: function() {
                 if (isMine) {
-                    g.myCardImg = g.add.image(inGameFrameX_p1, inGameFrameY_p1, 'card_' + cardid);
+                    g.myCardImg = g.add.image(inGameFrameX_p1, inGameFrameY_p1, 'card_' + cardid + suffix);
                 } else {
                     g.card_back_other = g.add.image(inGameFrameX_p2, inGameFrameY_p2, 'card_back');
                 }
@@ -737,6 +738,7 @@ class GameScene extends Phaser.Scene {
             type: 'attrResults',
             val: cardPlayed.attributes[attName],
             col: cardPlayed['color'],
+            attrId: data.attrId,
             caller: myid,
             isReversed: isReversed
         }))
@@ -780,6 +782,8 @@ class GameScene extends Phaser.Scene {
         currentWinner = data.winner
         playedCardValP1 = data.valP1
         playedCardValP2 = data.valP2
+        playedCardMetricP1 = attrs_metrics[(selectedCover - 1)]['at_' + (data.idP1 + 1)]
+        playedCardMetricP2 = attrs_metrics[(selectedCover - 1)]['at_' + (data.idP2 + 1)]
         if (myid != startingPlayer) {
             this.addPickedChoiceNotTurn(data)
             return
@@ -973,7 +977,7 @@ class GameScene extends Phaser.Scene {
             colorLoserImg.destroy()
         }
         this.card_back_other.destroy()
-        this.card_back_other = g.add.image(inGameFrameX_p2, inGameFrameY_p2, 'card_' + playedCardOther);
+        this.card_back_other = g.add.image(inGameFrameX_p2, inGameFrameY_p2, 'card_' + playedCardOther + suffix);
         this.stopTweens()
         timeoutHandle = setTimeout(function() {
             timeoutHandle = null
@@ -997,10 +1001,10 @@ class GameScene extends Phaser.Scene {
 
         if (winner != undefined) {
             if (winner == 'player1') {
-                val = playedCardValP1
+                val = playedCardValP1 + ' ' + playedCardMetricP1
 
             } else {
-                val = playedCardValP2
+                val = playedCardValP2 + ' ' + playedCardMetricP2
 
             }
             if (myid == winner) {
@@ -1013,9 +1017,9 @@ class GameScene extends Phaser.Scene {
 
         } else {
             if (currentWinner == 'player1') {
-                val = playedCardValP2
+                val = playedCardValP2 + ' ' + playedCardMetricP2
             } else {
-                val = playedCardValP1
+                val = playedCardValP1 + ' ' + playedCardMetricP1
             }
             if (myid != currentWinner) {
                 xpos = xPos_p1 + 275
@@ -1033,6 +1037,11 @@ class GameScene extends Phaser.Scene {
             fnt = '24px'
             tweenScMax = 1.00
         }
+        if (val.toString().length > 6) {
+            sc = 0.80
+            fnt = '22px'
+            tweenScMax = 1.00
+        }
         if (winner) {
             sc = 1.0
             const sound = this.sound.add('showScoreWin');
@@ -1044,8 +1053,9 @@ class GameScene extends Phaser.Scene {
             sound.play();
         }
         var bckImg = this.add.image(xpos, ypos, 'backShowScore').setOrigin(0.5);
-        bckImg.setScale(0.6)
+        bckImg.setScale(0.52)
         this.backShowScores.push(bckImg)
+
         var tt = this.add.text(xpos, ypos, val, {
             fontSize: fnt,
             fontFamily: 'Tahoma',
@@ -1381,7 +1391,6 @@ class GameScene extends Phaser.Scene {
         selectedCover = 1
         playersAll = []
         buttonLocked = false
-        mySelectedAvatar = ''
     }
     stopTweens() {
         let tweens = g.tweens.getAllTweens();

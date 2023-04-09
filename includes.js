@@ -12,7 +12,8 @@ var buttonLocked = false
 var selectedCover = 1
 var cardResetPosX = -200
 var cardResetPosY = 0
-var cardScale = 1
+var cardScale = 0.6
+var cardScaleHi = 0.4
 var cardScaleDraw = 0.20
 var totCards = 36
 var xPos_p1 = 60
@@ -31,6 +32,8 @@ var cardPlayed = null
 var playedCardOther = 0
 var playedCardValP2 = 0
 var playedCardValP1 = 0
+var playedCardMetricP1 = ''
+var playedCardMetricP2 = ''
 var winnerCard = 0
 var inGameFrameX_p1 = 145
 var inGameFrameY_p1 = 230
@@ -51,8 +54,8 @@ var quiVaCommencerBackimage
 var colorWinnerImg
 var colorLoserImg
 var coverClickBlock = false
-var drawDelay = 50
-var drawSpeed = 100
+var drawDelay = 10
+var drawSpeed = 20
 var remaining_p1 = 0
 var remaining_p2 = 0
 var showGameoverDoneShowned = false
@@ -61,6 +64,10 @@ var gameoverStartText = null
 var gameoverSceneStarted = false
 var animChoiceTextAdded2 = false
 var lastTurnSent = false
+var suffix
+var kingmusic
+var sound1
+var playerDC = false
 
 var attrs_labels = {
     0: {
@@ -68,6 +75,12 @@ var attrs_labels = {
         at_2: 'Poids',
         at_3: 'Puissance',
         at_4: "Apparition"
+    },
+    1: {
+        at_1: 'Poids',
+        at_2: 'Longueur',
+        at_3: 'Longévité',
+        at_4: "Gestation"
     }
 }
 var attrs_metrics = {
@@ -76,6 +89,12 @@ var attrs_metrics = {
         at_2: 'kg',
         at_3: '',
         at_4: ""
+    },
+    1: {
+        at_1: 'kg',
+        at_2: 'cm',
+        at_3: 'an',
+        at_4: "jours"
     }
 }
 var attrs = {
@@ -367,6 +386,296 @@ var attrs = {
             at_4: -700,
             col: 'red',
             name: 'Minotaure'
+        }
+    },
+    1: { // pack id
+        0: {
+            at_1: 1500,
+            at_2: 400,
+            at_3: 15,
+            at_4: 252,
+            col: 'green',
+            name: 'Eléphant de mer du Nord'
+        },
+        1: {
+            at_1: 190000,
+            at_2: 2600,
+            at_3: 85,
+            at_4: 350,
+            col: 'orange',
+            name: 'Baleine bleue'
+        },
+        2: {
+            at_1: 7,
+            at_2: 114,
+            at_3: 35,
+            at_4: 80,
+            col: 'red',
+            name: "Albatros d'Amsterdam"
+        },
+        3: {
+            at_1: 600,
+            at_2: 300,
+            at_3: 15,
+            at_4: 231,
+            col: 'green',
+            name: 'Élan'
+        },
+        4: {
+            at_1: 70,
+            at_2: 122,
+            at_3: 50,
+            at_4: 15,
+            col: 'orange',
+            name: 'Flétan'
+        },
+        5: {
+            at_1: 1600,
+            at_2: 310,
+            at_3: 40,
+            at_4: 331,
+            col: 'yellow',
+            name: 'Morse'
+        },
+        6: {
+            at_1: 4.5,
+            at_2: 68,
+            at_3: 14,
+            at_4: 32,
+            col: 'green',
+            name: 'Manchot Adélie'
+        },
+        7: {
+            at_1: 420,
+            at_2: 380,
+            at_3: 36,
+            at_4: 415,
+            col: 'green',
+            name: 'Bélouga'
+        },
+        8: {
+            at_1: 0.5,
+            at_2: 40,
+            at_3: 9,
+            at_4: 21,
+            col: 'green',
+            name: 'Lagopède des saules'
+        },
+        9: {
+            at_1: 510,
+            at_2: 260,
+            at_3: 23,
+            at_4: 240,
+            col: 'yellow',
+            name: 'Ours polaire'
+        },
+        10: {
+            at_1: 2,
+            at_2: 63,
+            at_3: 10,
+            at_4: 33,
+            col: 'green',
+            name: 'Harfang des neiges'
+        },
+        11: {
+            at_1: 1,
+            at_2: 41,
+            at_3: 8,
+            at_4: 28,
+            col: 'green',
+            name: 'Souslik arctique'
+        },
+        12: {
+            at_1: 0.35,
+            at_2: 35,
+            at_3: 29,
+            at_4: 45,
+            col: 'green',
+            name: 'Pétrel des neige'
+        },
+        13: {
+            at_1: 0.60,
+            at_2: 39,
+            at_3: 26,
+            at_4: 36,
+            col: 'green',
+            name: 'Petit pingouin'
+        },
+        14: {
+            at_1: 130,
+            at_2: 175,
+            at_3: 30,
+            at_4: 230,
+            col: 'green',
+            name: 'Phoque de Groenland'
+        },
+        15: {
+            at_1: 210,
+            at_2: 190,
+            at_3: 13,
+            at_4: 228,
+            col: 'yellow',
+            name: 'Renne'
+        },
+        16: {
+            at_1: 4,
+            at_2: 60,
+            at_3: 4,
+            at_4: 50,
+            col: 'green',
+            name: 'Lièvre arctique'
+        },
+        17: {
+            at_1: 30,
+            at_2: 115,
+            at_3: 19,
+            at_4: 64,
+            col: 'green',
+            name: 'Manchot empereur'
+        },
+        18: {
+            at_1: 650,
+            at_2: 325,
+            at_3: 24,
+            at_4: 274,
+            col: 'yellow',
+            name: 'Yack'
+        },
+        19: {
+            at_1: 80,
+            at_2: 140,
+            at_3: 41,
+            at_4: 251,
+            col: 'green',
+            name: 'Phoque annelé'
+        },
+        20: {
+            at_1: 5,
+            at_2: 55,
+            at_3: 16,
+            at_4: 52,
+            col: 'green',
+            name: 'Renard polaire'
+        },
+        21: {
+            at_1: 2.5,
+            at_2: 70,
+            at_3: 27,
+            at_4: 24,
+            col: 'green',
+            name: 'Oie des neiges'
+        },
+        22: {
+            at_1: 250,
+            at_2: 222,
+            at_3: 39,
+            at_4: 259,
+            col: 'green',
+            name: 'Phoque crabier'
+        },
+        23: {
+            at_1: 0.15,
+            at_2: 19,
+            at_3: 6,
+            at_4: 30,
+            col: 'green',
+            name: "Pika d'Amérique"
+        },
+        24: {
+            at_1: 300,
+            at_2: 230,
+            at_3: 17,
+            at_4: 105,
+            col: 'orange',
+            name: 'Tigre de Sibérie'
+        },
+        25: {
+            at_1: 8,
+            at_2: 90,
+            at_3: 21,
+            at_4: 43,
+            col: 'yellow',
+            name: 'Pygargue de Steller'
+        },
+        26: {
+            at_1: 5.5,
+            at_2: 71,
+            at_3: 17,
+            at_4: 35,
+            col: 'yellow',
+            name: 'Gorfou doré'
+        },
+        27: {
+            at_1: 1.7,
+            at_2: 64,
+            at_3: 28,
+            at_4: 31,
+            col: 'green',
+            name: 'Labbe antarctique'
+        },
+        28: {
+            at_1: 45,
+            at_2: 130,
+            at_3: 12,
+            at_4: 96,
+            col: 'orange',
+            name: 'Panthère des neiges'
+        },
+        29: {
+            at_1: 0.2,
+            at_2: 28,
+            at_3: 5,
+            at_4: 10,
+            col: 'green',
+            name: 'Poisson des glaces'
+        },
+        30: {
+            at_1: 230,
+            at_2: 235,
+            at_3: 32,
+            at_4: 240,
+            col: 'yellow',
+            name: 'Phoque à capuchon'
+        },
+        31: {
+            at_1: 0.45,
+            at_2: 29,
+            at_3: 22,
+            at_4: 42,
+            col: 'yellow',
+            name: 'Macareux moine'
+        },
+        32: {
+            at_1: 1250,
+            at_2: 425,
+            at_3: 42,
+            at_4: 450,
+            col: 'green',
+            name: 'Narval'
+        },
+        33: {
+            at_1: 850,
+            at_2: 330,
+            at_3: 272,
+            at_4: 540,
+            col: 'green',
+            name: 'Requin du Groenland'
+        },
+        34: {
+            at_1: 0.075,
+            at_2: 14,
+            at_3: 2.5,
+            at_4: 16,
+            col: 'green',
+            name: 'Lemming des toundras'
+        },
+        35: {
+            at_1: 280,
+            at_2: 210,
+            at_3: 25,
+            at_4: 258,
+            col: 'red',
+            name: 'Boeuf musqué'
         }
     }
 }

@@ -182,7 +182,6 @@ class StartScreen extends Phaser.Scene {
         for (const a of avatars) {
             a.setScale(0.7)
         }
-        mySelectedAvatar = ''
     }
 
     selectAvatar(avatarIndex, avatar) {

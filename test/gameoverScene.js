@@ -12,7 +12,7 @@ class GameoverScene extends Phaser.Scene {
         this.load.image('avatar5_round', 'images/avatar5_high_round.png');
         this.load.image('gameoverBack', 'images/backGameover.jpg');
         this.load.image('card_back', 'images/card_back.png');
-        this.load.image('backShowScoreSmall', 'images/backShowScore2.png');
+        this.load.image('backShowScore', 'images/backShowScore2.png');
         this.load.image('avatar1_king', 'images/avatar1_high_king.png');
         this.load.image('avatar2_king', 'images/avatar2_high_king.png');
         this.load.image('avatar3_king', 'images/avatar3_high_king.png');
@@ -24,16 +24,14 @@ class GameoverScene extends Phaser.Scene {
         this.load.audio('avatar3', 'sounds/avatar3.mp3');
         this.load.audio('avatar4', 'sounds/avatar4.mp3');
         this.load.audio('avatar5', 'sounds/avatar5.mp3');
-        //this.load.audio('countryWin', 'sounds/countryWin.mp3');
-        this.load.audio('countryWin', 'sounds/playerquit.mp3');
+        this.load.audio('countryWin', 'sounds/countryWin.mp3');
         this.load.audio('cardPile', 'sounds/cardPile.mp3')
         this.load.audio('showScore', 'sounds/showScore.mp3');
         this.load.audio('showScoreWin', 'sounds/showScoreWin.mp3');
         this.load.audio('fight', 'sounds/fight.mp3');
         this.load.audio('thump', 'sounds/thump.mp3');
         this.load.audio('loserfly', 'sounds/loserfly.mp3');
-        //this.load.audio('kingMusic', 'sounds/kingMusic.mp3');
-        this.load.audio('kingMusic', 'sounds/playerquit.mp3');
+        this.load.audio('kingMusic', 'sounds/kingMusic.mp3');
         this.load.spritesheet('pow', 'images/cardhit_spritesheet.png', {
             frameWidth: 150,
             frameHeight: 143
@@ -98,8 +96,6 @@ class GameoverScene extends Phaser.Scene {
         this.bckImgShowScoreWinner = null
         this.winnerAnimTween = null
         this.winnerAvatarKing = null
-        coverClickBlock = false
-        playedCardOther = ''
 
         if (!countryWinSoundAdded) {
             const sound = this.sound.add('countryWin');
@@ -129,23 +125,13 @@ class GameoverScene extends Phaser.Scene {
         showGameoverDoneShowned = true
         this.max_tot = Math.max(remaining_p1, remaining_p2)
         this.yorig = this.winnerYpos - 120
-        var origRemainingP1 = remaining_p1
         for (var i = 0; i < this.max_tot; i++) {
             setTimeout('g.showOneCard(' + i + ')', 700 + i * 40)
         }
     }
     showOneCard(i) {
-
-        var pp
-
         if (i < remaining_p1) {
-
-            if (currentWinner == 'player2') {
-                pp = this.loserXpos
-            } else {
-                pp = this.winnerXpos
-            }
-            var img = g.add.image(pp, this.yorig, 'card_back')
+            var img = g.add.image(this.winnerXpos, this.yorig, 'card_back')
             img.setScale(cardScaleDraw)
             this.imgCardsBack_p1.push(img)
             const sound = this.sound.add('cardPile');
@@ -155,12 +141,7 @@ class GameoverScene extends Phaser.Scene {
             this.currentDetune += 20
         }
         if (i < remaining_p2) {
-            if (currentWinner == 'player2') {
-                pp = this.winnerXpos
-            } else {
-                pp = this.loserXpos
-            }
-            var img = g.add.image(pp, this.yorig, 'card_back')
+            var img = g.add.image(this.loserXpos, this.yorig, 'card_back')
             img.setScale(cardScaleDraw)
             this.imgCardsBack_p2.push(img)
         }
@@ -178,15 +159,10 @@ class GameoverScene extends Phaser.Scene {
     }
     showTotCards(winner) {
         if (!winner) {
-            this.bckImgShowScoreLoser = this.add.image(this.loserXpos - 110, this.loserYpos - 150, 'backShowScoreSmall').setOrigin(0.5);
+            this.bckImgShowScoreLoser = this.add.image(this.loserXpos - 110, this.loserYpos - 150, 'backShowScore').setOrigin(0.5);
             this.bckImgShowScoreLoser.setScale(0.6)
             this.bckImgShowScoreLoser.setDepth(9)
-
-            var rem = remaining_p2
-            if (currentWinner == 'player2') {
-                rem = remaining_p1
-            }
-            this.remainingCardsLoser = this.add.text(this.loserXpos - 110, this.loserYpos - 150, rem, {
+            this.remainingCardsLoser = this.add.text(this.loserXpos - 110, this.loserYpos - 150, remaining_p2, {
                 fontSize: '48px',
                 fontFamily: 'Arial',
                 fontWeight: 'bold',
@@ -199,11 +175,7 @@ class GameoverScene extends Phaser.Scene {
             const sound = this.sound.add('showScore');
             sound.play();
         } else {
-            var rem = remaining_p2
-            if (currentWinner == 'player1') {
-                rem = remaining_p1
-            }
-            this.bckImgShowScoreWinner = this.add.image(this.winnerXpos + 125, this.winnerYpos - 150, 'backShowScoreSmall').setOrigin(0.5);
+            this.bckImgShowScoreWinner = this.add.image(this.winnerXpos + 125, this.winnerYpos - 150, 'backShowScore').setOrigin(0.5);
             this.bckImgShowScoreWinner.setScale(0.6)
             this.bckImgShowScoreWinner.setDepth(9)
             var tt = g.tweens.add({
@@ -215,7 +187,7 @@ class GameoverScene extends Phaser.Scene {
                 yoyo: true,
                 repeat: -1,
             })
-            this.remainingCardsWinner = this.add.text(this.winnerXpos + 125, this.winnerYpos - 150, rem, {
+            this.remainingCardsWinner = this.add.text(this.winnerXpos + 125, this.winnerYpos - 150, remaining_p1, {
                 fontSize: '48px',
                 fontFamily: 'Arial',
                 fontWeight: 'bold',
@@ -322,10 +294,10 @@ class GameoverScene extends Phaser.Scene {
             }));
         });
 
-        setTimeout('sound1 = g.sound.add("avatar' + mySelectedAvatar + '"); sound1.play()', 1000);
-        setTimeout('sound1 = g.sound.add("avatar' + otherSelectedAvatar + '"); sound1.play()', 1900);
-        setTimeout('sound1 = g.sound.add("avatar' + mySelectedAvatar + '"); sound1.play()', 3000);
-        setTimeout('sound1 = g.sound.add("avatar' + otherSelectedAvatar + '"); sound1.play()', 3900);
+        setTimeout('const sound1 = g.sound.add("avatar' + mySelectedAvatar + '"); sound1.play()', 1000);
+        setTimeout('const sound2 = g.sound.add("avatar' + otherSelectedAvatar + '"); sound2.play()', 1900);
+        setTimeout('const sound3 = g.sound.add("avatar' + mySelectedAvatar + '"); sound3.play()', 3000);
+        setTimeout('const sound4 = g.sound.add("avatar' + otherSelectedAvatar + '"); sound4.play()', 3900);
 
         pointsWinner.push(new Phaser.Math.Vector2(this.winnerXpos, this.winnerYpos));
         for (var i = 0; i < 30; i++) {
@@ -465,7 +437,7 @@ class GameoverScene extends Phaser.Scene {
         } else {
             this.winnerAvatarImg.setTexture('avatar' + otherSelectedAvatar + '_king');
         }
-        setTimeout('kingmusic = g.sound.add("kingMusic"); kingmusic.setVolume(0.9); kingmusic.play(); kingmusic.on("complete", function() { g.showWinnerName()  }); ', 500)
+        setTimeout('const ss = g.sound.add("kingMusic"); ss.setVolume(0.9); ss.play(); ss.on("complete", function() { g.showWinnerName()  }); ', 500)
         this.tweens.add({
             targets: this.winnerAvatarImg,
             y: 200,

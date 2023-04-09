@@ -49,7 +49,7 @@ var cardsPlayedP2 = []
 let inGame = false
 let startTime = 0
 let gameOverTimeout = false
-let gameMaxLength = 900
+let gameMaxLength = 50
 
 const playerState = {
     id: -1,
@@ -99,12 +99,11 @@ var card = function(id) {
         } else {
             selectedCover = players['player1'].state.selectedCover
         }
-        var selectedCover = players['player1'].state.selectedCover
-        this.attributes.at_1 = attrs[0][this.id].at_1
-        this.attributes.at_2 = attrs[0][this.id].at_2
-        this.attributes.at_3 = attrs[0][this.id].at_3
-        this.attributes.at_4 = attrs[0][this.id].at_4
-        this.color = attrs[0][this.id].col
+        this.attributes.at_1 = attrs[(selectedCover-1)][this.id].at_1
+        this.attributes.at_2 = attrs[(selectedCover-1)][this.id].at_2
+        this.attributes.at_3 = attrs[(selectedCover-1)][this.id].at_3
+        this.attributes.at_4 = attrs[(selectedCover-1)][this.id].at_4
+        this.color = attrs[(selectedCover-1)][this.id].col
     }
 }
 
@@ -187,7 +186,7 @@ server.on('connection', (socket) => {
                 if (players['player1'].state.selectedCover != '') {
                     c = players['player1'].state.selectedCover
                 }
-                sendToAll({
+                socket.send({
                     type: 'udpateAvatarP2',
                     coverid: c
                 })
@@ -206,6 +205,8 @@ server.on('connection', (socket) => {
                         type: 'startGame'
                     })
                 }
+				players['player1'].state.drawDone = false
+				players['player2'].state.drawDone = false
                 break;
 
             case 'selectedCover':
@@ -220,6 +221,8 @@ server.on('connection', (socket) => {
             case 'inGameConfirm':
                 players[socket.player.state.id].state.inGame = true
                 if (players['player1'].state.inGame && players['player2'].state.inGame) {
+					players['player1'].state.inGame = false
+					players['player2'].state.inGame = false
                     sendToAll({
                         type: 'inGameConfirm'
                     })
@@ -229,6 +232,8 @@ server.on('connection', (socket) => {
                 }
                 inGame = true
                 gameOverTimeout = false
+                players['player1'].state.cards = []
+                players['player2'].state.cards = []
                 break;
 
             case 'drawDoneConfirm':
@@ -253,7 +258,6 @@ server.on('connection', (socket) => {
                         starting = 'player2'
                     }
                     currentTurn = starting
-
                     sendToAll({
                         type: 'drawDone',
                         starting: starting,
@@ -282,9 +286,9 @@ server.on('connection', (socket) => {
                 break
 
             case 'drawWinnerShown':
-                startTime = new Date()
                 players[socket.player.state.id].state.drawWinnerShown = true
                 if (players['player1'].state.drawWinnerShown && players['player2'].state.drawWinnerShown) {
+					startTime = new Date()
                     sendToAll({
                         type: 'drawWinnerShown',
                         caller: socket.player.state.id
@@ -313,6 +317,7 @@ server.on('connection', (socket) => {
                 break
 
             case 'attributeSet':
+            console.log('attributeSet id:'+data.attrId)
                 var ret = {
                     type: 'attributeSet',
                     cardId: data.cardId,
@@ -340,6 +345,10 @@ server.on('connection', (socket) => {
                     valP2 = players['player2'].state.attrResultsFound['val']
                     colP1 = players['player1'].state.attrResultsFound['col']
                     colP2 = players['player2'].state.attrResultsFound['col']
+                    idP1 = players['player1'].state.attrResultsFound['attrId']
+                    idP2 = players['player2'].state.attrResultsFound['attrId']
+                    console.log('idP1:'+idP1)
+                    console.log('idP2:'+idP2)
                     var colOverride = false
                     var origCurrentTurn = currentTurn
                     const colorCombinations = {
@@ -365,7 +374,9 @@ server.on('connection', (socket) => {
                             col_p1: colP1,
                             col_p2: colP2,
                             valP1: valP1,
-                            valP2: valP2
+                            valP2: valP2,
+                            idP1: idP1,
+                            idP2: idP2
                         }
                         players['player1'].state.finishedChoiceAnim = false
                         players['player2'].state.finishedChoiceAnim = false
@@ -396,7 +407,9 @@ server.on('connection', (socket) => {
                             override: colOverrideSent,
                             caller: socket.player.state.id,
                             valP1: valP1,
-                            valP2: valP2
+                            valP2: valP2,
+                            idP1: idP1,
+                            idP2: idP2
                         }
                         sendToAll(ret)
                         colOverrideSent = false
@@ -489,6 +502,8 @@ server.on('connection', (socket) => {
                         colOverrideSent = false
                         cardsPlayedP1 = []
                         cardsPlayedP2 = []
+                        playersReady = []
+
                         sendToAll({
                             type: 'gameOver',
                             caller: socket.player.state.id,
@@ -583,6 +598,11 @@ server.on('connection', (socket) => {
         pl_state.makeLoserFlyDone = false
         pl_state.showLastTurnDone = false
         pl_state.avatar = ''
+        pl_state.bonneChanceDone = false
+        pl_state.quiVaCommencerDone = false
+        pl_state.drawWinnerShown = false
+        pl_state.inGame = false
+        pl_state.drawDone = false
     }
     socket.on('disconnect', (reason) => {
         console.log(reason)
@@ -618,19 +638,13 @@ server.on('connection', (socket) => {
                 }))
             }
         }
-        if (players['player1']) {
-            players['player1'].state.selectedCover = 1
-            players['player1'].state.cards = []
-        }
-        if (players['player2']) {
-            players['player2'].state.selectedCover = 1
-            players['player2'].state.cards = []
-        }
         resetCardsMain();
         totPlayers--
         colOverrideSent = false
         cardsPlayedP1 = []
         cardsPlayedP2 = []
+        reinit(players['player1'].state)
+        reinit(players['player2'].state)
     });
     var avatarTaken = false
     if (socket.player.state.id == 'player2' && players['player1'] && players['player1'].state && players['player1'].state.avatar != '') {

@@ -48,6 +48,7 @@ socket.addEventListener('message', (event) => {
             avatarTaken = data.avatarTaken
             break;
         case 'changeToPlayer1':
+            playerDC = true
             myid = 'player1'
 
             for (var i = 0; i < playersAll.length; i++) {
@@ -116,6 +117,9 @@ socket.addEventListener('message', (event) => {
             gameoverSceneStarted = false
             readyNextTurnSent = false
             lastTurnSent = false
+            coverClickBlock = false
+            otherSelectedAvatar = ''
+            stoppedScaleCardAnim = false
             if (g && g.battleSoundPlayed) {
                 g.battleSoundPlayed = false
             }
@@ -128,7 +132,7 @@ socket.addEventListener('message', (event) => {
             break;
 
         case 'player2DC':
-
+            playerDC = true
             var playclick = false
             if (g && g.otherName) {
                 playclick = true
@@ -175,6 +179,9 @@ socket.addEventListener('message', (event) => {
             readyNextTurnSent = false
             g.battleSoundPlayed = false
             lastTurnSent = false
+            coverClickBlock = false
+            otherSelectedAvatar = ''
+            stoppedScaleCardAnim = false
             if (g && g.resetCovers) {
                 g.resetCovers()
             }
@@ -191,7 +198,9 @@ socket.addEventListener('message', (event) => {
             playersAll = data.players
             if (data.callerp == myid) {
                 if (g) {
-                    g.removeClickListener()
+                    if (g.removeClickListener) {
+                        g.removeClickListener()
+                    }
                     g.sound.stopAll();
                     g.scene.pause();
                     g.scene.shutdown()
@@ -204,6 +213,15 @@ socket.addEventListener('message', (event) => {
             }
             if (g && g.addAvatar)
                 g.addAvatar()
+
+            if (playerDC) {
+                sendMessage({
+                    type: 'nameRegister',
+                    name: myName,
+                    avatar: mySelectedAvatar
+                })
+                playerDC = false
+            }
             break
         case 'udpateAvatarP2':
             if (g && g.addAvatar)
@@ -240,6 +258,7 @@ socket.addEventListener('message', (event) => {
         case 'drawWinnerShown':
             if (g && g.drawWinnerShown)
                 g.drawWinnerShown(data.caller)
+            gameoverSceneStarted = false
             break
         case 'drawCard':
             if (g && g.drawCard)

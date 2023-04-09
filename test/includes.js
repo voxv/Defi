@@ -1,3 +1,96 @@
+var canvasW = 1200
+var canvasH = 850
+var g
+var mySelectedAvatar = -1
+var otherSelectedAvatar = -1
+var avatarTaken = false
+var otherName = ''
+var myName = ''
+var avatars = []
+var playersAll = []
+var buttonLocked = false
+var selectedCover = 1
+var cardResetPosX = -200
+var cardResetPosY = 0
+var cardScale = 0.6
+var cardScaleHi = 0.4
+var cardScaleDraw = 0.20
+var totCards = 36
+var xPos_p1 = 60
+var yPos_p1 = 525
+var xPos_p2 = 740
+var yPos_p2 = 60
+var xOffset_avatar_deck = 80
+var yOffset_avatar_deck = 4
+var startingPlayer = 'player1'
+var timeoutHandle = null
+var playedCard = 0
+var currentAttrChoice = 0
+var attrMetricsAdded = false
+var gameStarted = false
+var cardPlayed = null
+var playedCardOther = 0
+var playedCardValP2 = 0
+var playedCardValP1 = 0
+var winnerCard = 0
+var inGameFrameX_p1 = 145
+var inGameFrameY_p1 = 230
+var inGameFrameX_p2 = 650
+var inGameFrameY_p2 = 377
+var choiceXStart = 395
+var choiceYStart = 77
+var choiceStep = 100
+var cardScaleAnimRange = cardScaleDraw + 0.02
+var cardScaleAnim = cardScaleAnimRange
+var stoppedScaleCardAnim = false
+var attrResultsAdded = false
+var animChoiceTextAdded = false
+var currentWinner
+var bonneChanceimage
+var quiVaCommencerText
+var quiVaCommencerBackimage
+var colorWinnerImg
+var colorLoserImg
+var coverClickBlock = false
+var drawDelay = 10
+var drawSpeed = 20
+var remaining_p1 = 0
+var remaining_p2 = 0
+var showGameoverDoneShowned = false
+var countryWinSoundAdded = false
+var gameoverStartText = null
+var gameoverSceneStarted = false
+var animChoiceTextAdded2 = false
+var lastTurnSent = false
+
+var attrs_labels = {
+    0: {
+        at_1: 'Taille',
+        at_2: 'Poids',
+        at_3: 'Puissance',
+        at_4: "Apparition"
+    },
+    1: {
+        at_1: 'Poids',
+        at_2: 'Longueur',
+        at_3: 'Longévité',
+        at_4: "Gestation"
+    }
+}
+var attrs_metrics = {
+    0: {
+        at_1: 'cm',
+        at_2: 'kg',
+        at_3: '',
+        at_4: ""
+    },
+    1: {
+        at_1: 'kg',
+        at_2: 'cm',
+        at_3: 'an',
+        at_4: "jours"
+    }
+}
 var attrs = {
     0: { // pack id
         0: {
@@ -331,7 +424,7 @@ var attrs = {
             name: 'Flétan'
         },
         5: {
-            at_1: 1600,
+            at_1: 600,
             at_2: 310,
             at_3: 40,
             at_4: 331,
@@ -581,6 +674,7 @@ var attrs = {
     }
 }
 
-module.exports = {
-    attrs
-};
+var scoreReversed = {
+    0: [3],
+    1: 0
+}
