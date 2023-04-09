@@ -1053,7 +1053,7 @@ class GameScene extends Phaser.Scene {
             sound.play();
         }
         var bckImg = this.add.image(xpos, ypos, 'backShowScore').setOrigin(0.5);
-        bckImg.setScale(0.52)
+        bckImg.setScale(0.55)
         this.backShowScores.push(bckImg)
 
         var tt = this.add.text(xpos, ypos, val, {
