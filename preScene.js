@@ -49,25 +49,20 @@ class PreScene extends Phaser.Scene {
         backimage.setScale(scale);
         backimage.setPosition(canvasWidth / 2, canvasHeight / 2);
         backimage.alpha = 0.8
-
-
         this.frame1X = 190
         this.frame2X = 590
         this.frameY = 200
         this.avatarScale = 1.32
-
         const frame1 = this.add.image(this.frame1X, this.frameY, 'frame');
         const frame2 = this.add.image(this.frame2X, this.frameY, 'frame');
         frame1.setScale(1.5)
         frame2.setScale(1.5)
-
         this.vs = this.add.image(this.frame1X + 200, this.frameY, 'vs');
         if (myid == 'player2') {
             socket.send(JSON.stringify({
                 type: 'udpateAvatarP2'
             }))
         }
-
         this.covers_scale = 0.35
         this.covers_scale_selected = 0.48
         this.covers = {}
@@ -85,17 +80,14 @@ class PreScene extends Phaser.Scene {
             }
             this.covers[i] = c
         }
-
         this.addAvatar()
         this.bkmusic = this.sound.add('bkmusic', {
             loop: true
         });
-
         this.bkmusic.play()
         this.battleSoundPlayed = false;
         gameStarted = false
         selectedCover = 1
-
     }
 
     addCoverClick(c, id) {
