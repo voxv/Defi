@@ -1,6 +1,7 @@
 var canvasW = 1200
 var canvasH = 850
 var g
+var debug = false
 var mySelectedAvatar = -1
 var otherSelectedAvatar = -1
 var avatarTaken = false
@@ -56,6 +57,10 @@ var colorLoserImg
 var coverClickBlock = false
 var drawDelay = 50
 var drawSpeed = 100
+if (debug) {
+	drawDelay = 10
+	drawSpeed = 20
+}
 var remaining_p1 = 0
 var remaining_p2 = 0
 var showGameoverDoneShowned = false

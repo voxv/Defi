@@ -242,9 +242,9 @@ class GameScene extends Phaser.Scene {
         this.load.image('game_back' + suffix, 'images/game_back' + suffix + '.jpg');
         this.load.image('gameBackName', 'images/gameBackName.png');
         this.load.image('backChoice', 'images/backChoice.png');
-        this.load.image('frameInGame', 'images/frameInGame.png');
-        this.load.image('commenceback', 'images/commenceBack.jpg');
-        this.load.image('bonnechance', 'images/bonnechance.jpg');
+        this.load.image('frameInGame' + suffix, 'images/frameInGame' + suffix + '.png');
+        this.load.image('commenceback' + suffix, 'images/commenceBack' + suffix + '.jpg');
+        this.load.image('bonnechance' + suffix, 'images/bonnechance' + suffix + '.jpg');
         this.load.image('choiceBackground', 'images/choiceBackground2.jpg');
         this.load.image('red', 'images/red.png');
         this.load.image('yellow', 'images/yellow.png');
@@ -257,7 +257,11 @@ class GameScene extends Phaser.Scene {
 
         this.load.audio('cardflip', 'sounds/cardflip.mp3');
         this.load.audio('bonnechance', 'sounds/bonnechance3.mp3');
-        this.load.audio('drumroll', 'sounds/drumroll.mp3');
+        if (debug) {
+            this.load.audio('drumroll', 'sounds/playerquit.mp3');
+        } else {
+            this.load.audio('drumroll', 'sounds/drumroll.mp3');
+        }
         this.load.audio('colorChange', 'sounds/colorChange.mp3');
         this.load.audio('showScore', 'sounds/showScore.mp3');
         this.load.audio('showScoreWin', 'sounds/showScoreWin.mp3');
@@ -341,6 +345,7 @@ class GameScene extends Phaser.Scene {
         lastTurnSent = false
     }
     createBackImage() {
+        document.body.style.backgroundColor = '#001029';
         const backimage = this.add.image(0, 0, 'game_back' + suffix);
         const canvasWidth = this.game.config.width;
         const canvasHeight = this.game.config.height;
@@ -400,7 +405,7 @@ class GameScene extends Phaser.Scene {
         }
         const x = canvasW / 2 - 199
         const y = canvasH / 2 - 125
-        quiVaCommencerBackimage = this.add.image(x, y - 40, 'commenceback');
+        quiVaCommencerBackimage = this.add.image(x, y - 40, 'commenceback' + suffix);
         quiVaCommencerBackimage.setDepth(4)
         quiVaCommencerBackimage.setScale(1.2)
 
@@ -1446,9 +1451,9 @@ class GameScene extends Phaser.Scene {
 
     drawWinnerShown(caller) {
         this.changeArrowSide()
-        const frame1 = this.add.image(inGameFrameX_p1, inGameFrameY_p1, 'frameInGame');
+        const frame1 = this.add.image(inGameFrameX_p1, inGameFrameY_p1, 'frameInGame' + suffix);
         frame1.setScale(1.1)
-        const frame2 = this.add.image(inGameFrameX_p2, inGameFrameY_p2, 'frameInGame');
+        const frame2 = this.add.image(inGameFrameX_p2, inGameFrameY_p2, 'frameInGame' + suffix);
         frame2.setScale(1.1)
         this.animScaleCard(caller)
         gameStarted = true
@@ -1474,7 +1479,7 @@ class GameScene extends Phaser.Scene {
     }
 
     showBonneChance() {
-        bonneChanceimage = this.add.image(canvasW / 2 - 169, canvasH / 2 - 125, 'bonnechance');
+        bonneChanceimage = this.add.image(canvasW / 2 - 169, canvasH / 2 - 125, 'bonnechance' + suffix);
         const sound = this.sound.add('bonnechance');
         sound.play();
         sound.on('complete', function() {
