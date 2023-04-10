@@ -444,7 +444,7 @@ class GameoverScene extends Phaser.Scene {
             strokeThickness: 10,
             strokeRounded: true
         }).setOrigin(0.5).setDepth(18);
-        setTimeout('sound1 = g.sound.add("avatar' + ava + '"); sound5.play()', 80);
+        setTimeout('sound1 = g.sound.add("avatar' + ava + '"); sound1.play()', 80);
         setTimeout('g.restart()', 6000);
     }
 
