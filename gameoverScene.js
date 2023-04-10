@@ -24,16 +24,14 @@ class GameoverScene extends Phaser.Scene {
         this.load.audio('avatar3', 'sounds/avatar3.mp3');
         this.load.audio('avatar4', 'sounds/avatar4.mp3');
         this.load.audio('avatar5', 'sounds/avatar5.mp3');
-        //this.load.audio('countryWin', 'sounds/countryWin.mp3');
-        this.load.audio('countryWin', 'sounds/playerquit.mp3');
+        this.load.audio('countryWin', 'sounds/countryWin.mp3');
         this.load.audio('cardPile', 'sounds/cardPile.mp3')
         this.load.audio('showScore', 'sounds/showScore.mp3');
         this.load.audio('showScoreWin', 'sounds/showScoreWin.mp3');
         this.load.audio('fight', 'sounds/fight.mp3');
         this.load.audio('thump', 'sounds/thump.mp3');
         this.load.audio('loserfly', 'sounds/loserfly.mp3');
-        //this.load.audio('kingMusic', 'sounds/kingMusic.mp3');
-        this.load.audio('kingMusic', 'sounds/playerquit.mp3');
+        this.load.audio('kingMusic', 'sounds/kingMusic.mp3');
         this.load.spritesheet('pow', 'images/cardhit_spritesheet.png', {
             frameWidth: 150,
             frameHeight: 143
@@ -48,6 +46,7 @@ class GameoverScene extends Phaser.Scene {
         } = this.scale;
         const centerX = width * 0.5;
         const centerY = height * 0.5;
+
 
         gameoverStartText = this.add.text(centerX, centerY - 200, 'Partie Terminée', {
             fontSize: '58px',
@@ -100,7 +99,6 @@ class GameoverScene extends Phaser.Scene {
         this.winnerAvatarKing = null
         coverClickBlock = false
         playedCardOther = ''
-
         if (!countryWinSoundAdded) {
             const sound = this.sound.add('countryWin');
             sound.play();
@@ -122,6 +120,7 @@ class GameoverScene extends Phaser.Scene {
             frameRate: 30
         });
     }
+
     showGameoverDone() {
         if (showGameoverDoneShowned) {
             return
@@ -129,17 +128,14 @@ class GameoverScene extends Phaser.Scene {
         showGameoverDoneShowned = true
         this.max_tot = Math.max(remaining_p1, remaining_p2)
         this.yorig = this.winnerYpos - 120
-        var origRemainingP1 = remaining_p1
         for (var i = 0; i < this.max_tot; i++) {
             setTimeout('g.showOneCard(' + i + ')', 700 + i * 40)
         }
     }
+
     showOneCard(i) {
-
         var pp
-
         if (i < remaining_p1) {
-
             if (currentWinner == 'player2') {
                 pp = this.loserXpos
             } else {
@@ -448,7 +444,7 @@ class GameoverScene extends Phaser.Scene {
             strokeThickness: 10,
             strokeRounded: true
         }).setOrigin(0.5).setDepth(18);
-        setTimeout('const sound5 = g.sound.add("avatar' + ava + '"); sound5.play()', 80);
+        setTimeout('sound1 = g.sound.add("avatar' + ava + '"); sound5.play()', 80);
         setTimeout('g.restart()', 6000);
     }
 

@@ -233,14 +233,13 @@ class GameScene extends Phaser.Scene {
             this.load.image('card_' + i + suffix, 'images/pack' + (selectedCover - 1) + '/card_' + i + suffix + '.png');
         }
         this.load.image('card_back', 'images/card_back.png');
-        this.load.image('card_sp_tornade', 'images/card_sp_tornade.png');
         this.load.image('frame', 'images/frame.png');
         this.load.image('avatar1', 'images/avatar1_high.png');
         this.load.image('avatar2', 'images/avatar2_high.png');
         this.load.image('avatar3', 'images/avatar3_high.png');
         this.load.image('avatar4', 'images/avatar4_high.png');
         this.load.image('avatar5', 'images/avatar5_high.png');
-        this.load.image('game_back', 'images/game_back.jpg');
+        this.load.image('game_back' + suffix, 'images/game_back' + suffix + '.jpg');
         this.load.image('gameBackName', 'images/gameBackName.png');
         this.load.image('backChoice', 'images/backChoice.png');
         this.load.image('frameInGame', 'images/frameInGame.png');
@@ -271,8 +270,8 @@ class GameScene extends Phaser.Scene {
         this.load.audio('choiceClick', 'sounds/choiceClick.mp3');
         this.load.audio('choiceShow', 'sounds/choiceShow3.mp3');
         this.load.audio('cardPlaced', 'sounds/cardPlaced.mp3');
-        this.load.audio('countryWin', 'sounds/countryWin.mp3');
         this.load.audio('derniertour', 'sounds/derniertour.mp3');
+        this.load.audio('gamebacksound' + suffix, 'sounds/gamebacksound' + suffix + '.mp3');
 
         this.load.spritesheet('arrows', 'images/arrows.png', {
             frameWidth: 60,
@@ -342,7 +341,7 @@ class GameScene extends Phaser.Scene {
         lastTurnSent = false
     }
     createBackImage() {
-        const backimage = this.add.image(0, 0, 'game_back');
+        const backimage = this.add.image(0, 0, 'game_back' + suffix);
         const canvasWidth = this.game.config.width;
         const canvasHeight = this.game.config.height;
         const imageWidth = backimage.width;
@@ -1453,6 +1452,11 @@ class GameScene extends Phaser.Scene {
         frame2.setScale(1.1)
         this.animScaleCard(caller)
         gameStarted = true
+        const sound = this.sound.add('gamebacksound' + suffix, {
+            loop: true
+        });
+        sound.setVolume(0.25)
+        sound.play();
     }
 
     animScaleCard(caller) {

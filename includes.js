@@ -54,8 +54,8 @@ var quiVaCommencerBackimage
 var colorWinnerImg
 var colorLoserImg
 var coverClickBlock = false
-var drawDelay = 10
-var drawSpeed = 20
+var drawDelay = 50
+var drawSpeed = 100
 var remaining_p1 = 0
 var remaining_p2 = 0
 var showGameoverDoneShowned = false
@@ -68,6 +68,7 @@ var suffix
 var kingmusic
 var sound1
 var playerDC = false
+var gamebacksound
 
 var attrs_labels = {
     0: {

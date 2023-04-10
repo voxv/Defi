@@ -214,7 +214,7 @@ socket.addEventListener('message', (event) => {
             if (g && g.addAvatar)
                 g.addAvatar()
 
-            if (playerDC) {
+            if (playerDC && myid == 'player1') {
                 sendMessage({
                     type: 'nameRegister',
                     name: myName,
@@ -222,6 +222,9 @@ socket.addEventListener('message', (event) => {
                 })
                 playerDC = false
             }
+            var tt = playersAll.find(item => item.id == myid)
+            mySelectedAvatar = tt.avatar
+            myName = tt.username
             break
         case 'udpateAvatarP2':
             if (g && g.addAvatar)

@@ -49,7 +49,7 @@ var cardsPlayedP2 = []
 let inGame = false
 let startTime = 0
 let gameOverTimeout = false
-let gameMaxLength = 50
+let gameMaxLength = 900
 
 const playerState = {
     id: -1,
@@ -99,11 +99,11 @@ var card = function(id) {
         } else {
             selectedCover = players['player1'].state.selectedCover
         }
-        this.attributes.at_1 = attrs[(selectedCover-1)][this.id].at_1
-        this.attributes.at_2 = attrs[(selectedCover-1)][this.id].at_2
-        this.attributes.at_3 = attrs[(selectedCover-1)][this.id].at_3
-        this.attributes.at_4 = attrs[(selectedCover-1)][this.id].at_4
-        this.color = attrs[(selectedCover-1)][this.id].col
+        this.attributes.at_1 = attrs[(selectedCover - 1)][this.id].at_1
+        this.attributes.at_2 = attrs[(selectedCover - 1)][this.id].at_2
+        this.attributes.at_3 = attrs[(selectedCover - 1)][this.id].at_3
+        this.attributes.at_4 = attrs[(selectedCover - 1)][this.id].at_4
+        this.color = attrs[(selectedCover - 1)][this.id].col
     }
 }
 
@@ -205,8 +205,8 @@ server.on('connection', (socket) => {
                         type: 'startGame'
                     })
                 }
-				players['player1'].state.drawDone = false
-				players['player2'].state.drawDone = false
+                players['player1'].state.drawDone = false
+                players['player2'].state.drawDone = false
                 break;
 
             case 'selectedCover':
@@ -221,8 +221,8 @@ server.on('connection', (socket) => {
             case 'inGameConfirm':
                 players[socket.player.state.id].state.inGame = true
                 if (players['player1'].state.inGame && players['player2'].state.inGame) {
-					players['player1'].state.inGame = false
-					players['player2'].state.inGame = false
+                    players['player1'].state.inGame = false
+                    players['player2'].state.inGame = false
                     sendToAll({
                         type: 'inGameConfirm'
                     })
@@ -288,7 +288,7 @@ server.on('connection', (socket) => {
             case 'drawWinnerShown':
                 players[socket.player.state.id].state.drawWinnerShown = true
                 if (players['player1'].state.drawWinnerShown && players['player2'].state.drawWinnerShown) {
-					startTime = new Date()
+                    startTime = new Date()
                     sendToAll({
                         type: 'drawWinnerShown',
                         caller: socket.player.state.id
@@ -317,7 +317,6 @@ server.on('connection', (socket) => {
                 break
 
             case 'attributeSet':
-            console.log('attributeSet id:'+data.attrId)
                 var ret = {
                     type: 'attributeSet',
                     cardId: data.cardId,
@@ -347,8 +346,6 @@ server.on('connection', (socket) => {
                     colP2 = players['player2'].state.attrResultsFound['col']
                     idP1 = players['player1'].state.attrResultsFound['attrId']
                     idP2 = players['player2'].state.attrResultsFound['attrId']
-                    console.log('idP1:'+idP1)
-                    console.log('idP2:'+idP2)
                     var colOverride = false
                     var origCurrentTurn = currentTurn
                     const colorCombinations = {
@@ -545,7 +542,7 @@ server.on('connection', (socket) => {
                 break
             case 'showGameoverDone':
                 players[socket.player.state.id].state.showGameoverDone = true
-                if (players['player1'].state.showGameoverDone && players['player2'].state.showGameoverDone) {
+                if (players['player1'].state.showGameoverDone && players['player2'] && players['player2'].state && players['player2'].state.showGameoverDone) {
                     sendToAll({
                         type: 'showGameoverDone',
                         caller: socket.player.state.id
@@ -580,7 +577,6 @@ server.on('connection', (socket) => {
                     })
                 }
                 break
-
         }
     });
 
