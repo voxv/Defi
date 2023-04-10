@@ -639,8 +639,10 @@ server.on('connection', (socket) => {
         colOverrideSent = false
         cardsPlayedP1 = []
         cardsPlayedP2 = []
-        reinit(players['player1'].state)
-        reinit(players['player2'].state)
+        if (players['player2'])
+            reinit(players['player1'].state)
+        if (players['player2'])
+            reinit(players['player2'].state)
     });
     var avatarTaken = false
     if (socket.player.state.id == 'player2' && players['player1'] && players['player1'].state && players['player1'].state.avatar != '') {
