@@ -1,4 +1,6 @@
 node_modules/
 back/
 .env
+.replit
+replit.nix
 package-lock.json
