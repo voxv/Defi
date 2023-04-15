@@ -540,7 +540,7 @@ server.on('connection', (socket) => {
                         cardsPlayedP1 = []
                         cardsPlayedP2 = []
                         playersReady = []
-						console.log('gameover remaing p1:'+p1rem+' remaing p2:'+p1rem)
+						console.log('gameover remaing p1:'+p1rem+' remaing p2:'+p2rem)
 						console.log('winner:'+thewinner)
                         sendToAll({
                             type: 'gameOver',
