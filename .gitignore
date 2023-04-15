@@ -1,3 +1,4 @@
 node_modules/
+back/
 .env
 package-lock.json

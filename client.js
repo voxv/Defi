@@ -315,6 +315,7 @@ socket.addEventListener('message', (event) => {
                 g.stopTweens()
             buttonLocked = false
             currentWinner = data.winner
+            console.log('start gmaeover with winner:'+data.winner+' remp1:'+data.remaining_p1+' remp2:'+data.remaining_p2)
             remaining_p1 = data.remaining_p1
             remaining_p2 = data.remaining_p2
             g.scene.pause();

@@ -119,6 +119,7 @@ class GameoverScene extends Phaser.Scene {
             }),
             frameRate: 30
         });
+        console.log('GAMEOVER SCENE with winner:'+currentWinner+' remp1:'+remaining_p1+' remp2:'+remaining_p2)
     }
 
     showGameoverDone() {
@@ -177,11 +178,15 @@ class GameoverScene extends Phaser.Scene {
             this.bckImgShowScoreLoser = this.add.image(this.loserXpos - 110, this.loserYpos - 150, 'backShowScoreSmall').setOrigin(0.5);
             this.bckImgShowScoreLoser.setScale(0.6)
             this.bckImgShowScoreLoser.setDepth(9)
+			console.log('show tot cards rp1:'+remaining_p1+' rp2:'+remaining_p2+'  winner:'+currentWinner)
 
             var rem = remaining_p2
             if (currentWinner == 'player2') {
                 rem = remaining_p1
             }
+            console.log('Remaining loser:'+rem)
+
+
             this.remainingCardsLoser = this.add.text(this.loserXpos - 110, this.loserYpos - 150, rem, {
                 fontSize: '48px',
                 fontFamily: 'Arial',
@@ -199,6 +204,7 @@ class GameoverScene extends Phaser.Scene {
             if (currentWinner == 'player1') {
                 rem = remaining_p1
             }
+            console.log('Remaining winner:'+rem)
             this.bckImgShowScoreWinner = this.add.image(this.winnerXpos + 125, this.winnerYpos - 150, 'backShowScoreSmall').setOrigin(0.5);
             this.bckImgShowScoreWinner.setScale(0.6)
             this.bckImgShowScoreWinner.setDepth(9)
@@ -237,9 +243,11 @@ class GameoverScene extends Phaser.Scene {
 
     createFrames() {
         if (myid == currentWinner) {
+			console.log('Im winner to the right'+this.winnerXpos)
             this.winnerAvatarImg = this.add.image(this.winnerXpos, this.winnerYpos, 'avatar' + mySelectedAvatar + '_round');
             this.loserAvatarImg = this.add.image(this.loserXpos, this.loserYpos, 'avatar' + otherSelectedAvatar + '_round');
         } else {
+			console.log('Im loser to the left '+this.loserXpos)
             this.loserAvatarImg = this.add.image(this.loserXpos, this.loserYpos, 'avatar' + mySelectedAvatar + '_round');
             this.winnerAvatarImg = this.add.image(this.winnerXpos, this.winnerYpos, 'avatar' + otherSelectedAvatar + '_round');
         }

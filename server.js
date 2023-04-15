@@ -476,7 +476,7 @@ server.on('connection', (socket) => {
                     }
                 }
                 if (debug) {
-					var str1 = ''
+					/*var str1 = ''
 					for (var i = 0 ; i < cardsPlayedP1.length ; i++) {
 						str1+=cardsPlayedP1[i].id+' ,'
 					}
@@ -500,7 +500,7 @@ server.on('connection', (socket) => {
 						str1+=players['player2'].state.cards[i].id+', '
 					}
 					console.log('P2 REMAINING: '+players['player2'].state.cards.length)
-					console.log(str1)
+					console.log(str1)*/
 				}
 
                 players[socket.player.state.id].state.readyNextTurn = true
@@ -526,6 +526,11 @@ server.on('connection', (socket) => {
                     if (gameOverTimeout || players['player1'].state.cards.length == 0 && cardsPlayedP1.length == 0 || players['player2'].state.cards.length == 0 && cardsPlayedP2.length == 0) {
                         var p1rem = players['player1'].state.cards.length + cardsPlayedP1.length
                         var p2rem = players['player2'].state.cards.length + cardsPlayedP2.length
+
+                        var thewinner = 'player1'
+                        if (p2rem > p1rem) {
+							thewinner = 'player2'
+						}
                         reinit(players['player1'].state)
                         reinit(players['player2'].state)
                         players['player2'].state.cards = []
@@ -535,11 +540,12 @@ server.on('connection', (socket) => {
                         cardsPlayedP1 = []
                         cardsPlayedP2 = []
                         playersReady = []
-
+						console.log('gameover remaing p1:'+p1rem+' remaing p2:'+p1rem)
+						console.log('winner:'+thewinner)
                         sendToAll({
                             type: 'gameOver',
                             caller: socket.player.state.id,
-                            winner: data.winner,
+                            winner: thewinner,
                             remaining_p1: p1rem,
                             remaining_p2: p2rem,
                         })
