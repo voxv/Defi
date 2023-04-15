@@ -50,6 +50,7 @@ let inGame = false
 let startTime = 0
 let gameOverTimeout = false
 let gameMaxLength = 900
+let debug = false
 
 const playerState = {
     id: -1,
@@ -152,7 +153,7 @@ server.on('connection', (socket) => {
         onClose(evt)
     };
     socket.on('message', (message) => {
-        console.log('message:' + message)
+        //console.log('message:' + message)
         let data = JSON.parse(message);
 
         switch (data.type) {
@@ -297,7 +298,14 @@ server.on('connection', (socket) => {
                 break
 
             case 'drawCard':
+
                 var c = players[socket.player.state.id].state.cards.pop()
+
+                if (debug) {
+				    console.log(socket.player.state.id+' draw:'+c.id)
+				    console.log(socket.player.state.id+ ' remaining:'+players[socket.player.state.id].state.cards.length)
+				}
+
                 var ret = {
                     type: 'drawCard',
                     cardId: c.id,
@@ -467,6 +475,33 @@ server.on('connection', (socket) => {
                         cardsPlayedP2.push(card2)
                     }
                 }
+                if (debug) {
+					var str1 = ''
+					for (var i = 0 ; i < cardsPlayedP1.length ; i++) {
+						str1+=cardsPlayedP1[i].id+' ,'
+					}
+					console.log('P1 TRASH: '+cardsPlayedP1.length)
+					console.log(str1)
+					str1 = ''
+					for (var i = 0 ; i < players['player1'].state.cards.length ; i++) {
+						str1+=players['player1'].state.cards[i].id+', '
+					}
+					console.log('P1 REMAINING:'+players['player2'].state.cards.length)
+					console.log(str1)
+
+					str1 = ''
+					for (var i = 0 ; i < cardsPlayedP2.length ; i++) {
+						str1+=cardsPlayedP2[i].id+' ,'
+					}
+					console.log('P2 TRASH: '+cardsPlayedP2.length)
+					console.log(str1)
+					str1 = ''
+					for (var i = 0 ; i < players['player2'].state.cards.length ; i++) {
+						str1+=players['player2'].state.cards[i].id+', '
+					}
+					console.log('P2 REMAINING: '+players['player2'].state.cards.length)
+					console.log(str1)
+				}
 
                 players[socket.player.state.id].state.readyNextTurn = true
                 if (players['player1'].state.readyNextTurn && players['player2'].state.readyNextTurn) {
