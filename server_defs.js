@@ -575,7 +575,7 @@ var attrs = {
             at_2: 210,
             at_3: 25,
             at_4: 258,
-            col: 'red',
+            col: 'green',
             name: 'Boeuf musqué'
         }
     },
